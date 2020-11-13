@@ -2,14 +2,14 @@ import jig.Vector;
 
 public class physics {
   //constants
-  static public float GRAVCONSTANT = .05f;
+  static public float GRAVCONSTANT = .15f;
   static public float TERMINALVELOCITY = .5f;
   public static float NORMALFRICTION = .1f;
 
 
   public static Vector gravity(Vector v, int delta){
     float y = v.getY();
-    y += delta/1000*GRAVCONSTANT;
+    y += (delta/1000f)*GRAVCONSTANT;
     return new Vector(v.getX(), y);
   }
 
