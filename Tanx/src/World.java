@@ -1,16 +1,7 @@
-import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Rectangle;
 
-import jig.Entity;
 import jig.Vector;
-import jig.ConvexPolygon;
-
-class TerrainTile extends Entity {
-	public TerrainTile() {
-		super.addShape(new ConvexPolygon((float)World.tileLength, (float)World.tileLength), Color.black, Color.white);
-	}
-}
 
 public class World {
 	
