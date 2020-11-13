@@ -1,10 +1,9 @@
 import org.newdawn.slick.Color;
 
 import jig.ConvexPolygon;
-import jig.Entity;
 import jig.Vector;
 
-public class Projectile extends Entity {
+public class Projectile extends PhysicEntity {
 	
 	Vector velocity;
 	
