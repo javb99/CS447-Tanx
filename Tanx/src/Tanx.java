@@ -52,14 +52,15 @@ import org.newdawn.slick.state.StateBasedGame;
       super(title);
       ScreenHeight = height;
       ScreenWidth = width;
+      Entity.setCoarseGrainedCollisionBoundary(Entity.CIRCLE);
 
     }
 
 
     @Override
     public void initStatesList(GameContainer container) throws SlickException {
-      addState(new StartUpState());
-      addState(new GameOverState());
+     // addState(new StartUpState());
+     // addState(new GameOverState());
       addState(new PlayingState());
 
       // the sound resource takes a particularly long time to load,
