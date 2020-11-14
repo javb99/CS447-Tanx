@@ -13,15 +13,19 @@ import jig.Vector;
 
 public class PlayingState extends BasicGameState {
 	World world;
+  Camera camera;
   ArrayList<PhysicsEntity> PE_list;
   PhysicsEngine PE;
   Tank t;
-  
+
 	@Override
 	public void init(GameContainer container, StateBasedGame game)
 			throws SlickException {
 		Entity.setCoarseGrainedCollisionBoundary(Entity.AABB);
-		world = new World(new Rectangle(0, 0, container.getWidth(), container.getHeight()));
+		Rectangle worldBounds = new Rectangle(0, 0, container.getWidth()*2, container.getHeight()*2);
+		Rectangle screenBounds = new Rectangle(0, 0, container.getWidth(), container.getHeight());//new Rectangle(0, 0, container.getScreenWidth(), container.getScreenHeight());
+		world = new World(worldBounds);
+		camera = new Camera(screenBounds, worldBounds);
 		world.loadLevel("YAY");
 	}
 	
@@ -41,8 +45,16 @@ public class PlayingState extends BasicGameState {
 	public void render(GameContainer container, StateBasedGame game,
 			Graphics g) throws SlickException {
 		Tanx bg = (Tanx) game;
+		
+		System.out.println("render: " + camera.toString());
+		g.pushTransform();
+		camera.transformContext(g);
+		// Render anything that should be affected by the camera location.
 
 		world.renderTerrain(g);
+		
+		g.popTransform();
+		// Render anything that shouldn't be transformed below here.
 	}
 
 	@Override
