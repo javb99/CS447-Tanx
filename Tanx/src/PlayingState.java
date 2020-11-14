@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
@@ -26,6 +27,7 @@ public class PlayingState extends BasicGameState {
 		Rectangle screenBounds = new Rectangle(0, 0, container.getWidth(), container.getHeight());//new Rectangle(0, 0, container.getScreenWidth(), container.getScreenHeight());
 		world = new World(worldBounds);
 		camera = new Camera(screenBounds, worldBounds);
+		System.out.println("world size: " + worldBounds + ", screen size: " + screenBounds);
 		world.loadLevel("YAY");
 	}
 	
@@ -52,9 +54,24 @@ public class PlayingState extends BasicGameState {
 		// Render anything that should be affected by the camera location.
 
 		world.renderTerrain(g);
-		
+		if (worldMouse != null) {
+  		Vector center = camera.getWorldLocation();
+  		g.setColor(Color.red);
+  		g.setLineWidth(3);
+  		g.drawLine(center.getX(), center.getY(), worldMouse.getX(), worldMouse.getY());
+  		System.out.println("RED(w): " + center +" - " + worldMouse);
+		}
 		g.popTransform();
 		// Render anything that shouldn't be transformed below here.
+		
+		if (worldMouse != null) {
+      Vector center = camera.screenLocationForWorldLocation(camera.getWorldLocation());
+      Vector screenMouse = camera.screenLocationForWorldLocation(worldMouse);
+      g.setColor(Color.blue);
+      g.setLineWidth(1);
+      g.drawLine(center.getX(), center.getY(), screenMouse.getX(), screenMouse.getY());
+      System.out.println("BLUE(s): " + center +" - " + screenMouse);
+    }
 	}
 
 	@Override
@@ -72,6 +89,10 @@ public class PlayingState extends BasicGameState {
     }
     
     PE.update(delta);
+		controlCamera(delta, input);
+	}
+	
+	private void controlCamera(int delta, Input input) {
 	}
 
 	@Override

@@ -15,14 +15,13 @@ class Camera {
   /// Center of the camera in unscaled world points.
   private Vector worldLocation;
   
-  /// The scale factor applied to the world to fit the screen.
   private float zoom;
   
   Camera(Rectangle screen, Rectangle world) {
     this.screen = screen;
     this.world = world;
     this.worldLocation = new Vector(world.getCenter());
-    this.zoom = world.getWidth() / screen.getWidth();
+    this.zoom = 1.0f;
   }
   
   void transformContext(Graphics g) {
@@ -30,10 +29,9 @@ class Camera {
     
     
     g.translate(-translation.getX(), -translation.getY());
-    g.scale(zoom, zoom);
+//    g.scale(zoom, zoom);
     
 //    g.setColor(Color.green);
-//    g.scale(1/zoom, 1/zoom); // make the full world fit.
 //    g.drawLine(0, 0, translation.getX(), translation.getY());
 //    g.drawRect(translation.getX(), translation.getY(), screen.getWidth(), screen.getHeight());
   }
@@ -61,14 +59,14 @@ class Camera {
   public void setZoom(float scale) { this.zoom = scale; }
   
   public Vector worldLocationForScreenLocation(Vector screenLocation) {
-    return screenLocation.subtract(getTranslation()).scale(1/zoom);
+    return screenLocation.add(getTranslation());
   }
   public Vector screenLocationForWorldLocation(Vector worldLocation) {
-    return worldLocation.add(getTranslation()).scale(zoom);
+    return worldLocation.subtract(getTranslation());
   }
   
   @Override
   public String toString() {
-    return "location: " + worldLocation.toString() + ", zoom: " + zoom;
+    return "location: " + worldLocation.toString() + ", zoom: " + zoom + "screen: " + screenLocationForWorldLocation(worldLocation);
   }
 }
