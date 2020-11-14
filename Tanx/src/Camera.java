@@ -13,6 +13,8 @@ class Camera {
   
   /// Center of the camera in unscaled world points.
   private Vector worldLocation;
+  
+  /// The scale factor applied to the world to fit the screen.
   private float zoom;
   
   Camera(Rectangle screen, Rectangle world) {
@@ -54,6 +56,13 @@ class Camera {
   }
   
   public void setZoom(float scale) { this.zoom = scale; }
+  
+  public Vector worldLocationForScreenLocation(Vector screenLocation) {
+    return screenLocation.subtract(getTranslation()).scale(1/zoom);
+  }
+  public Vector screenLocationForWorldLocation(Vector worldLocation) {
+    return worldLocation.add(getTranslation()).scale(zoom);
+  }
   
   @Override
   public String toString() {
