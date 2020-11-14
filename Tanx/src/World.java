@@ -21,7 +21,7 @@ public class World {
 	
 	public void loadLevel(String name) {
 		for (int x = 0; x < tiles.length; x++) {
-			for (int y = tiles[x].length-1; y >= tiles[x].length-3; y--) {
+			for (int y = tiles[x].length-1; y >= 0; y--) {
 				tiles[x][y] = new TerrainTile();
 				Vector position = geometry.centerLocationOfTile(x, y);
 				tiles[x][y].setPosition(position);

@@ -1,3 +1,4 @@
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Rectangle;
 
@@ -28,11 +29,13 @@ class Camera {
     Vector translation = getTranslation();
     
     
-//    g.translate(translation.getX(), translation.getY());
-    g.scale(1/zoom, 1/zoom); // make the full world fit.
+    g.translate(-translation.getX(), -translation.getY());
+    g.scale(zoom, zoom);
     
-    g.drawLine(0, 0, translation.getX(), translation.getY());
-    g.drawRect(translation.getX(), translation.getY(), screen.getWidth(), screen.getHeight());
+//    g.setColor(Color.green);
+//    g.scale(1/zoom, 1/zoom); // make the full world fit.
+//    g.drawLine(0, 0, translation.getX(), translation.getY());
+//    g.drawRect(translation.getX(), translation.getY(), screen.getWidth(), screen.getHeight());
   }
   
   /// The distance from the top-left corner of the world to the top-left of the viewport.
