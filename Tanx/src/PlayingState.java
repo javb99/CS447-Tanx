@@ -88,16 +88,16 @@ public class PlayingState extends BasicGameState {
       camera.toggleDebug();
     }
     if (input.isKeyDown(Input.KEY_LEFT)) {
-      camera.setWorldLocation(camera.getWorldLocation().add(new Vector(-delta/3, 0)));
+      camera.move(new Vector(-delta/3, 0));
     }
     if (input.isKeyDown(Input.KEY_RIGHT)) {
-      camera.setWorldLocation(camera.getWorldLocation().add(new Vector(delta/3, 0)));
+      camera.move(new Vector(delta/3, 0));
     }
     if (input.isKeyDown(Input.KEY_UP)) {
-      camera.setWorldLocation(camera.getWorldLocation().add(new Vector(0, -delta/3)));
+      camera.move(new Vector(0, -delta/3));
     }
     if (input.isKeyDown(Input.KEY_DOWN)) {
-      camera.setWorldLocation(camera.getWorldLocation().add(new Vector(0, delta/3)));
+      camera.move(new Vector(0, delta/3));
     }
 	}
 
