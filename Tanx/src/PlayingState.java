@@ -14,7 +14,7 @@ import jig.Vector;
 
 public class PlayingState extends BasicGameState {
 	World world;
-  Camera camera;
+	DebugCamera camera;
   ArrayList<PhysicsEntity> PE_list;
   PhysicsEngine PE;
   Tank t;
@@ -26,7 +26,7 @@ public class PlayingState extends BasicGameState {
 		Rectangle worldBounds = new Rectangle(0, 0, container.getWidth()*2, container.getHeight()*2);
 		Rectangle screenBounds = new Rectangle(0, 0, container.getWidth(), container.getHeight());//new Rectangle(0, 0, container.getScreenWidth(), container.getScreenHeight());
 		world = new World(worldBounds);
-		camera = new Camera(screenBounds, worldBounds);
+		camera = new DebugCamera(screenBounds, worldBounds);
 		System.out.println("world size: " + worldBounds + ", screen size: " + screenBounds);
 		world.loadLevel("YAY");
 	}

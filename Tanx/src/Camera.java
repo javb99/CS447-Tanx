@@ -17,8 +17,6 @@ class Camera {
   
   private float zoom;
   
-  private boolean debug = false;
-  
   Camera(Rectangle screen, Rectangle world) {
     this.screen = screen;
     this.world = world;
@@ -26,24 +24,11 @@ class Camera {
     this.zoom = 1.0f;
   }
   
-  public void toggleDebug() {
-    this.debug = !this.debug;
-  }
-  
   void transformContext(Graphics g) {
     Vector translation = getTranslation();
-    
-    if (!debug) {
-      g.translate(-translation.getX()*zoom, -translation.getY()*zoom);
-      g.scale(zoom, zoom);
-    } else {
-      float toFit = screen.getWidth()/world.getWidth();
-      g.scale(toFit, toFit);
-      
-      g.setColor(Color.green);
-      g.drawLine(world.getMinX(), world.getMinY(), translation.getX(), translation.getY());
-      g.drawRect(translation.getX(), translation.getY(), viewPortSize().getX(), viewPortSize().getY());
-    }
+
+    g.translate(-translation.getX()*zoom, -translation.getY()*zoom);
+    g.scale(zoom, zoom);
   }
   
   /// Screen size in world size points.
@@ -87,5 +72,33 @@ class Camera {
   @Override
   public String toString() {
     return "location: " + worldLocation.toString() + ", zoom: " + zoom;
+  }
+}
+
+class DebugCamera extends Camera {
+  
+  private boolean debug = false;
+  
+  DebugCamera(Rectangle screen, Rectangle world) {
+    super(screen, world);
+  }
+  
+  public void toggleDebug() {
+    this.debug = !this.debug;
+  }
+  
+  @Override
+  void transformContext(Graphics g) {
+    if (debug) {
+      float toFit = screen.getWidth()/world.getWidth();
+      g.scale(toFit, toFit);
+      
+      Vector translation = getTranslation();
+      g.setColor(Color.green);
+      g.drawLine(world.getMinX(), world.getMinY(), translation.getX(), translation.getY());
+      g.drawRect(translation.getX(), translation.getY(), viewPortSize().getX(), viewPortSize().getY());
+    } else {
+      super.transformContext(g);
+    }
   }
 }
