@@ -5,6 +5,9 @@ import org.newdawn.slick.geom.Rectangle;
 import jig.Vector;
 
 class Camera {
+  
+  static float MAX_ZOOM = 4f;
+  
   /// Portion of the screen that the camera/world occupy.
   /// This may not be the whole screen if we want menus outside the scrolling area.
   Rectangle screen;
@@ -48,19 +51,24 @@ class Camera {
   
   public Vector getWorldLocation() { return worldLocation; }
   public void setWorldLocation(Vector location) {
-    this.worldLocation = clampToScreen(location);
+    this.worldLocation = location;
+    clampViewPortToWorld();
   }
-  private Vector clampToScreen(Vector newCenterLocation) {
+  private void clampViewPortToWorld() {
     Vector viewPortSize = viewPortSize();
     float minValidX = world.getMinX() + viewPortSize.getX()/2;
     float maxValidX = world.getMaxX() - viewPortSize.getX()/2;
     float minValidY = world.getMinY() + viewPortSize.getY()/2;
     float maxValidY = world.getMaxY() - viewPortSize.getY()/2;
-    return newCenterLocation.clampX(minValidX, maxValidX).clampY(minValidY, maxValidY);
+    worldLocation = worldLocation.clampX(minValidX, maxValidX).clampY(minValidY, maxValidY);
   }
   
   public float getZoom() { return this.zoom; }
-  public void setZoom(float scale) { this.zoom = scale; }
+  public void setZoom(float scale) {
+    float fullWorldScale = screen.getWidth()/world.getWidth();
+    this.zoom = Math.min(MAX_ZOOM, Math.max(fullWorldScale, scale));
+    clampViewPortToWorld();
+  }
   
   public Vector worldLocationForScreenLocation(Vector screenLocation) {
     return screenLocation.add(getTranslation().scale(zoom)).scale(1/zoom);
