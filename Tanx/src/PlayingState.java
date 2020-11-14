@@ -10,6 +10,7 @@ import jig.Vector;
 public class PlayingState extends BasicGameState {
 	
 	Projectile p;
+	Tank t;
 	
   @Override
   public void init(GameContainer container, StateBasedGame game)
@@ -21,6 +22,7 @@ public class PlayingState extends BasicGameState {
   	throws SlickException {
 	  
 	  p = new Projectile(30, 400, new Vector(.2f, -.2f));
+	  t = new Tank(50, 400);
   }
 
   @Override
@@ -29,12 +31,23 @@ public class PlayingState extends BasicGameState {
     Tanx bg = (Tanx) game;
     
     p.render(g);
+    t.render(g);
+    t.renderCannon(g);
   }
 
   @Override
   public void update(GameContainer container, StateBasedGame game,
                      int delta) throws SlickException {
     Input input = container.getInput();
+
+    if (input.isKeyDown(Input.KEY_E)){
+      t.rotate(Direction.RIGHT, delta);
+    } else if (input.isKeyDown(Input.KEY_Q)){
+      t.rotate(Direction.LEFT, delta);
+    }
+    if (input.isKeyPressed(Input.KEY_SPACE)){
+      p = t.fire(1);
+    }
     
     p.update(delta);
     
