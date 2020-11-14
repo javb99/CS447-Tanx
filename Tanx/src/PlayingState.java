@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
@@ -9,7 +11,8 @@ import jig.Vector;
 
 public class PlayingState extends BasicGameState {
 	
-	Projectile p;
+	ArrayList<PhysicsEntity> PE_list;
+	PhysicsEngine PE;
 	
   @Override
   public void init(GameContainer container, StateBasedGame game)
@@ -20,7 +23,11 @@ public class PlayingState extends BasicGameState {
   public void enter(GameContainer container, StateBasedGame game)
   	throws SlickException {
 	  
-	  p = new Projectile(30, 400, new Vector(.2f, -.2f));
+	  PE_list = new ArrayList<PhysicsEntity>();
+	  
+	  PE_list.add(new Projectile(20, 300, new Vector(2f, -2f)));
+	  
+	  PE = new PhysicsEngine(PE_list);
   }
 
   @Override
@@ -28,7 +35,7 @@ public class PlayingState extends BasicGameState {
                      Graphics g) throws SlickException {
     Tanx bg = (Tanx) game;
     
-    p.render(g);
+    PE_list.forEach((n) -> n.render(g));
   }
 
   @Override
@@ -36,7 +43,11 @@ public class PlayingState extends BasicGameState {
                      int delta) throws SlickException {
     Input input = container.getInput();
     
-    p.update(delta);
+    PE.update(delta);
+    
+    if(input.isKeyPressed(Input.KEY_SPACE)) {
+    	PE.addPhysicsEntity(new Projectile(20, 600, new Vector(2.5f, -5f)));
+    }
     
   }
 

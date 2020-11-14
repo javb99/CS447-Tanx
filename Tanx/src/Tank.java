@@ -4,7 +4,7 @@ import org.newdawn.slick.Color;
 
 enum Direction {LEFT, RIGHT};
 
-public class Tank extends PhysicEntity {
+public class Tank extends PhysicsEntity {
   //Constants
   public static final int INIT_TANK_HEALTH = 100;
   public static final float TANKMOVESPEED = .2f;
