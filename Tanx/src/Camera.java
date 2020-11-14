@@ -34,10 +34,12 @@ class Camera {
     g.scale(zoom, zoom);
   }
   
-  /// Screen size in world size points.
+  /// The ViewPort is the Screen in world points.
   public Vector viewPortSize() {
     return new Vector(screen.getWidth()/zoom, screen.getHeight()/zoom);
   }
+  /// The top left corner of the ViewPort. 
+  /// The ViewPort is the Screen in world points.
   public Vector viewPortOrigin() {
     Vector viewPortSize = viewPortSize();
     Vector camera = getWorldLocation();
@@ -54,6 +56,7 @@ class Camera {
     this.worldLocation = location;
     clampViewPortToWorld();
   }
+  /// Shift worldLocation so that the whole ViewPort is within the World.
   private void clampViewPortToWorld() {
     Vector viewPortSize = viewPortSize();
     float minValidX = world.getMinX() + viewPortSize.getX()/2;
@@ -83,6 +86,7 @@ class Camera {
   }
 }
 
+/// When debug is true, it shows the full world and an border for the viewport.
 class DebugCamera extends Camera {
   
   private boolean debug = false;
