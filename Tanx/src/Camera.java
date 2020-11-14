@@ -48,10 +48,10 @@ class Camera {
     this.worldLocation = clampToScreen(location);
   }
   private Vector clampToScreen(Vector newLocation) {
-    float minValidX = screen.getMinX() + screen.getWidth() / zoom;
-    float maxValidX = screen.getMaxX() + screen.getWidth() / zoom;
-    float minValidY = screen.getMinY() + screen.getHeight() / zoom;
-    float maxValidY = screen.getMaxY() + screen.getHeight() / zoom;
+    float minValidX = world.getMinX() + screen.getWidth() / zoom;
+    float maxValidX = world.getMaxX() - screen.getWidth() / zoom;
+    float minValidY = world.getMinY() + screen.getHeight() / zoom;
+    float maxValidY = world.getMaxY() - screen.getHeight() / zoom;
     return newLocation.clampX(minValidX, maxValidX).clampY(minValidY, maxValidY);
   }
   
