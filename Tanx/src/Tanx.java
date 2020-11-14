@@ -76,9 +76,10 @@ public class Tanx extends StateBasedGame {
 	public static void main(String[] args) {
 		AppGameContainer app;
 		try {
-			int length = World.tileLength * 20;
-			app = new AppGameContainer(new Tanx("Tanx", length, length));
-			app.setDisplayMode(length, length, false);
+			int height = World.tileLength * 20;
+			int width = World.tileLength * 40;
+			app = new AppGameContainer(new Tanx("Tanx", width, height));
+			app.setDisplayMode(width, height, false);
 			app.setVSync(true);
 			app.start();
 		} catch (SlickException e) {

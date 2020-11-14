@@ -54,24 +54,9 @@ public class PlayingState extends BasicGameState {
 		// Render anything that should be affected by the camera location.
 
 		world.renderTerrain(g);
-		if (worldMouse != null) {
-  		Vector center = camera.getWorldLocation();
-  		g.setColor(Color.red);
-  		g.setLineWidth(3);
-  		g.drawLine(center.getX(), center.getY(), worldMouse.getX(), worldMouse.getY());
-  		System.out.println("RED(w): " + center +" - " + worldMouse);
-		}
+		
 		g.popTransform();
 		// Render anything that shouldn't be transformed below here.
-		
-		if (worldMouse != null) {
-      Vector center = camera.screenLocationForWorldLocation(camera.getWorldLocation());
-      Vector screenMouse = camera.screenLocationForWorldLocation(worldMouse);
-      g.setColor(Color.blue);
-      g.setLineWidth(1);
-      g.drawLine(center.getX(), center.getY(), screenMouse.getX(), screenMouse.getY());
-      System.out.println("BLUE(s): " + center +" - " + screenMouse);
-    }
 	}
 
 	@Override
@@ -93,6 +78,27 @@ public class PlayingState extends BasicGameState {
 	}
 	
 	private void controlCamera(int delta, Input input) {
+    if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+      camera.setZoom(camera.getZoom() + 0.25f);
+    }
+    if (input.isMousePressed(Input.MOUSE_RIGHT_BUTTON)) {
+      camera.setZoom(camera.getZoom() - 0.25f);
+    }
+    if (input.isKeyPressed(Input.KEY_SPACE)) {
+      camera.toggleDebug();
+    }
+    if (input.isKeyDown(Input.KEY_LEFT)) {
+      camera.setWorldLocation(camera.getWorldLocation().add(new Vector(-delta/3, 0)));
+    }
+    if (input.isKeyDown(Input.KEY_RIGHT)) {
+      camera.setWorldLocation(camera.getWorldLocation().add(new Vector(delta/3, 0)));
+    }
+    if (input.isKeyDown(Input.KEY_UP)) {
+      camera.setWorldLocation(camera.getWorldLocation().add(new Vector(0, -delta/3)));
+    }
+    if (input.isKeyDown(Input.KEY_DOWN)) {
+      camera.setWorldLocation(camera.getWorldLocation().add(new Vector(0, delta/3)));
+    }
 	}
 
 	@Override
