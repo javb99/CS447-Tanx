@@ -22,14 +22,9 @@ public class World {
 	
 	public void loadLevel(String name) {
 		for (int x = 0; x < tiles.length; x++) {
-			for (int y = tiles[x].length-1; y >= 0; y--) {
-			  if (x == 0 || y == 0 || x == tiles.length-1 || y == tiles[x].length-1) {
-			    tiles[x][y] = new TerrainTile(Color.blue);
-			  } else if (x % 2 == 0 || y % 2 == 0) {
-			    tiles[x][y] = new TerrainTile(Color.transparent);
-			  } else {
-			    tiles[x][y] = new TerrainTile(Color.white);
-			  }
+			for (int dy = 0; dy < 3; dy++) {
+			  int y = tiles[x].length - 1 - dy;
+			  tiles[x][y] = new TerrainTile(Color.white);
 			  Vector position = geometry.centerLocationOfTile(x, y);
 			  tiles[x][y].setPosition(position);
 			}
