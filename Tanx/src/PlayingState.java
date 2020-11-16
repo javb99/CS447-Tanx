@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
@@ -22,7 +21,7 @@ public class PlayingState extends BasicGameState {
 	@Override
 	public void init(GameContainer container, StateBasedGame game)
 			throws SlickException {
-		Entity.setCoarseGrainedCollisionBoundary(Entity.AABB);
+		Entity.setCoarseGrainedCollisionBoundary(Entity.CIRCLE);
 		Rectangle worldBounds = new Rectangle(0, 0, container.getWidth()*2, container.getHeight()*2);
 		Rectangle screenBounds = new Rectangle(0, 0, container.getWidth(), container.getHeight());//new Rectangle(0, 0, container.getScreenWidth(), container.getScreenHeight());
 		world = new World(worldBounds);
@@ -54,6 +53,8 @@ public class PlayingState extends BasicGameState {
 		// Render anything that should be affected by the camera location.
 
 		world.renderTerrain(g);
+		PE_list.forEach((e)->e.render(g)); 
+		t.render(g);
 		
 		g.popTransform();
 		// Render anything that shouldn't be transformed below here.
