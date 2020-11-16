@@ -4,13 +4,15 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+import jig.Entity;
 import jig.Vector;
 
 public class PlayingState extends BasicGameState {
-	
+  World world;
 	ArrayList<PhysicsEntity> PE_list;
 	PhysicsEngine PE;
 	Tank t;
@@ -18,6 +20,9 @@ public class PlayingState extends BasicGameState {
   @Override
   public void init(GameContainer container, StateBasedGame game)
       throws SlickException {
+    Entity.setCoarseGrainedCollisionBoundary(Entity.AABB);
+    world = new World(new Rectangle(0, 0, container.getWidth(), container.getHeight()));
+    world.loadLevel("YAY");
   }
   
   @Override
@@ -39,6 +44,7 @@ public class PlayingState extends BasicGameState {
     
     PE_list.forEach((n) -> n.render(g));
     t.render(g);
+    world.renderTerrain(g);
   }
 
   @Override
