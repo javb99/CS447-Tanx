@@ -47,7 +47,6 @@ public class PlayingState extends BasicGameState {
 			Graphics g) throws SlickException {
 		Tanx bg = (Tanx) game;
 		
-		System.out.println("render: " + camera.toString());
 		g.pushTransform();
 		camera.transformContext(g);
 		// Render anything that should be affected by the camera location.
@@ -85,7 +84,7 @@ public class PlayingState extends BasicGameState {
     if (input.isMousePressed(Input.MOUSE_RIGHT_BUTTON)) {
       camera.setZoom(camera.getZoom() - 0.25f);
     }
-    if (input.isKeyPressed(Input.KEY_SPACE)) {
+    if (input.isKeyPressed(Input.KEY_O)) {
       camera.toggleDebug();
     }
     if (input.isKeyDown(Input.KEY_LEFT)) {
