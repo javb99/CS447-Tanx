@@ -35,6 +35,7 @@ public class StartUpState extends BasicGameState {
 
     Input input = container.getInput();
     Tanx bg = (Tanx) game;
+    bg.enterState(Tanx.PLAYINGSTATE);
 
   }
 
