@@ -33,6 +33,7 @@ import org.newdawn.slick.state.StateBasedGame;
     public static final int GAMEOVERSTATE = 2;
 
     //ex: public static final String BALL_BALLIMG_RSC = "bounce/resource/ball.png";
+    public static final String BASIC_CANNON_SPRITE = "resource/cannon1.png";
 
     public final int ScreenWidth;
     public final int ScreenHeight;
@@ -51,14 +52,15 @@ import org.newdawn.slick.state.StateBasedGame;
       super(title);
       ScreenHeight = height;
       ScreenWidth = width;
+      Entity.setCoarseGrainedCollisionBoundary(Entity.CIRCLE);
 
     }
 
 
     @Override
     public void initStatesList(GameContainer container) throws SlickException {
-      addState(new StartUpState());
-      addState(new GameOverState());
+     // addState(new StartUpState());
+     // addState(new GameOverState());
       addState(new PlayingState());
 
       // the sound resource takes a particularly long time to load,
