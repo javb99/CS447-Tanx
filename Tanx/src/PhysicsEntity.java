@@ -5,6 +5,7 @@ public class PhysicsEntity extends Entity {
   //constants
 
   //class variables
+  protected boolean isDead;
   private Vector acceleration;
   private Vector velocity;
   private float drag;
@@ -13,6 +14,8 @@ public class PhysicsEntity extends Entity {
 
   public PhysicsEntity (final float x, final float y, final float d, final float tx, final float ty){
     super(x,y);
+    acceleration = new Vector(0, 0);
+    velocity = new Vector(0, 0);
     drag = d;
     terminalX = tx;
     terminalY = ty;
@@ -33,5 +36,5 @@ public class PhysicsEntity extends Entity {
   public float getDrag(){return drag;}
   public float getTerminalX() {return terminalX;}
   public float getTerminalY() {return terminalY;}
-  
+  public boolean getIsDead() { return isDead; };
 }
