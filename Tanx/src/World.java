@@ -1,3 +1,5 @@
+import java.util.function.Consumer;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Rectangle;
@@ -31,14 +33,14 @@ public class World {
 		}
 	}
 	
-	public void renderTerrain(Graphics g) {
-		for (int x = 0; x < tiles.length; x++) {
-			for (int y = 0; y < tiles[x].length; y++) {
-				if (tiles[x][y] != null) {
-					tiles[x][y].render(g);
-				}
-			}
-		}
+	public void forEachTerrainTile(Consumer<TerrainTile> action) {
+	  for (int x = 0; x < tiles.length; x++) {
+      for (int y = 0; y < tiles[x].length; y++) {
+        if (tiles[x][y] != null) {
+          action.accept(tiles[x][y]);
+        }
+      }
+    }
 	}
 }
 

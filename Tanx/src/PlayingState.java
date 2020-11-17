@@ -49,10 +49,23 @@ public class PlayingState extends BasicGameState {
     
     PE_list = new ArrayList<PhysicsEntity>();
     
-    PE_list.add(new Projectile(20, 300, new Vector(2f, -2f)));
+    PE = new PhysicsEngine(PE_list, world);
+    t = new Tank(world.geometry.tilesArea.getCenterX(), world.geometry.tilesArea.getCenterY());
+    PE.addPhysicsEntity(t);
     
-    PE = new PhysicsEngine(PE_list, trn);
-    t = new Tank(50, 400);
+    // Example use case. Probably not complete.
+    PE.registerCollisionHandler(Tank.class, TerrainTile.class, (tank, terrain, c) -> {
+      if (tank.getY() < terrain.getY()) {
+        tank.setOnGround(true);
+      }
+    });
+    
+    PE.registerCollisionHandler(Projectile.class, PhysicsEntity.class, (projectile, obstacle, c) -> {
+      if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
+      projectile.explode();
+    });
+    
+    camera.toggleDebug();
   }
 
 	@Override
@@ -87,6 +100,7 @@ public class PlayingState extends BasicGameState {
       PE.addPhysicsEntity(t.fire(1));
     }
     
+    t.update(delta);
     PE.update(delta);
 		controlCamera(delta, input);
 	}

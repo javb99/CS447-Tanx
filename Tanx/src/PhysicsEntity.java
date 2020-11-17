@@ -14,6 +14,7 @@ public class PhysicsEntity extends Entity {
 
   public PhysicsEntity (final float x, final float y, final float d, final float tx, final float ty){
     super(x,y);
+    isDead = false;
     acceleration = new Vector(0, 0);
     velocity = new Vector(0, 0);
     drag = d;
