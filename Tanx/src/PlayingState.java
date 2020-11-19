@@ -109,6 +109,7 @@ public class PlayingState extends BasicGameState {
     } else if (state == phase.FIRING){
 		  if (activeProjectile.isDead){
 		    state = phase.MOVEFIRE;
+		    turnTimer = TURNLENGTH;
 		    currentTank = getNextTank(players);
       }
     }
