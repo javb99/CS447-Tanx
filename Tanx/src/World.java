@@ -1,3 +1,4 @@
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Rectangle;
 
@@ -21,10 +22,11 @@ public class World {
 	
 	public void loadLevel(String name) {
 		for (int x = 0; x < tiles.length; x++) {
-			for (int y = tiles[x].length-1; y >= tiles[x].length-3; y--) {
-				tiles[x][y] = new TerrainTile();
-				Vector position = geometry.centerLocationOfTile(x, y);
-				tiles[x][y].setPosition(position);
+			for (int dy = 0; dy < 3; dy++) {
+			  int y = tiles[x].length - 1 - dy;
+			  tiles[x][y] = new TerrainTile(Color.white);
+			  Vector position = geometry.centerLocationOfTile(x, y);
+			  tiles[x][y].setPosition(position);
 			}
 		}
 	}
