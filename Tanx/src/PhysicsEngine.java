@@ -9,12 +9,14 @@ public class PhysicsEngine {
 	
 	
 	private ArrayList<PhysicsEntity> objects;
+	private Terrain terrain;
 	//private World world;
 	
 	
-	public PhysicsEngine(ArrayList<PhysicsEntity> o/*, World w*/) {
+	public PhysicsEngine(ArrayList<PhysicsEntity> o, Terrain t) {
 		objects = o;
 		//world = w;
+		terrain = t;
 	}
 	
 	public void addPhysicsEntity(PhysicsEntity e) {
@@ -39,6 +41,7 @@ public class PhysicsEngine {
 		applyAccelerationtoVelocity(e, delta, A);	//change velocity
 		applyTerminalVelocity(e);	//truncate if greater than terminal velocity
 		translateEntity(e);	//move the object
+		e.update(delta, terrain);
 	}
 	
 	private Vector applyGravity(Vector a) {

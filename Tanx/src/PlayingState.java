@@ -17,6 +17,7 @@ public class PlayingState extends BasicGameState {
   ArrayList<PhysicsEntity> PE_list;
   PhysicsEngine PE;
   Tank t;
+  Terrain trn;
 
 	@Override
 	public void init(GameContainer container, StateBasedGame game)
@@ -28,6 +29,18 @@ public class PlayingState extends BasicGameState {
 		camera = new DebugCamera(screenBounds, worldBounds);
 		System.out.println("world size: " + worldBounds + ", screen size: " + screenBounds);
 		world.loadLevel("YAY");
+		
+		
+		int mask[][] = new int[container.getWidth()*2][container.getHeight()*2];
+		for(int x = 0; x < mask.length; x++) {
+			for(int y = 0; y < mask[x].length; y++) {
+				mask[x][y] = 1;
+			}
+		}
+		
+		trn = new Terrain(container.getWidth()*2, container.getHeight()*2, mask);
+		trn.removeTerrain(200, 200, 500);
+		trn.addTerrain(200, 200);
 	}
 	
 	@Override
@@ -38,7 +51,7 @@ public class PlayingState extends BasicGameState {
     
     PE_list.add(new Projectile(20, 300, new Vector(2f, -2f)));
     
-    PE = new PhysicsEngine(PE_list);
+    PE = new PhysicsEngine(PE_list, trn);
     t = new Tank(50, 400);
   }
 
@@ -51,6 +64,7 @@ public class PlayingState extends BasicGameState {
 		camera.transformContext(g);
 		// Render anything that should be affected by the camera location.
 
+		trn.render(g);
 		world.renderTerrain(g);
 		PE_list.forEach((e)->e.render(g)); 
 		t.render(g);
