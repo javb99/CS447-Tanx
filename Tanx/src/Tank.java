@@ -17,11 +17,11 @@ public class Tank extends PhysicsEntity {
   private Cannon cannon;
   private boolean onGround;
 
-  public Tank(final float x, final float y){
+  public Tank(final float x, final float y, Color c){
     super(x,y, 0, 100, 100);
     setHealth(INIT_TANK_HEALTH);
     cannon = new Cannon(this.getX(), this.getY());
-    this.addShape(new ConvexPolygon(64f, 32f), Color.blue, Color.red);
+    this.addShape(new ConvexPolygon(64f, 32f), c, Color.red);
   }
 
   public Projectile fire(int power){return cannon.fire(power);}
