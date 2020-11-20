@@ -80,6 +80,7 @@ public class PlayingState extends BasicGameState {
 
 		//placeholder, should put an arrow sprite pointing to currently active tank
     g.drawString("Active", currentTank.getX() - 20, currentTank.getY() + 30);
+    g.drawString(Integer.toString(turnTimer/1000), currentTank.getX() - 40, currentTank.getY() + 30);
 		
 		g.popTransform();
 		// Render anything that shouldn't be transformed below here.
@@ -93,9 +94,9 @@ public class PlayingState extends BasicGameState {
 		if (state == phase.MOVEFIRE){
 		  turnTimer -= delta;
 		  if (turnTimer <= 0){
-		    turnTimer = TURNLENGTH;
-		    currentTank = getNextTank(players);
+		    changePlayer();
       }
+
       if (input.isKeyDown(Input.KEY_E)){
         currentTank.rotate(Direction.RIGHT, delta);
       } else if (input.isKeyDown(Input.KEY_Q)){
@@ -108,16 +109,20 @@ public class PlayingState extends BasicGameState {
       }
     } else if (state == phase.FIRING){
 		  if (activeProjectile.isDead){
-		    state = phase.MOVEFIRE;
-		    turnTimer = TURNLENGTH;
-		    currentTank = getNextTank(players);
+		    changePlayer();
       }
     }
-
     
     PE.update(delta);
 		controlCamera(delta, input);
 	}
+
+  private void changePlayer() {
+    state = phase.MOVEFIRE;
+    turnTimer = TURNLENGTH;
+    currentTank = getNextTank(players);
+    camera.setCenter(new Vector(currentTank.getX(), currentTank.getY()));
+  }
 
   private Tank getNextTank(ArrayList<Player> pList) {
 	  currentPlayer++;
