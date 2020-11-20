@@ -17,6 +17,14 @@ public class PhysicsEntity extends Entity {
     terminalX = tx;
     terminalY = ty;
   }
+  
+  public void update(int delta, Terrain t) {
+	  /*
+	   	basic physics entities should probably do nothing,
+	  	this method is just here for the more specific physics entities to inherit
+	  	and allow for generalized calling by the engine
+	  */
+  }
 
   protected void setVelocity(Vector v){velocity = v;}
   protected void setAcceleration(Vector a){acceleration = a;}
