@@ -31,16 +31,16 @@ public class PlayingState extends BasicGameState {
 		world.loadLevel("YAY");
 		
 		
-		int mask[][] = new int[container.getWidth()*2][container.getHeight()*2];
+		Terrain.TerrainType mask[][] = new Terrain.TerrainType[container.getWidth()*2][container.getHeight()*2];
 		for(int x = 0; x < mask.length; x++) {
 			for(int y = 0; y < mask[x].length; y++) {
-				mask[x][y] = 1;
+				mask[x][y] = Terrain.TerrainType.NORMAL;
 			}
 		}
 		
 		trn = new Terrain(container.getWidth()*2, container.getHeight()*2, mask);
-		trn.removeTerrain(200, 200, 500);
-		trn.addTerrain(200, 200);
+		trn.setTerrainInCircle(new Vector(200, 200), 500, Terrain.TerrainType.OPEN);
+		trn.setTerrainInLine(new Vector(200, 200), new Vector(700, 200), Terrain.TerrainType.NORMAL);
 	}
 	
 	@Override
