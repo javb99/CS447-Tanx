@@ -68,6 +68,8 @@ public class PlayingState extends BasicGameState {
 		PE_list.forEach((e)->e.render(g)); 
 		t.render(g);
 		
+		camera.renderDebugOverlay(g);
+		
 		g.popTransform();
 		// Render anything that shouldn't be transformed below here.
 	}
