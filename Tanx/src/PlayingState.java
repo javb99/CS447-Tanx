@@ -17,16 +17,15 @@ import jig.Vector;
 enum phase {MOVEFIRE, FIRING};
 
 public class PlayingState extends BasicGameState {
-  static private int TURNLENGTH = 10*1000;
+  static private int TURNLENGTH = 11*1000;
 	World world;
 	DebugCamera camera;
   ArrayList<PhysicsEntity> PE_list;
   PhysicsEngine PE;
   ArrayList<Player> players;
-  Tank currentTank;
   phase state;
   Projectile activeProjectile;
-  int currentPlayer;
+  int pIndex;
   int turnTimer;
 
 	@Override
@@ -48,20 +47,22 @@ public class PlayingState extends BasicGameState {
     PE_list = new ArrayList<PhysicsEntity>();
     
     PE_list.add(new Projectile(20, 300, new Vector(2f, -2f)));
-    
-    PE = new PhysicsEngine(PE_list);
 
-    //setup players
     players = new ArrayList<Player>();
-    players.add(new Player(Color.blue));
-    players.add(new Player(Color.green));
+
+    //setup players test-THIS SHOULD BE SETUP IN A LEVEL CONFIG
+    players.add(new Player(Color.blue, 1));
+    //players.add(new Player(Color.green, 2));
     players.get(0).addTank(50, 400);
     players.get(0).addTank(500, 400);
-    players.get(1).addTank(200, 400);
-    players.get(1).addTank(800, 400);
+    //players.get(1).addTank(200, 400);
+    //players.get(1).addTank(800, 400);
+    //end of test stub
+
+    PE = new PhysicsEngine(PE_list);
+
     state = phase.MOVEFIRE;
-    currentPlayer = 0;
-    currentTank = players.get(currentPlayer).getNextTank();
+    pIndex = 0;
     turnTimer = TURNLENGTH;
   }
 
@@ -79,8 +80,11 @@ public class PlayingState extends BasicGameState {
 		players.forEach((t) ->t.render(g));
 
 		//placeholder, should put an arrow sprite pointing to currently active tank
-    g.drawString("Active", currentTank.getX() - 20, currentTank.getY() + 30);
-    g.drawString(Integer.toString(turnTimer/1000), currentTank.getX() - 40, currentTank.getY() + 30);
+    if (state == phase.MOVEFIRE){
+      Tank currentTank = players.get(pIndex).getTank();
+      g.drawString("Active", currentTank.getX() - 20, currentTank.getY() + 30);
+      g.drawString(Integer.toString(turnTimer/1000), currentTank.getX() - 40, currentTank.getY() + 30);
+    }
 		
 		g.popTransform();
 		// Render anything that shouldn't be transformed below here.
@@ -92,6 +96,7 @@ public class PlayingState extends BasicGameState {
 		Input input = container.getInput();
 
 		if (state == phase.MOVEFIRE){
+		  Tank currentTank = players.get(pIndex).getTank();
 		  turnTimer -= delta;
 		  if (turnTimer <= 0){
 		    changePlayer();
@@ -120,18 +125,12 @@ public class PlayingState extends BasicGameState {
   private void changePlayer() {
     state = phase.MOVEFIRE;
     turnTimer = TURNLENGTH;
-    currentTank = getNextTank(players);
-    camera.setCenter(new Vector(currentTank.getX(), currentTank.getY()));
-  }
-
-  private Tank getNextTank(ArrayList<Player> pList) {
-	  currentPlayer++;
-	  if (pList.isEmpty()){
-	    System.out.println("getNextTankERROR: No players in playerlist");
-    } if (currentPlayer >= pList.size()){
-	    currentPlayer = 0;
-    }
-	  return pList.get(currentPlayer).getNextTank();
+    pIndex ++;
+    if (pIndex >= players.size()){pIndex = 0;}
+    players.get(pIndex).getNextTank();
+    float cameraX = players.get(pIndex).getTank().getX();
+    float cameraY = players.get(pIndex).getTank().getY();
+    camera.setCenter(new Vector(cameraX, cameraY));
   }
 
   private void controlCamera(int delta, Input input) {
