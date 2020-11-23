@@ -17,7 +17,6 @@ public class PlayingState extends BasicGameState {
   ArrayList<PhysicsEntity> PE_list;
   PhysicsEngine PE;
   Tank t;
-  Terrain trn;
 
 	@Override
 	public void init(GameContainer container, StateBasedGame game)
@@ -29,18 +28,6 @@ public class PlayingState extends BasicGameState {
 		camera = new DebugCamera(screenBounds, worldBounds);
 		System.out.println("world size: " + worldBounds + ", screen size: " + screenBounds);
 		world.loadLevel("YAY");
-		
-		
-		/*Terrain.TerrainType mask[][] = new Terrain.TerrainType[container.getWidth()*2][container.getHeight()*2];
-		for(int x = 0; x < mask.length; x++) {
-			for(int y = 0; y < mask[x].length; y++) {
-				mask[x][y] = Terrain.TerrainType.NORMAL;
-			}
-		}*/
-		
-		BitmapGenerator bg = new BitmapGenerator(container.getWidth()*2, container.getHeight()*2);
-		
-		trn = new Terrain(container.getWidth()*2, container.getHeight()*2, bg.generateRandomSineMap());
 	}
 	
 	@Override
@@ -54,7 +41,7 @@ public class PlayingState extends BasicGameState {
     PE.addPhysicsEntity(t);
     
     // Example use case. Probably not complete.
-    PE.registerCollisionHandler(Tank.class, TerrainTile.class, (tank, terrain, c) -> {
+    PE.registerCollisionHandler(Tank.class, Terrain.class, (tank, terrain, c) -> {
       if (tank.getY() < terrain.getY()) {
         tank.setOnGround(true);
       }
@@ -77,8 +64,7 @@ public class PlayingState extends BasicGameState {
 		camera.transformContext(g);
 		// Render anything that should be affected by the camera location.
 
-		trn.render(g);
-		world.renderTerrain(g);
+		world.terrain.render(g);
 		PE_list.forEach((e)->e.render(g)); 
 		t.render(g);
 		

@@ -34,14 +34,12 @@ public class PhysicsEngine {
 	
 	
 	private ArrayList<PhysicsEntity> objects;
-	private Terrain terrain;
 	private ArrayList<CollisionHandler<PhysicsEntity, PhysicsEntity>> collisionHandlers;
 	private World world;
 	
 	
-	public PhysicsEngine(ArrayList<PhysicsEntity> o, Terrain t, World w) {
+	public PhysicsEngine(ArrayList<PhysicsEntity> o, World w) {
 		objects = o;
-		terrain = t;
 		world = w;
 		collisionHandlers = new ArrayList<>();
 	}
@@ -77,7 +75,7 @@ public class PhysicsEngine {
 		applyTerminalVelocity(e);	//truncate if greater than terminal velocity
 
 		translateEntity(e, delta);	//move the object
-    e.update(delta, terrain);
+    e.update(delta, world.terrain);
 	}
 	
 	private void applyCollisionDetection(int delta) {
@@ -86,12 +84,21 @@ public class PhysicsEngine {
 	    PhysicsEntity a = objects.get(x);
 	    for (int y = x+1; y < count; y++) {
 	      PhysicsEntity b = objects.get(y);
-	      if (TerrainTile.class.isInstance(a) && TerrainTile.class.isInstance(b)) { continue; }
 	      if (a == b) { continue; }
 	      checkCollision(delta, a, b);
 	    }
+	    checkTerrainCollision(delta, a);
 	  }
   }
+	
+	private void checkTerrainCollision(int delta, PhysicsEntity entity) {
+	  float radius = entity.getCoarseGrainedRadius();
+	  Vector position = entity.getPosition();
+	  if (world.terrain.checkCircularCollision(position, radius)) {
+	    collisionHandlers.forEach(handler -> handler.handleCollision(entity, world.terrain, null));
+	    resolveCollision(delta, entity, world.terrain, null);
+	  }
+	}
 	
 	private void checkCollision(int delta, PhysicsEntity a, PhysicsEntity b) {
 	  Collision c = a.collides(b);
@@ -102,14 +109,14 @@ public class PhysicsEngine {
 	}
 	
 	private void resolveCollision(int delta, PhysicsEntity a, PhysicsEntity b, Collision c) {
-	  System.out.println("Before Resolving collision between p: " + a.getPosition() + " and p: " + b.getPosition() + " c: " + c.getMinPenetration().length());
-	  System.out.println("Before Resolving collision between v: " + a.getVelocity() + " and v: " + b.getVelocity());
+//	  System.out.println("Before Resolving collision between p: " + a.getPosition() + " and p: " + b.getPosition() + " c: " + c.getMinPenetration().length());
+//	  System.out.println("Before Resolving collision between v: " + a.getVelocity() + " and v: " + b.getVelocity());
 	  float f = a.getVelocity().length() / b.getVelocity().length();
 	  a.translate(a.getVelocity().negate().scale(delta));
 	  b.translate(b.getVelocity().negate().scale(delta));
 	  a.setVelocity(new Vector(0,0));
 	  b.setVelocity(new Vector(0,0));
-	  System.out.println("After Resolving collision between " + a.getPosition() + " and " + b.getPosition() + " c: " + c.getMinPenetration().length());
+//	  System.out.println("After Resolving collision between " + a.getPosition() + " and " + b.getPosition() + " c: " + c.getMinPenetration().length());
 	}
 	
 	private Vector applyGravity(Vector a) {
