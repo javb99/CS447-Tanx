@@ -26,6 +26,8 @@ public class PhysicsEngine {
 	public void update(int delta) {
 		
 		objects.forEach((n) -> applyPhysics(n, delta));
+		
+		objects.forEach((n) -> n.checkTerrainCollision(terrain));
 	
 	}
 	
@@ -41,6 +43,7 @@ public class PhysicsEngine {
 		applyAccelerationtoVelocity(e, delta, A);	//change velocity
 		applyTerminalVelocity(e);	//truncate if greater than terminal velocity
 		translateEntity(e);	//move the object
+		
 		e.update(delta, terrain);
 	}
 	
@@ -72,13 +75,14 @@ public class PhysicsEngine {
 		Vector v = e.getVelocity();
 		float x = v.getX();
 		float y = v.getY();
+		Vector t = e.getTerminal();
 		
-		if(x > e.getTerminalX()) {
-			x = e.getTerminalX();
+		if(x > t.getX()) {
+			x = t.getX();
 		}
 		
-		if(y > e.getTerminalY()) {
-			y = e.getTerminalY();
+		if(y > t.getY()) {
+			y = t.getY();
 		}
 		
 		e.setVelocity(new Vector(x, y));
@@ -87,4 +91,5 @@ public class PhysicsEngine {
 	private void translateEntity(PhysicsEntity e) {
 		e.translate(e.getVelocity());
 	}
+	
 }

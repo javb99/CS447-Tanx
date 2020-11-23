@@ -18,7 +18,7 @@ public class Tank extends PhysicsEntity {
   private boolean onGround;
 
   public Tank(final float x, final float y){
-    super(x,y, 0, 100, 100);
+    super(x,y, 0, new Vector(100, 100));
     setHealth(INIT_TANK_HEALTH);
     cannon = new Cannon(this.getX(), this.getY());
     this.addShape(new ConvexPolygon(64f, 32f), Color.blue, Color.red);
