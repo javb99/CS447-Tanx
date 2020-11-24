@@ -47,18 +47,11 @@ public class PlayingState extends BasicGameState {
     
     PE_list = new ArrayList<PhysicsEntity>();
 
-    PE_list.add(new Projectile(20, 300, new Vector(2f, -2f)));
-
     players = new ArrayList<Player>();
 
-    //setup players test-THIS SHOULD BE SETUP IN A LEVEL CONFIG
-    players.add(new Player(Color.blue, 1));
-    players.add(new Player(Color.green, 2));
-    players.get(0).addTank(50, 400);
-    players.get(0).addTank(500, 400);
-    players.get(1).addTank(200, 400);
-    players.get(1).addTank(800, 400);
-    //end of test stub
+    PlayerConfigurator PC = new PlayerConfigurator(container.getWidth()*2, 4, 2);
+    players = PC.config();
+    
 
     for (Player p: players){
       for (Tank t: p.getTanks()){

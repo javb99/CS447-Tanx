@@ -24,9 +24,11 @@ public class Player {
     }
   }
 
-  public void addTank(float x, float y) {
-    tanks.add(new Tank(x, y, playerColor, this));
+  public Tank addTank(float x, float y) {
+	Tank t = new Tank(x, y, playerColor, this);
+    tanks.add(t);
     isDead = false;
+    return t;
   }
 
   public void removeTank(Tank t) {
