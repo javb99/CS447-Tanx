@@ -64,6 +64,8 @@ public class Player {
   public void checkWeapon(){
     if (ammo.get(ammoIndex).amount == 0){
       nextWeapon();
+    } else {
+      tanks.get(tankIndex).changeWeapon(ammo.get(ammoIndex).type);
     }
   }
 
