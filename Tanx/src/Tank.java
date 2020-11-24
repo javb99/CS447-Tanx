@@ -20,7 +20,6 @@ public class Tank extends PhysicsEntity {
 
 
   public Tank(final float x, final float y, Color c, Player player){
-    super(x,y, 0, 100, 100);
     super(x,y, 0, new Vector(100, 100));
     setVelocity(new Vector(0, 0));
     setAcceleration(new Vector(0,0));

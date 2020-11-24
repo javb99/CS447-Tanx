@@ -19,7 +19,7 @@ public class Terrain extends PhysicsEntity {
 	}
 	
 	public Terrain(int w, int h, TerrainType t) {	//create a new terrain object completely of the specified type
-		super(w/2, h/2, 0, 0, 0);
+		super(w/2, h/2, 0, new Vector(0,0));
 		width = w;
 		height = h;
 		mask = new TerrainType[width][height];
@@ -33,7 +33,7 @@ public class Terrain extends PhysicsEntity {
 	}
 	
 	public Terrain(int w, int h, TerrainType m[][]) {	//make a new Terrain object from a given mask
-		super(w/2,h/2, 0, 0, 0);
+		super(w/2,h/2, 0, new Vector(0,0));
 		height = h;
 		width = w;
 		mask = m;
