@@ -25,7 +25,7 @@ public class Player {
   }
 
   public void addTank(float x, float y) {
-    tanks.add(new Tank(x, y, playerColor));
+    tanks.add(new Tank(x, y, playerColor, this));
     isDead = false;
   }
 
@@ -63,6 +63,10 @@ public class Player {
     if (tankIndex < 0){
       tankIndex = tanks.size() - 1;
     }
+  }
+
+  public void update(int delta){
+    for (Tank t: tanks){t.update(delta);}
   }
 
   public int tanksLeft(){return tanks.size();}

@@ -52,13 +52,18 @@ public class PlayingState extends BasicGameState {
 
     //setup players test-THIS SHOULD BE SETUP IN A LEVEL CONFIG
     players.add(new Player(Color.blue, 1));
-    //players.add(new Player(Color.green, 2));
+    players.add(new Player(Color.green, 2));
     players.get(0).addTank(50, 400);
     players.get(0).addTank(500, 400);
-    //players.get(1).addTank(200, 400);
-    //players.get(1).addTank(800, 400);
+    players.get(1).addTank(200, 400);
+    players.get(1).addTank(800, 400);
     //end of test stub
 
+    for (Player p: players){
+      for (Tank t: p.getTanks()){
+        PE_list.add(t);
+      }
+    }
     PE = new PhysicsEngine(PE_list);
 
     state = phase.MOVEFIRE;
@@ -112,12 +117,9 @@ public class PlayingState extends BasicGameState {
         PE.addPhysicsEntity(activeProjectile);
         state = phase.FIRING;
       }
-    } else if (state == phase.FIRING){
-		  if (activeProjectile.isDead){
-		    changePlayer();
-      }
     }
-    
+
+		for(Player p: players){p.update(delta);}
     PE.update(delta);
 		controlCamera(delta, input);
 	}
