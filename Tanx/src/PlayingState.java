@@ -81,7 +81,7 @@ public class PlayingState extends BasicGameState {
     
     PE.registerCollisionHandler(Projectile.class, PhysicsEntity.class, (projectile, obstacle, c) -> {
       if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
-      if (projectile == activeProjectile && state == phase.FIRING) { changePlayer(); }
+      if (projectile == activeProjectile && state == phase.FIRING) { camera.stopTracking(); changePlayer(); }
       projectile.explode();
     });
     
@@ -134,6 +134,7 @@ public class PlayingState extends BasicGameState {
       if (input.isKeyPressed(Input.KEY_SPACE)) {
         activeProjectile = currentTank.fire(1);
         PE.addPhysicsEntity(activeProjectile);
+        camera.trackObject(activeProjectile);
         state = phase.FIRING;
         turnTimer = FIRING_TIMEOUT;
       }
@@ -141,7 +142,7 @@ public class PlayingState extends BasicGameState {
       turnTimer -= delta;
 		  if (turnTimer <= 0) { changePlayer(); }
     } else if(state == phase.TURNCHANGE) {
-		  if(!camera.isMoving()) {
+		  if(camera.getState() == camState.IDLE) {
 		    state = phase.MOVEFIRE;
       }
     }
