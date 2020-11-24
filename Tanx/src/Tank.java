@@ -18,10 +18,13 @@ public class Tank extends PhysicsEntity {
   private boolean onGround;
   private Player myPlayer;
 
+
   public Tank(final float x, final float y, Color c, Player player){
     super(x,y, 0, 100, 100);
+    super(x,y, 0, new Vector(100, 100));
     setVelocity(new Vector(0, 0));
     setAcceleration(new Vector(0,0));
+
     setHealth(INIT_TANK_HEALTH);
     cannon = new Cannon(this.getX(), this.getY());
     myPlayer = player;
