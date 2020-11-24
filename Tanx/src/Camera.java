@@ -9,9 +9,11 @@ enum camState {IDLE, MOVING, TRACKING};
 public class Camera {
   
   public static float MAX_ZOOM = 4f;
+  public static float DEFAULT_ZOOM = 1f;
   public static float MAX_CAMERA_SPEED = 2f;
   public static float MIN_CAMERA_SPEED = .2f;
   public static float CAM_ACCELERATION = 1.1f;
+  public static float CAM_ZOOM_RATE = .0005f;
   
   /// Portion of the screen that the camera/world occupy.
   /// This may not be the whole screen if we want menus outside the scrolling area.
@@ -31,6 +33,8 @@ public class Camera {
 
   ///Camera tracking variables
   private Entity trackedObject;
+  private float startTrackHeight;
+  private float startTrackZoom;
   
   private float zoom;
   
@@ -38,7 +42,7 @@ public class Camera {
     this.screen = screen;
     this.world = world;
     this.center = new Vector(world.getCenter());
-    this.zoom = 1.0f;
+    this.zoom = DEFAULT_ZOOM;
     this.velocity = new Vector(0, 0);
     state = camState.IDLE;
   }
@@ -121,6 +125,12 @@ public class Camera {
   //Object Tracking
   private void cameraTrackingHandler(int delta){
     setCenter(trackedObject.getPosition());
+    setTrackedZoom();
+  }
+
+  public void setTrackedZoom(){
+    float heightDiff = startTrackHeight - trackedObject.getY();
+    setZoom(-CAM_ZOOM_RATE*heightDiff + startTrackZoom);
   }
 
   public void trackObject(Entity e){
@@ -129,11 +139,14 @@ public class Camera {
       return;
     }
     trackedObject = e;
+    startTrackHeight = e.getY();
+    startTrackZoom = getZoom();
     state = camState.TRACKING;
   }
 
   public void stopTracking(){
     trackedObject = null;
+    setZoom(startTrackZoom);
     state = camState.IDLE;
   }
 
