@@ -113,13 +113,15 @@ class DebugCamera extends Camera {
     if (debug) {
       float toFit = screen.getWidth()/world.getWidth();
       g.scale(toFit, toFit);
-      
-      Vector translation = getTranslation();
-      g.setColor(Color.green);
-      g.drawLine(world.getMinX(), world.getMinY(), translation.getX(), translation.getY());
-      g.drawRect(translation.getX(), translation.getY(), viewPortSize().getX(), viewPortSize().getY());
     } else {
       super.transformContext(g);
     }
+  }
+  
+  public void renderDebugOverlay(Graphics g) {
+    Vector translation = getTranslation();
+    g.setColor(Color.green);
+    g.drawLine(world.getMinX(), world.getMinY(), translation.getX(), translation.getY());
+    g.drawRect(translation.getX(), translation.getY(), viewPortSize().getX(), viewPortSize().getY());
   }
 }

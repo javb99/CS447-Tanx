@@ -1,3 +1,5 @@
+import java.util.function.Consumer;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Rectangle;
@@ -8,37 +10,22 @@ public class World {
 	
 	public static int tileLength = 32;
 	
-	/// Stored as a row of columns
-	/// [column][row] AKA [x][y]
-	TerrainTile[][] tiles;
+	Terrain terrain;
 	TileGeometry geometry;
+	Rectangle worldBounds;
 
 	public World(Rectangle worldBounds) {
+	  this.worldBounds = worldBounds;
 		int xTilesCount = (int) (worldBounds.getWidth()/((float)World.tileLength));
 		int yTilesCount = (int) (worldBounds.getHeight()/((float)World.tileLength));
 		this.geometry = new TileGeometry(worldBounds, xTilesCount, yTilesCount);
-		tiles = new TerrainTile[xTilesCount][yTilesCount];
 	}
 	
 	public void loadLevel(String name) {
-		for (int x = 0; x < tiles.length; x++) {
-			for (int dy = 0; dy < 3; dy++) {
-			  int y = tiles[x].length - 1 - dy;
-			  tiles[x][y] = new TerrainTile(Color.white);
-			  Vector position = geometry.centerLocationOfTile(x, y);
-			  tiles[x][y].setPosition(position);
-			}
-		}
-	}
-	
-	public void renderTerrain(Graphics g) {
-		for (int x = 0; x < tiles.length; x++) {
-			for (int y = 0; y < tiles[x].length; y++) {
-				if (tiles[x][y] != null) {
-					tiles[x][y].render(g);
-				}
-			}
-		}
+	  int width = (int)worldBounds.getWidth();
+    int height = (int)worldBounds.getHeight();
+    BitmapGenerator bg = new BitmapGenerator(width, height);
+    terrain = new Terrain(width, height, bg.generateRandomSineMap());
 	}
 }
 

@@ -16,12 +16,19 @@ public class Tank extends PhysicsEntity {
   private int health;
   private Cannon cannon;
   private boolean onGround;
+  private Player myPlayer;
 
-  public Tank(final float x, final float y){
+
+  public Tank(final float x, final float y, Color c, Player player){
+    super(x,y, 0, 100, 100);
     super(x,y, 0, new Vector(100, 100));
+    setVelocity(new Vector(0, 0));
+    setAcceleration(new Vector(0,0));
+
     setHealth(INIT_TANK_HEALTH);
     cannon = new Cannon(this.getX(), this.getY());
-    this.addShape(new ConvexPolygon(64f, 32f), Color.blue, Color.red);
+    myPlayer = player;
+    this.addShape(new ConvexPolygon(64f, 32f), c, Color.red);
   }
 
   public Projectile fire(int power){return cannon.fire(power);}
@@ -35,10 +42,9 @@ public class Tank extends PhysicsEntity {
     }
   }
 
+  //NEED REWORK TO JUMPJETS
   public void jump(){
-    if (onGround){
       setVelocity(new Vector(getVelocity().getX(), JUMP_SPEED));
-    }
   }
 
   public void update(int delta){
@@ -58,4 +64,5 @@ public class Tank extends PhysicsEntity {
   public void setHealth(int health) {this.health = health;}
   public void setOnGround(boolean onGround) {this.onGround = onGround;}
   public boolean isOnGround() {return onGround;}
+  public Player getMyPlayer() {return myPlayer;}
 }

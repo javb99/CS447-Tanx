@@ -13,7 +13,7 @@ public class Projectile extends PhysicsEntity {
 	}
 	
 	public void explode() {
-		//
+	  this.isDead = true;
 	}
 	
 	public void update(int delta, Terrain t) {
