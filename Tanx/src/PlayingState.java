@@ -18,6 +18,7 @@ enum phase {MOVEFIRE, FIRING};
 
 public class PlayingState extends BasicGameState {
   static private int TURNLENGTH = 11*1000;
+  static private int FIRING_TIMEOUT = 5*1000;
 	World world;
 	DebugCamera camera;
   ArrayList<PhysicsEntity> PE_list;
@@ -80,6 +81,7 @@ public class PlayingState extends BasicGameState {
     
     PE.registerCollisionHandler(Projectile.class, PhysicsEntity.class, (projectile, obstacle, c) -> {
       if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
+      if (projectile == activeProjectile && state == phase.FIRING) { changePlayer(); }
       projectile.explode();
     });
     
@@ -117,9 +119,9 @@ public class PlayingState extends BasicGameState {
 			int delta) throws SlickException {
 		Input input = container.getInput();
 
+    turnTimer -= delta;
 		if (state == phase.MOVEFIRE){
 		  Tank currentTank = players.get(pIndex).getTank();
-		  turnTimer -= delta;
 		  if (turnTimer <= 0){
 		    changePlayer();
       }
@@ -133,7 +135,10 @@ public class PlayingState extends BasicGameState {
         activeProjectile = currentTank.fire(1);
         PE.addPhysicsEntity(activeProjectile);
         state = phase.FIRING;
+        turnTimer = FIRING_TIMEOUT;
       }
+    } else if(state == phase.FIRING){
+		  if (turnTimer <= 0) { changePlayer(); }
     }
 
 		for(Player p: players){p.update(delta);}
@@ -142,14 +147,13 @@ public class PlayingState extends BasicGameState {
 	}
 
   private void changePlayer() {
+    activeProjectile = null;
     state = phase.MOVEFIRE;
     turnTimer = TURNLENGTH;
     pIndex ++;
     if (pIndex >= players.size()){pIndex = 0;}
     players.get(pIndex).getNextTank();
-    float cameraX = players.get(pIndex).getTank().getX();
-    float cameraY = players.get(pIndex).getTank().getY();
-    camera.setCenter(new Vector(cameraX, cameraY));
+    camera.setCenter(players.get(pIndex).getTank().getPosition());
   }
 
   private void controlCamera(int delta, Input input) {
