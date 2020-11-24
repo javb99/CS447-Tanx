@@ -1,6 +1,7 @@
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Color;
-import java.util.ArrayList;
+
+import java.util.*;
 
 public class Player {
   private ArrayList<Tank> tanks;
@@ -8,6 +9,8 @@ public class Player {
   public boolean isDead;
   private Color playerColor;
   private int playerId;
+  private ArrayList<Ammo> ammo;
+  private int ammoIndex;
   //tbd weapons available to player listed here?
 
   public Player(Color c, int id) {
@@ -16,11 +19,51 @@ public class Player {
     isDead = false;
     playerColor = c;
     playerId = id;
+    ammo = new ArrayList<Ammo>();
+    giveAmmo(Cannon.BASE_CANNON, Ammo.INF_AMMO);
+    giveAmmo(Cannon.BIG_CANNON, 10);
+    ammoIndex = 0;
   }
 
   public void render(Graphics g){
     for (Tank tank : tanks) {
       tank.render(g);
+    }
+  }
+
+  public void giveAmmo(int type, int amount) {
+    for (Ammo a: ammo ){
+      if (a.type == type){
+        if(a.amount == Ammo.INF_AMMO) { return; }
+        a.amount += amount;
+        return;
+      }
+    }
+    ammo.add(new Ammo(type, amount));
+  }
+
+  private void newAmmoIndex(int amount){
+    ammoIndex += amount;
+    if (ammoIndex >= ammo.size()){
+      ammoIndex = 0;
+    } else if (ammoIndex < 0){
+      ammoIndex = ammo.size() - 1;
+    }
+    if (ammo.get(ammoIndex).amount == 0){ newAmmoIndex(amount); }
+  }
+  public void nextWeapon(){
+    newAmmoIndex(1);
+    tanks.get(tankIndex).changeWeapon(ammo.get(ammoIndex).type);
+  }
+
+  public void prevWeapon(){
+    newAmmoIndex(-1);
+    tanks.get(tankIndex).changeWeapon(ammo.get(ammoIndex).type);
+  }
+
+  public void checkWeapon(){
+    if (ammo.get(ammoIndex).amount == 0){
+      nextWeapon();
     }
   }
 
@@ -74,4 +117,6 @@ public class Player {
   public boolean isDead() { return isDead; }
 
   public ArrayList<Tank> getTanks() { return tanks; }
+
+  public int getAmmo(){return ammo.get(ammoIndex).amount;}
 }
