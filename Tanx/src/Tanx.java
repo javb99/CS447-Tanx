@@ -70,6 +70,7 @@ public class Tanx extends StateBasedGame {
 
 		// preload all the resources to avoid warnings & minimize latency...
 		//ex: ResourceManager.loadImage(BALL_BALLIMG_RSC);
+		
 
 	}
 

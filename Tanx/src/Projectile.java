@@ -13,7 +13,16 @@ public class Projectile extends PhysicsEntity {
 	}
 	
 	public void explode() {
-		//
+	  this.isDead = true;
+	}
+	
+	public void update(int delta, Terrain t) {
+		super.update(delta, t);
+		
+		if(t.checkCircularCollision(this.getPosition(), this.getCoarseGrainedRadius())) {
+			System.out.println("collision: <" + (int)this.getX() + ", " + (int)this.getY() + ">");
+		}
+		
 	}
 	
 }

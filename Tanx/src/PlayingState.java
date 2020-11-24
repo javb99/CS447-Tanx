@@ -45,7 +45,7 @@ public class PlayingState extends BasicGameState {
     throws SlickException {
     
     PE_list = new ArrayList<PhysicsEntity>();
-    
+
     PE_list.add(new Projectile(20, 300, new Vector(2f, -2f)));
 
     players = new ArrayList<Player>();
@@ -64,11 +64,26 @@ public class PlayingState extends BasicGameState {
         PE_list.add(t);
       }
     }
-    PE = new PhysicsEngine(PE_list);
 
     state = phase.MOVEFIRE;
     pIndex = 0;
     turnTimer = TURNLENGTH;
+
+    PE = new PhysicsEngine(PE_list, world);
+    
+    // Example use case. Probably not complete.
+    PE.registerCollisionHandler(Tank.class, Terrain.class, (tank, terrain, c) -> {
+      if (tank.getY() < terrain.getY()) {
+        tank.setOnGround(true);
+      }
+    });
+    
+    PE.registerCollisionHandler(Projectile.class, PhysicsEntity.class, (projectile, obstacle, c) -> {
+      if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
+      projectile.explode();
+    });
+    
+    camera.toggleDebug();
   }
 
 	@Override
@@ -80,7 +95,7 @@ public class PlayingState extends BasicGameState {
 		camera.transformContext(g);
 		// Render anything that should be affected by the camera location.
 
-		world.renderTerrain(g);
+    world.terrain.render(g);
 		PE_list.forEach((e)->e.render(g));
 		players.forEach((t) ->t.render(g));
 
@@ -90,6 +105,8 @@ public class PlayingState extends BasicGameState {
       g.drawString("Active", currentTank.getX() - 20, currentTank.getY() + 30);
       g.drawString(Integer.toString(turnTimer/1000), currentTank.getX() - 40, currentTank.getY() + 30);
     }
+		
+		camera.renderDebugOverlay(g);
 		
 		g.popTransform();
 		// Render anything that shouldn't be transformed below here.
