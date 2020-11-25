@@ -65,10 +65,8 @@ public class PlayingState extends BasicGameState {
         PE_list.add(t);
       }
     }
-
-    state = phase.MOVEFIRE;
     pIndex = 0;
-    turnTimer = TURNLENGTH;
+    changePlayer();
 
     PE = new PhysicsEngine(PE_list, world);
     
