@@ -9,17 +9,28 @@ public class PhysicsEntity extends Entity {
   private Vector acceleration;
   private Vector velocity;
   private float drag;
-  private float terminalX;
-  private float terminalY;
+  private Vector terminal;
 
-  public PhysicsEntity (final float x, final float y, final float d, final float tx, final float ty){
+  public PhysicsEntity (final float x, final float y, final float d, final Vector t){
     super(x,y);
     isDead = false;
     acceleration = new Vector(0, 0);
     velocity = new Vector(0, 0);
     drag = d;
-    terminalX = tx;
-    terminalY = ty;
+    terminal = t;
+  }
+  
+  public void checkTerrainCollision(Terrain t) {
+	  /*
+	   	Check for collision with the terrain. This method is specific to each entity because of
+	   	differing entity shapes.
+	   */
+  }
+  
+  private void handleTerrainCollision(Terrain t) {
+	  /*
+	    Each entity handles a terrain collision differently, so they each have 
+	   */
   }
   
   public void update(int delta, Terrain t) {
@@ -35,7 +46,6 @@ public class PhysicsEntity extends Entity {
   public Vector getAcceleration(){return acceleration;}
   public Vector getVelocity(){return velocity;}
   public float getDrag(){return drag;}
-  public float getTerminalX() {return terminalX;}
-  public float getTerminalY() {return terminalY;}
+  public Vector getTerminal() {return terminal;}
   public boolean getIsDead() { return isDead; };
 }
