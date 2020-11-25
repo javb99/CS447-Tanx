@@ -14,11 +14,12 @@ import org.newdawn.slick.Color;
 import jig.Entity;
 import jig.Vector;
 
-enum phase {MOVEFIRE, FIRING};
+enum phase {MOVEFIRE, FIRING, TURNCHANGE};
 
 public class PlayingState extends BasicGameState {
   static private int TURNLENGTH = 11*1000;
   static private int FIRING_TIMEOUT = 5*1000;
+  static private int SHOTRESOLVE_TIMEOUT = 2*1000;
 	World world;
 	DebugCamera camera;
   ArrayList<PhysicsEntity> PE_list;
@@ -49,19 +50,21 @@ public class PlayingState extends BasicGameState {
 
     players = new ArrayList<Player>();
 
+
     PlayerConfigurator PC = new PlayerConfigurator(container.getWidth()*2, 4, 2);
     players = PC.config();
     
+
+    PE_list.add(new AmmoPowerup(50, 200, Cannon.BIG_CANNON, 1));
+
 
     for (Player p: players){
       for (Tank t: p.getTanks()){
         PE_list.add(t);
       }
     }
-
-    state = phase.MOVEFIRE;
     pIndex = 0;
-    turnTimer = TURNLENGTH;
+    changePlayer();
 
     PE = new PhysicsEngine(PE_list, world);
     
@@ -71,10 +74,14 @@ public class PlayingState extends BasicGameState {
         tank.setOnGround(true);
       }
     });
-    
+
+    PE.registerCollisionHandler(Powerup.class, Tank.class, (powerup, tank, c) -> {
+      powerup.usePowerup(tank);
+    });
+
     PE.registerCollisionHandler(Projectile.class, PhysicsEntity.class, (projectile, obstacle, c) -> {
       if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
-      if (projectile == activeProjectile && state == phase.FIRING) { changePlayer(); }
+      if (projectile == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
       projectile.explode();
     });
     
@@ -99,6 +106,7 @@ public class PlayingState extends BasicGameState {
       Tank currentTank = players.get(pIndex).getTank();
       g.drawString("Active", currentTank.getX() - 20, currentTank.getY() + 30);
       g.drawString(Integer.toString(turnTimer/1000), currentTank.getX() - 40, currentTank.getY() + 30);
+      g.drawString(Integer.toString(players.get(pIndex).getAmmo()), currentTank.getX() + 40, currentTank.getY() + 30);
     }
 		
 		camera.renderDebugOverlay(g);
@@ -113,7 +121,7 @@ public class PlayingState extends BasicGameState {
 		Input input = container.getInput();
 
     turnTimer -= delta;
-		if (state == phase.MOVEFIRE){
+		if (state == phase.MOVEFIRE){ ;
 		  Tank currentTank = players.get(pIndex).getTank();
 		  if (turnTimer <= 0){
 		    changePlayer();
@@ -124,53 +132,71 @@ public class PlayingState extends BasicGameState {
       } else if (input.isKeyDown(Input.KEY_Q)){
         currentTank.rotate(Direction.LEFT, delta);
       }
+      if (input.isKeyPressed(Input.KEY_C)){
+        players.get(pIndex).nextWeapon();
+      }
+      if (input.isKeyPressed(Input.KEY_Z)){
+        players.get(pIndex).prevWeapon();
+      }
       if (input.isKeyPressed(Input.KEY_SPACE)){
         activeProjectile = currentTank.fire(1);
         PE.addPhysicsEntity(activeProjectile);
+        camera.trackObject(activeProjectile);
         state = phase.FIRING;
         turnTimer = FIRING_TIMEOUT;
       }
-    } else if(state == phase.FIRING){
-		  if (turnTimer <= 0) { changePlayer(); }
+    } else if(state == phase.FIRING) {
+      if (turnTimer <= 0) { camera.stopTracking(); changePlayer(); }
+    } if (state == phase.TURNCHANGE) {
+		  //For safety, timeout if there are issues-soft bug
+        if(camera.getState() == camState.IDLE) {
+          state = phase.MOVEFIRE;
+        }
     }
 
 		for(Player p: players){p.update(delta);}
     PE.update(delta);
 		controlCamera(delta, input);
+		world.update(delta, PE, players);
 	}
 
   private void changePlayer() {
     activeProjectile = null;
-    state = phase.MOVEFIRE;
+    state = phase.TURNCHANGE;
     turnTimer = TURNLENGTH;
     pIndex ++;
     if (pIndex >= players.size()){pIndex = 0;}
-    players.get(pIndex).getNextTank();
-    camera.setCenter(players.get(pIndex).getTank().getPosition());
+    Player currentPlayer = players.get(pIndex);
+    currentPlayer.getNextTank();
+    currentPlayer.checkWeapon();
+    camera.moveTo(currentPlayer.getTank().getPosition());
   }
 
   private void controlCamera(int delta, Input input) {
-    if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-      camera.setZoom(camera.getZoom() + 0.25f);
+	  if (camera.getState() == camState.IDLE){
+      if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+        camera.setZoom(camera.getZoom() + 0.25f);
+      }
+      if (input.isMousePressed(Input.MOUSE_RIGHT_BUTTON)) {
+        camera.setZoom(camera.getZoom() - 0.25f);
+      }
+      if (input.isKeyPressed(Input.KEY_O)) {
+        camera.toggleDebug();
+      }
+      if (input.isKeyDown(Input.KEY_LEFT)) {
+        camera.move(new Vector(-delta/3, 0));
+      }
+      if (input.isKeyDown(Input.KEY_RIGHT)) {
+        camera.move(new Vector(delta/3, 0));
+      }
+      if (input.isKeyDown(Input.KEY_UP)) {
+        camera.move(new Vector(0, -delta/3));
+      }
+      if (input.isKeyDown(Input.KEY_DOWN)) {
+        camera.move(new Vector(0, delta/3));
+      }
     }
-    if (input.isMousePressed(Input.MOUSE_RIGHT_BUTTON)) {
-      camera.setZoom(camera.getZoom() - 0.25f);
-    }
-    if (input.isKeyPressed(Input.KEY_O)) {
-      camera.toggleDebug();
-    }
-    if (input.isKeyDown(Input.KEY_LEFT)) {
-      camera.move(new Vector(-delta/3, 0));
-    }
-    if (input.isKeyDown(Input.KEY_RIGHT)) {
-      camera.move(new Vector(delta/3, 0));
-    }
-    if (input.isKeyDown(Input.KEY_UP)) {
-      camera.move(new Vector(0, -delta/3));
-    }
-    if (input.isKeyDown(Input.KEY_DOWN)) {
-      camera.move(new Vector(0, delta/3));
-    }
+    camera.update(delta);
 	}
 
 	@Override
