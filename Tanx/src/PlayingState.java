@@ -19,6 +19,7 @@ enum phase {MOVEFIRE, FIRING, TURNCHANGE};
 public class PlayingState extends BasicGameState {
   static private int TURNLENGTH = 11*1000;
   static private int FIRING_TIMEOUT = 5*1000;
+  static private int SHOTRESOLVE_TIMEOUT = 2*1000;
 	World world;
 	DebugCamera camera;
   ArrayList<PhysicsEntity> PE_list;
@@ -81,7 +82,7 @@ public class PlayingState extends BasicGameState {
     
     PE.registerCollisionHandler(Projectile.class, PhysicsEntity.class, (projectile, obstacle, c) -> {
       if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
-      if (projectile == activeProjectile && state == phase.FIRING) { camera.stopTracking(); changePlayer(); }
+      if (projectile == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
       projectile.explode();
     });
     
@@ -138,14 +139,13 @@ public class PlayingState extends BasicGameState {
         state = phase.FIRING;
         turnTimer = FIRING_TIMEOUT;
       }
-    } else if(state == phase.FIRING || state == phase.TURNCHANGE) {
+    } else if(state == phase.FIRING) {
+      if (turnTimer <= 0) { camera.stopTracking(); changePlayer(); }
+    } if (state == phase.TURNCHANGE) {
 		  //For safety, timeout if there are issues-soft bug
-		  if (turnTimer <= 0) { camera.stopTracking(); changePlayer(); }
-		  if (state == phase.TURNCHANGE) {
         if(camera.getState() == camState.IDLE) {
           state = phase.MOVEFIRE;
         }
-      }
     }
 
 		for(Player p: players){p.update(delta);}
