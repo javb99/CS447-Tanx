@@ -14,7 +14,7 @@ import org.newdawn.slick.Color;
 import jig.Entity;
 import jig.Vector;
 
-enum phase {MOVEFIRE, FIRING};
+enum phase {MOVEFIRE, FIRING, TURNCHANGE};
 
 public class PlayingState extends BasicGameState {
   static private int TURNLENGTH = 11*1000;
@@ -65,10 +65,8 @@ public class PlayingState extends BasicGameState {
         PE_list.add(t);
       }
     }
-
-    state = phase.MOVEFIRE;
     pIndex = 0;
-    turnTimer = TURNLENGTH;
+    changePlayer();
 
     PE = new PhysicsEngine(PE_list, world);
     
@@ -120,8 +118,8 @@ public class PlayingState extends BasicGameState {
 			int delta) throws SlickException {
 		Input input = container.getInput();
 
-    turnTimer -= delta;
 		if (state == phase.MOVEFIRE){
+      turnTimer -= delta;
 		  Tank currentTank = players.get(pIndex).getTank();
 		  if (turnTimer <= 0){
 		    changePlayer();
@@ -144,8 +142,13 @@ public class PlayingState extends BasicGameState {
         state = phase.FIRING;
         turnTimer = FIRING_TIMEOUT;
       }
-    } else if(state == phase.FIRING){
+    } else if(state == phase.FIRING) {
+      turnTimer -= delta;
 		  if (turnTimer <= 0) { changePlayer(); }
+    } else if(state == phase.TURNCHANGE) {
+		  if(!camera.isMoving()) {
+		    state = phase.MOVEFIRE;
+      }
     }
 
 		for(Player p: players){p.update(delta);}
@@ -155,14 +158,14 @@ public class PlayingState extends BasicGameState {
 
   private void changePlayer() {
     activeProjectile = null;
-    state = phase.MOVEFIRE;
+    state = phase.TURNCHANGE;
     turnTimer = TURNLENGTH;
     pIndex ++;
     if (pIndex >= players.size()){pIndex = 0;}
     Player currentPlayer = players.get(pIndex);
     currentPlayer.getNextTank();
     currentPlayer.checkWeapon();
-    camera.setCenter(currentPlayer.getTank().getPosition());
+    camera.moveTo(currentPlayer.getTank().getPosition());
   }
 
   private void controlCamera(int delta, Input input) {
@@ -187,6 +190,7 @@ public class PlayingState extends BasicGameState {
     if (input.isKeyDown(Input.KEY_DOWN)) {
       camera.move(new Vector(0, delta/3));
     }
+    camera.update(delta);
 	}
 
 	@Override

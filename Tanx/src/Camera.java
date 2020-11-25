@@ -7,6 +7,9 @@ import jig.Vector;
 public class Camera {
   
   public static float MAX_ZOOM = 4f;
+  public static float MAX_CAMERA_SPEED = 2f;
+  public static float MIN_CAMERA_SPEED = .2f;
+  public static float CAM_ACCELERATION = 1.1f;
   
   /// Portion of the screen that the camera/world occupy.
   /// This may not be the whole screen if we want menus outside the scrolling area.
@@ -17,6 +20,12 @@ public class Camera {
   
   /// Center of the camera in unscaled world points.
   private Vector center;
+
+  ///Camera Motion Variables
+  private float distanceToGoal;
+  private Vector velocity;
+  private Vector goalPosition;
+  private boolean isMoving;
   
   private float zoom;
   
@@ -25,6 +34,7 @@ public class Camera {
     this.world = world;
     this.center = new Vector(world.getCenter());
     this.zoom = 1.0f;
+    this.velocity = new Vector(0, 0);
   }
   
   /// Use this to actually change the rendering.
@@ -93,6 +103,67 @@ public class Camera {
   public String toString() {
     return "location: " + center.toString() + ", zoom: " + zoom;
   }
+
+  //camera smoothing code
+  public void update(int delta){
+    cameraMotionHandler(delta);
+  }
+
+  private void cameraMotionHandler(int delta){
+    if (isMoving){
+      double dist = getDistToGoal();
+      if (dist > distanceToGoal/2){
+        velocity = velocity.scale(CAM_ACCELERATION);
+      } else {
+        velocity = velocity.scale(1/CAM_ACCELERATION);
+      }
+      Vector move = velocity.scale(delta);
+      if (move.length() >= dist){
+        isMoving = false;
+        velocity = new Vector(0, 0);
+        setCenter(goalPosition);
+      } else {
+        move(move);
+      }
+    }
+  }
+
+  private double getDistToGoal() {
+    double x1 = goalPosition.getX();
+    double x2 = center.getX();
+    double y1 = goalPosition.getY();
+    double y2 = center.getY();
+    double ac = Math.abs(y2 - y1);
+    double cb = Math.abs(x2 - x1);
+    return Math.hypot(ac, cb);
+  }
+
+  public void moveTo(Vector position){
+    goalPosition = position;
+    clampGoal();
+    if (goalPosition == center){ return; }
+    isMoving = true;
+    float x1 = center.getX();
+    float x2 = goalPosition.getX();
+    float y1 = center.getY();
+    float y2 = goalPosition.getY();
+    Vector fullLength = new Vector(x2 - x1, y2 - y1);
+    Vector unitVect = fullLength.scale(1/fullLength.length());
+    velocity = unitVect.scale(MIN_CAMERA_SPEED);
+    distanceToGoal = (float)getDistToGoal();
+  }
+
+  private void clampGoal() {
+    Vector viewPortSize = viewPortSize();
+    float minValidX = world.getMinX() + viewPortSize.getX()/2;
+    float maxValidX = world.getMaxX() - viewPortSize.getX()/2;
+    float minValidY = world.getMinY() + viewPortSize.getY()/2;
+    float maxValidY = world.getMaxY() - viewPortSize.getY()/2;
+    goalPosition = goalPosition.clampX(minValidX, maxValidX).clampY(minValidY, maxValidY);
+  }
+
+  public boolean isMoving() { return isMoving; }
+
 }
 
 /// When debug is true, it shows the full world and an border for the viewport.
