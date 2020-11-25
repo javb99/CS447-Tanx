@@ -31,6 +31,14 @@ public class Player {
     }
   }
 
+
+  public Tank addTank(float x, float y) {
+	Tank t = new Tank(x, y, playerColor, this);
+    tanks.add(t);
+    isDead = false;
+    return t;
+  }
+
   public void giveAmmo(int type, int amount) {
     for (Ammo a: ammo ){
       if (a.type == type){
@@ -67,11 +75,6 @@ public class Player {
     } else {
       tanks.get(tankIndex).changeWeapon(ammo.get(ammoIndex).type);
     }
-  }
-
-  public void addTank(float x, float y) {
-    tanks.add(new Tank(x, y, playerColor, this));
-    isDead = false;
   }
 
   public void removeTank(Tank t) {
