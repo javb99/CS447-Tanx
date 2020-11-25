@@ -156,7 +156,7 @@ public class PlayingState extends BasicGameState {
 		for(Player p: players){p.update(delta);}
     PE.update(delta);
 		controlCamera(delta, input);
-		world.update(delta, PE);
+		world.update(delta, PE, players);
 	}
 
   private void changePlayer() {
