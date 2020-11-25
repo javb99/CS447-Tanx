@@ -8,6 +8,7 @@ enum Direction {LEFT, RIGHT};
 public class Tank extends PhysicsEntity {
   //Constants
   public static final int INIT_TANK_HEALTH = 100;
+  public static final int MAX_TANK_HEALTH = 100;
   public static final float TANK_MOVE_SPEED = .2f;
   public static final float TANK_TERMINAL_VELOCITY = 2f;
   public static final float ACCELERATION = .05f;
@@ -63,6 +64,14 @@ public class Tank extends PhysicsEntity {
   }
   public void changeWeapon(int type){
     cannon.changeType(type);
+  }
+
+  public void giveHealth(int amount) {
+    if (amount <= 0){System.out.println("Tank.giveHealthERROR: Attempted to give 0 or below health to a tank!"); return;}
+    health += amount;
+    if (health > MAX_TANK_HEALTH){
+      health = MAX_TANK_HEALTH;
+    }
   }
 
   //set/get functions

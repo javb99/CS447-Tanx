@@ -60,6 +60,7 @@ public class PlayingState extends BasicGameState {
     players.get(1).addTank(200, 400);
     players.get(1).addTank(800, 400);
     //end of test stub
+    PE_list.add(new AmmoPowerup(50, 200, Cannon.BIG_CANNON, 1));
 
     for (Player p: players){
       for (Tank t: p.getTanks()){
@@ -77,7 +78,11 @@ public class PlayingState extends BasicGameState {
         tank.setOnGround(true);
       }
     });
-    
+
+    PE.registerCollisionHandler(Powerup.class, Tank.class, (powerup, tank, c) -> {
+      powerup.usePowerup(tank);
+    });
+
     PE.registerCollisionHandler(Projectile.class, PhysicsEntity.class, (projectile, obstacle, c) -> {
       if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
       if (projectile == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
@@ -156,6 +161,7 @@ public class PlayingState extends BasicGameState {
 		for(Player p: players){p.update(delta);}
     PE.update(delta);
 		controlCamera(delta, input);
+		world.update(delta, PE, players);
 	}
 
   private void changePlayer() {
