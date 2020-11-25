@@ -106,6 +106,7 @@ public class PlayingState extends BasicGameState {
       Tank currentTank = players.get(pIndex).getTank();
       g.drawString("Active", currentTank.getX() - 20, currentTank.getY() + 30);
       g.drawString(Integer.toString(turnTimer/1000), currentTank.getX() - 40, currentTank.getY() + 30);
+      g.drawString(Integer.toString(players.get(pIndex).getAmmo()), currentTank.getX() + 40, currentTank.getY() + 30);
     }
 		
 		camera.renderDebugOverlay(g);
@@ -131,6 +132,12 @@ public class PlayingState extends BasicGameState {
       } else if (input.isKeyDown(Input.KEY_Q)){
         currentTank.rotate(Direction.LEFT, delta);
       }
+      if (input.isKeyPressed(Input.KEY_C)){
+        players.get(pIndex).nextWeapon();
+      }
+      if (input.isKeyPressed(Input.KEY_Z)){
+        players.get(pIndex).prevWeapon();
+      }
       if (input.isKeyPressed(Input.KEY_SPACE)){
         activeProjectile = currentTank.fire(1);
         PE.addPhysicsEntity(activeProjectile);
@@ -152,8 +159,10 @@ public class PlayingState extends BasicGameState {
     turnTimer = TURNLENGTH;
     pIndex ++;
     if (pIndex >= players.size()){pIndex = 0;}
-    players.get(pIndex).getNextTank();
-    camera.setCenter(players.get(pIndex).getTank().getPosition());
+    Player currentPlayer = players.get(pIndex);
+    currentPlayer.getNextTank();
+    currentPlayer.checkWeapon();
+    camera.setCenter(currentPlayer.getTank().getPosition());
   }
 
   private void controlCamera(int delta, Input input) {
