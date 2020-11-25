@@ -10,7 +10,7 @@ public class Cannon extends Entity {
   public static float MAX_ROTATION_FACTOR = 90;
   public static float ANGLE_CORRECTION = -90;
   public static int BASE_CANNON = 0;
-  public static float BASE_CANNON_POWER = 0.5f;
+  public static float BASE_CANNON_POWER = 1f;
   public static float BASE_CANNON_OFFSET = 50;
   public static int BIG_CANNON = 1;
   public static float BIG_CANNON_POWER = 1f;

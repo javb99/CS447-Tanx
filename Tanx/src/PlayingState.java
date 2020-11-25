@@ -19,6 +19,7 @@ enum phase {MOVEFIRE, FIRING, TURNCHANGE};
 public class PlayingState extends BasicGameState {
   static private int TURNLENGTH = 11*1000;
   static private int FIRING_TIMEOUT = 5*1000;
+  static private int SHOTRESOLVE_TIMEOUT = 2*1000;
 	World world;
 	DebugCamera camera;
   ArrayList<PhysicsEntity> PE_list;
@@ -79,7 +80,7 @@ public class PlayingState extends BasicGameState {
     
     PE.registerCollisionHandler(Projectile.class, PhysicsEntity.class, (projectile, obstacle, c) -> {
       if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
-      if (projectile == activeProjectile && state == phase.FIRING) { changePlayer(); }
+      if (projectile == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
       projectile.explode();
     });
     
@@ -118,8 +119,8 @@ public class PlayingState extends BasicGameState {
 			int delta) throws SlickException {
 		Input input = container.getInput();
 
-		if (state == phase.MOVEFIRE){
-      turnTimer -= delta;
+    turnTimer -= delta;
+		if (state == phase.MOVEFIRE){ ;
 		  Tank currentTank = players.get(pIndex).getTank();
 		  if (turnTimer <= 0){
 		    changePlayer();
@@ -139,16 +140,17 @@ public class PlayingState extends BasicGameState {
       if (input.isKeyPressed(Input.KEY_SPACE)){
         activeProjectile = currentTank.fire(1);
         PE.addPhysicsEntity(activeProjectile);
+        camera.trackObject(activeProjectile);
         state = phase.FIRING;
         turnTimer = FIRING_TIMEOUT;
       }
     } else if(state == phase.FIRING) {
-      turnTimer -= delta;
-		  if (turnTimer <= 0) { changePlayer(); }
-    } else if(state == phase.TURNCHANGE) {
-		  if(!camera.isMoving()) {
-		    state = phase.MOVEFIRE;
-      }
+      if (turnTimer <= 0) { camera.stopTracking(); changePlayer(); }
+    } if (state == phase.TURNCHANGE) {
+		  //For safety, timeout if there are issues-soft bug
+        if(camera.getState() == camState.IDLE) {
+          state = phase.MOVEFIRE;
+        }
     }
 
 		for(Player p: players){p.update(delta);}
@@ -169,26 +171,28 @@ public class PlayingState extends BasicGameState {
   }
 
   private void controlCamera(int delta, Input input) {
-    if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-      camera.setZoom(camera.getZoom() + 0.25f);
-    }
-    if (input.isMousePressed(Input.MOUSE_RIGHT_BUTTON)) {
-      camera.setZoom(camera.getZoom() - 0.25f);
-    }
-    if (input.isKeyPressed(Input.KEY_O)) {
-      camera.toggleDebug();
-    }
-    if (input.isKeyDown(Input.KEY_LEFT)) {
-      camera.move(new Vector(-delta/3, 0));
-    }
-    if (input.isKeyDown(Input.KEY_RIGHT)) {
-      camera.move(new Vector(delta/3, 0));
-    }
-    if (input.isKeyDown(Input.KEY_UP)) {
-      camera.move(new Vector(0, -delta/3));
-    }
-    if (input.isKeyDown(Input.KEY_DOWN)) {
-      camera.move(new Vector(0, delta/3));
+	  if (camera.getState() == camState.IDLE){
+      if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+        camera.setZoom(camera.getZoom() + 0.25f);
+      }
+      if (input.isMousePressed(Input.MOUSE_RIGHT_BUTTON)) {
+        camera.setZoom(camera.getZoom() - 0.25f);
+      }
+      if (input.isKeyPressed(Input.KEY_O)) {
+        camera.toggleDebug();
+      }
+      if (input.isKeyDown(Input.KEY_LEFT)) {
+        camera.move(new Vector(-delta/3, 0));
+      }
+      if (input.isKeyDown(Input.KEY_RIGHT)) {
+        camera.move(new Vector(delta/3, 0));
+      }
+      if (input.isKeyDown(Input.KEY_UP)) {
+        camera.move(new Vector(0, -delta/3));
+      }
+      if (input.isKeyDown(Input.KEY_DOWN)) {
+        camera.move(new Vector(0, delta/3));
+      }
     }
     camera.update(delta);
 	}

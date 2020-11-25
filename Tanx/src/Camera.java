@@ -1,15 +1,19 @@
+import jig.Entity;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Rectangle;
 
 import jig.Vector;
 
+enum camState {IDLE, MOVING, TRACKING};
 public class Camera {
   
   public static float MAX_ZOOM = 4f;
+  public static float DEFAULT_ZOOM = 1f;
   public static float MAX_CAMERA_SPEED = 2f;
   public static float MIN_CAMERA_SPEED = .2f;
   public static float CAM_ACCELERATION = 1.1f;
+  public static float CAM_ZOOM_RATE = .0005f;
   
   /// Portion of the screen that the camera/world occupy.
   /// This may not be the whole screen if we want menus outside the scrolling area.
@@ -22,10 +26,15 @@ public class Camera {
   private Vector center;
 
   ///Camera Motion Variables
+  private camState state;
   private float distanceToGoal;
   private Vector velocity;
   private Vector goalPosition;
-  private boolean isMoving;
+
+  ///Camera tracking variables
+  private Entity trackedObject;
+  private float startTrackHeight;
+  private float startTrackZoom;
   
   private float zoom;
   
@@ -33,8 +42,9 @@ public class Camera {
     this.screen = screen;
     this.world = world;
     this.center = new Vector(world.getCenter());
-    this.zoom = 1.0f;
+    this.zoom = DEFAULT_ZOOM;
     this.velocity = new Vector(0, 0);
+    state = camState.IDLE;
   }
   
   /// Use this to actually change the rendering.
@@ -104,27 +114,59 @@ public class Camera {
     return "location: " + center.toString() + ", zoom: " + zoom;
   }
 
-  //camera smoothing code
   public void update(int delta){
-    cameraMotionHandler(delta);
+    if (state == camState.MOVING){
+      cameraMotionHandler(delta);
+    } else if (state == camState.TRACKING){
+      cameraTrackingHandler(delta);
+    }
   }
 
+  //Object Tracking
+  private void cameraTrackingHandler(int delta){
+    setCenter(trackedObject.getPosition());
+    setTrackedZoom();
+  }
+
+  public void setTrackedZoom(){
+    float heightDiff = startTrackHeight - trackedObject.getY();
+    setZoom(-CAM_ZOOM_RATE*heightDiff + startTrackZoom);
+  }
+
+  public void trackObject(Entity e){
+    if (state != camState.IDLE) {
+      System.out.println("camera.trackObjectERROR: Tried to track an object while not in IDLE state!");
+      return;
+    }
+    trackedObject = e;
+    startTrackHeight = e.getY();
+    startTrackZoom = getZoom();
+    state = camState.TRACKING;
+  }
+
+  public void stopTracking(){
+    trackedObject = null;
+    setZoom(startTrackZoom);
+    state = camState.IDLE;
+  }
+
+
+
+  //camera smoothing code
   private void cameraMotionHandler(int delta){
-    if (isMoving){
-      double dist = getDistToGoal();
-      if (dist > distanceToGoal/2){
-        velocity = velocity.scale(CAM_ACCELERATION);
-      } else {
-        velocity = velocity.scale(1/CAM_ACCELERATION);
-      }
-      Vector move = velocity.scale(delta);
-      if (move.length() >= dist){
-        isMoving = false;
-        velocity = new Vector(0, 0);
-        setCenter(goalPosition);
-      } else {
-        move(move);
-      }
+    double dist = getDistToGoal();
+    if (dist > distanceToGoal/2){
+      velocity = velocity.scale(CAM_ACCELERATION);
+    } else {
+      velocity = velocity.scale(1/CAM_ACCELERATION);
+    }
+    Vector move = velocity.scale(delta);
+    if (move.length() >= dist){
+      state = camState.IDLE;
+      velocity = new Vector(0, 0);
+      setCenter(goalPosition);
+    } else {
+      move(move);
     }
   }
 
@@ -139,10 +181,11 @@ public class Camera {
   }
 
   public void moveTo(Vector position){
+    if (state != camState.IDLE) {System.out.println("camera.moveToERROR: Tried to move the camera while not in IDLE state!"); return;}
     goalPosition = position;
     clampGoal();
     if (goalPosition == center){ return; }
-    isMoving = true;
+    state = camState.MOVING;
     float x1 = center.getX();
     float x2 = goalPosition.getX();
     float y1 = center.getY();
@@ -162,7 +205,7 @@ public class Camera {
     goalPosition = goalPosition.clampX(minValidX, maxValidX).clampY(minValidY, maxValidY);
   }
 
-  public boolean isMoving() { return isMoving; }
+  public camState getState() { return state; }
 
 }
 
