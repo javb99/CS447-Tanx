@@ -83,6 +83,8 @@ public class PlayingState extends BasicGameState {
       if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
       if (projectile == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
       projectile.explode();
+      int blastRadius = 200;
+      world.terrain.setTerrainInCircle(projectile.getPosition(), blastRadius, Terrain.TerrainType.OPEN);
     });
     
     camera.toggleDebug();

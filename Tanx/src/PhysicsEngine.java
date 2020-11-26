@@ -78,7 +78,6 @@ public class PhysicsEngine {
 
 
 		translateEntity(e, delta);	//move the object
-    e.update(delta, world.terrain);
 	}
 	
 	private void applyCollisionDetection(int delta) {
@@ -90,14 +89,12 @@ public class PhysicsEngine {
 	      if (a == b) { continue; }
 	      checkCollision(delta, a, b);
 	    }
-	    checkTerrainCollision(delta, a);
+	    handlePotentialTerrainCollision(delta, a);
 	  }
   }
 	
-	private void checkTerrainCollision(int delta, PhysicsEntity entity) {
-	  float radius = entity.getCoarseGrainedRadius();
-	  Vector position = entity.getPosition();
-	  if (world.terrain.checkCircularCollision(position, radius)) {
+	private void handlePotentialTerrainCollision(int delta, PhysicsEntity entity) {
+	  if (entity.checkTerrainCollision(world.terrain)) {
 	    collisionHandlers.forEach(handler -> handler.handleCollision(entity, world.terrain, null));
 	    resolveCollision(delta, entity, world.terrain, null);
 	  }
