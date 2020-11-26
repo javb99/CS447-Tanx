@@ -1,6 +1,9 @@
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import jig.Collision;
+import jig.ConvexPolygon;
+import jig.Entity;
 import jig.Vector;
 
 interface CollisionHandler<A extends PhysicsEntity, B extends PhysicsEntity> {
@@ -50,6 +53,15 @@ public class PhysicsEngine {
 	public void removePhysicsEntity(PhysicsEntity e) {
     objects.remove(e);
   }
+	public void forEachEntityInCircle(Vector center, float radius, Consumer<PhysicsEntity> action) {
+	  Entity area = new Entity(center.getX(), center.getY());
+	  area.addShape(new ConvexPolygon(radius));
+	  objects.forEach((e) -> {
+	    if (area.collides(e) != null) {
+	      action.accept(e);
+	    }
+	  });
+	}
 	
 	public <A extends PhysicsEntity, B extends PhysicsEntity> 
 	void registerCollisionHandler(Class<A> aClass, Class<B> bClass, CollisionHandler<A,B> handler) {
