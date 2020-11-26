@@ -25,6 +25,7 @@ public class PlayingState extends BasicGameState {
   ArrayList<PhysicsEntity> PE_list;
   PhysicsEngine PE;
   ArrayList<Player> players;
+  ExplosionSystem explosionSystem;
   phase state;
   Projectile activeProjectile;
   int pIndex;
@@ -40,6 +41,7 @@ public class PlayingState extends BasicGameState {
 		camera = new DebugCamera(screenBounds, worldBounds);
 		System.out.println("world size: " + worldBounds + ", screen size: " + screenBounds);
 		world.loadLevel("YAY");
+		explosionSystem = new ExplosionSystem();
 	}
 	
 	@Override
@@ -83,8 +85,10 @@ public class PlayingState extends BasicGameState {
       if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
       if (projectile == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
       projectile.explode();
-      int blastRadius = 200;
-      world.terrain.setTerrainInCircle(projectile.getPosition(), blastRadius, Terrain.TerrainType.OPEN);
+      int blastRadius = 64;
+      Vector location = projectile.getPosition();
+      explosionSystem.addExplosion(location, (float)blastRadius);
+      world.terrain.setTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN);
     });
     
     camera.toggleDebug();
@@ -102,6 +106,7 @@ public class PlayingState extends BasicGameState {
     world.terrain.render(g);
 		PE_list.forEach((e)->e.render(g));
 		players.forEach((t) ->t.render(g));
+		explosionSystem.render(g);
 
 		//placeholder, should put an arrow sprite pointing to currently active tank
     if (state == phase.MOVEFIRE){
@@ -155,7 +160,8 @@ public class PlayingState extends BasicGameState {
           state = phase.MOVEFIRE;
         }
     }
-
+    
+    explosionSystem.update(delta);
 		for(Player p: players){p.update(delta);}
     PE.update(delta);
 		controlCamera(delta, input);
