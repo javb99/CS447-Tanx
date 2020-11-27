@@ -56,10 +56,7 @@ public class Tank extends PhysicsEntity {
     }
   }
 
-  public void update(int delta){
-    health -= 1;
-    if (health <= 0){health = MAX_TANK_HEALTH; }
-  }
+  public void update(int delta){ }
   
   @Override
   public void render(Graphics g) {
