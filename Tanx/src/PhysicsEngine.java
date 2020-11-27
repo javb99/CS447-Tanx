@@ -61,12 +61,37 @@ public class PhysicsEngine {
 		objects.forEach((n) -> applyPhysics(n, delta));
 
 		applyCollisionDetection(delta);
-		
-		objects.removeIf(e -> e.getIsDead() || !world.geometry.tilesArea.contains(e.getX(), e.getY()));
+
+    checkObjectBounds();
+		objects.removeIf(e -> e.getIsDead() );
 
 	}
-	
-	private void applyPhysics(PhysicsEntity e, int delta) {	//still needs to handle collisions
+
+  private void checkObjectBounds() {
+	  final float OUT_BOUNDS_LENGTH = 100f;
+
+	  //check that tank doesn't go past allowed x values
+    for (PhysicsEntity e: objects) {
+      if (Tank.class.isInstance(e)){
+        float minX = e.getCoarseGrainedMinX();
+        float maxX = e.getCoarseGrainedMaxX();
+        if (minX <= world.worldBounds.getMinX()){
+          e.setX(world.worldBounds.getMinX() + Math.abs(minX));
+        } else if (maxX >= world.worldBounds.getMaxX()){
+          e.setX(world.worldBounds.getMaxX() - Math.abs(maxX));
+        }
+      }
+
+      //check that object hasn't left our world completely
+      if ((e.getX() <= (world.worldBounds.getMinX() - OUT_BOUNDS_LENGTH))
+          || (e.getX() >= (world.worldBounds.getMaxX() + OUT_BOUNDS_LENGTH))
+          || (e.getY() >= (world.worldBounds.getMaxY() + OUT_BOUNDS_LENGTH))) {
+        e.isDead = true;
+      }
+    }
+  }
+
+  private void applyPhysics(PhysicsEntity e, int delta) {	//still needs to handle collisions
 		Vector A = e.getAcceleration();	//get movement acceleration
 //		System.out.println("incoming" + A);
 		A = applyGravity(A);	//add gravity to acceleration

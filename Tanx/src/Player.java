@@ -69,7 +69,11 @@ public class Player {
     tanks.get(tankIndex).changeWeapon(ammo.get(ammoIndex).type);
   }
 
-  public void checkWeapon(){
+  public void startTurn(){
+    checkWeapon();
+    tanks.get(tankIndex).setFuel(Tank.INIT_FUEL_BURNTIME);
+  }
+  private void checkWeapon(){
     if (ammo.get(ammoIndex).amount == 0){
       nextWeapon();
     } else {
