@@ -125,4 +125,10 @@ public class Player {
   public ArrayList<Tank> getTanks() { return tanks; }
 
   public int getAmmo(){return ammo.get(ammoIndex).amount;}
+
+  public ArrayList<Ammo> getAmmoList() { return ammo; }
+
+  public int getAmmoIndex() { return ammoIndex; }
+
+  public int getCurrentAmmo() { return ammo.get(ammoIndex).type; }
 }

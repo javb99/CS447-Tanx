@@ -17,11 +17,13 @@ import jig.Vector;
 enum phase {MOVEFIRE, FIRING, TURNCHANGE};
 
 public class PlayingState extends BasicGameState {
-  static private int TURNLENGTH = 11*1000;
-  static private int FIRING_TIMEOUT = 5*1000;
-  static private int SHOTRESOLVE_TIMEOUT = 2*1000;
+  static public int TURNLENGTH = 11*1000;
+  static public int FIRING_TIMEOUT = 5*1000;
+  static public int SHOTRESOLVE_TIMEOUT = 2*1000;
+  static public int BOTTOM_UI_HEIGHT = 300;
 	World world;
 	DebugCamera camera;
+	Ui ui;
   ArrayList<PhysicsEntity> PE_list;
   PhysicsEngine PE;
   ArrayList<Player> players;
@@ -35,7 +37,11 @@ public class PlayingState extends BasicGameState {
 			throws SlickException {
 		Entity.setCoarseGrainedCollisionBoundary(Entity.CIRCLE);
 		Rectangle worldBounds = new Rectangle(0, 0, container.getWidth()*2, container.getHeight()*2);
-		Rectangle screenBounds = new Rectangle(0, 0, container.getWidth(), container.getHeight());//new Rectangle(0, 0, container.getScreenWidth(), container.getScreenHeight());
+		Rectangle screenBounds = new Rectangle(0, 0, container.getWidth(), container.getHeight() - BOTTOM_UI_HEIGHT/2);//new Rectangle(0, 0, container.getScreenWidth(), container.getScreenHeight());
+    Rectangle bottomUiBounds = new Rectangle(0, 0, screenBounds.getWidth(), BOTTOM_UI_HEIGHT);
+    System.out.println(screenBounds.getHeight());
+    Vector bottomUiPosition = new Vector(screenBounds.getWidth()/4, BOTTOM_UI_HEIGHT);
+    ui = new Ui(bottomUiBounds, bottomUiPosition);
 		world = new World(worldBounds);
 		camera = new DebugCamera(screenBounds, worldBounds);
 		System.out.println("world size: " + worldBounds + ", screen size: " + screenBounds);
@@ -60,13 +66,13 @@ public class PlayingState extends BasicGameState {
     players.get(1).addTank(200, 400);
     players.get(1).addTank(800, 400);
     //end of test stub
-    PE_list.add(new AmmoPowerup(50, 200, Cannon.BIG_CANNON, 1));
 
     for (Player p: players){
       for (Tank t: p.getTanks()){
         PE_list.add(t);
       }
     }
+    ui.initPlayerUi(players);
     pIndex = 0;
     changePlayer();
 
@@ -110,15 +116,15 @@ public class PlayingState extends BasicGameState {
       Tank currentTank = players.get(pIndex).getTank();
       g.drawString("Active", currentTank.getX() - 20, currentTank.getY() + 30);
       g.drawString(Integer.toString(turnTimer/1000), currentTank.getX() - 40, currentTank.getY() + 30);
-      g.drawString(Integer.toString(players.get(pIndex).getAmmo()), currentTank.getX() + 40, currentTank.getY() + 30);
-      g.drawString("Fuel: " + Integer.toString(currentTank.getFuelPercentage()) + "%",
-          currentTank.getX(), currentTank.getY() + 60);
     }
-		
+
+    ui.renderInCam(g);
+
 		camera.renderDebugOverlay(g);
-		
+
 		g.popTransform();
 		// Render anything that shouldn't be transformed below here.
+    ui.renderOutCam(g);
 	}
 
 	@Override
@@ -167,6 +173,7 @@ public class PlayingState extends BasicGameState {
     PE.update(delta);
 		controlCamera(delta, input);
 		world.update(delta, PE, players);
+		ui.update(delta, players, players.get(pIndex));
 	}
 
   private void changePlayer() {
