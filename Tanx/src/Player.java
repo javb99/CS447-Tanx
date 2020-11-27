@@ -6,7 +6,6 @@ import java.util.*;
 public class Player {
   private ArrayList<Tank> tanks;
   private int tankIndex;
-  public boolean isDead;
   private Color playerColor;
   private int playerId;
   private ArrayList<Ammo> ammo;
@@ -16,7 +15,6 @@ public class Player {
   public Player(Color c, int id) {
     tanks = new ArrayList<Tank>();
     tankIndex = 0;
-    isDead = false;
     playerColor = c;
     playerId = id;
     ammo = new ArrayList<Ammo>();
@@ -29,6 +27,13 @@ public class Player {
     for (Tank tank : tanks) {
       tank.render(g);
     }
+  }
+
+
+  public Tank addTank(float x, float y) {
+	Tank t = new Tank(x, y, playerColor, this);
+    tanks.add(t);
+    return t;
   }
 
   public void giveAmmo(int type, int amount) {
@@ -73,17 +78,9 @@ public class Player {
     }
   }
 
-  public void addTank(float x, float y) {
-    tanks.add(new Tank(x, y, playerColor, this));
-    isDead = false;
-  }
-
   public void removeTank(Tank t) {
     if (tanks.contains(t)){
       tanks.remove(t);
-      if (tanks.isEmpty()){
-        isDead = true;
-      }
     } else {
       System.out.println("removeTankERROR: Tank not in this player!");
     }
@@ -115,12 +112,13 @@ public class Player {
   }
 
   public void update(int delta){
-    for (Tank t: tanks){t.update(delta);}
+    for (Tank t: tanks) { t.update(delta); }
+    tanks.removeIf((t) -> t.getIsDead());
   }
 
   public int tanksLeft(){return tanks.size();}
 
-  public boolean isDead() { return isDead; }
+  public boolean isDead() { return tanks.isEmpty(); }
 
   public ArrayList<Tank> getTanks() { return tanks; }
 

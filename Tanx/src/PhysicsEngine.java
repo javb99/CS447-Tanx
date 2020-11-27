@@ -1,6 +1,9 @@
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import jig.Collision;
+import jig.ConvexPolygon;
+import jig.Entity;
 import jig.Vector;
 
 interface CollisionHandler<A extends PhysicsEntity, B extends PhysicsEntity> {
@@ -50,6 +53,15 @@ public class PhysicsEngine {
 	public void removePhysicsEntity(PhysicsEntity e) {
     objects.remove(e);
   }
+	public void forEachEntityInCircle(Vector center, float radius, Consumer<PhysicsEntity> action) {
+	  Entity area = new Entity(center.getX(), center.getY());
+	  area.addShape(new ConvexPolygon(radius));
+	  objects.forEach((e) -> {
+	    if (area.collides(e) != null) {
+	      action.accept(e);
+	    }
+	  });
+	}
 	
 	public <A extends PhysicsEntity, B extends PhysicsEntity> 
 	void registerCollisionHandler(Class<A> aClass, Class<B> bClass, CollisionHandler<A,B> handler) {
@@ -103,7 +115,6 @@ public class PhysicsEngine {
 
 
 		translateEntity(e, delta);	//move the object
-    e.update(delta, world.terrain);
 	}
 	
 	private void applyCollisionDetection(int delta) {
@@ -115,14 +126,12 @@ public class PhysicsEngine {
 	      if (a == b) { continue; }
 	      checkCollision(delta, a, b);
 	    }
-	    checkTerrainCollision(delta, a);
+	    handlePotentialTerrainCollision(delta, a);
 	  }
   }
 	
-	private void checkTerrainCollision(int delta, PhysicsEntity entity) {
-	  float radius = entity.getCoarseGrainedRadius();
-	  Vector position = entity.getPosition();
-	  if (world.terrain.checkCircularCollision(position, radius)) {
+	private void handlePotentialTerrainCollision(int delta, PhysicsEntity entity) {
+	  if (entity.checkTerrainCollision(world.terrain)) {
 	    collisionHandlers.forEach(handler -> handler.handleCollision(entity, world.terrain, null));
 	    resolveCollision(delta, entity, world.terrain, null);
 	  }

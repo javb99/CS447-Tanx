@@ -15,12 +15,12 @@ public class Tank extends PhysicsEntity {
   public static final float ACCELERATION = .05f;
   public static final Vector ACCELERATION_JETS = new Vector(0, -.0015f);
 
-  //Tank Stats
-  private int health;
+  //Class Variables
   private float fuel;
   private Cannon cannon;
   private boolean onGround;
   private Player myPlayer;
+  private Healthbar healthbar;
 
 
   public Tank(final float x, final float y, Color c, Player player){
@@ -28,7 +28,7 @@ public class Tank extends PhysicsEntity {
     setVelocity(new Vector(0, 0));
     setAcceleration(new Vector(0,0));
 
-    setHealth(INIT_TANK_HEALTH);
+    healthbar = new Healthbar(INIT_TANK_HEALTH);
     cannon = new Cannon(x, y, Cannon.BASE_CANNON);
     myPlayer = player;
     this.addShape(new ConvexPolygon(64f, 32f), c, Color.red);
@@ -67,23 +67,26 @@ public class Tank extends PhysicsEntity {
     cannon.setX(this.getX());
     cannon.setY(this.getY());
     cannon.render(g);
+    float bottomSpacing = 20;
+    healthbar.render(g, this.getCoarseGrainedMaxY() + bottomSpacing, this.getX());
   }
   public void changeWeapon(int type){
     cannon.changeType(type);
   }
 
+  
   public void giveHealth(int amount) {
-    if (amount <= 0){System.out.println("Tank.giveHealthERROR: Attempted to give 0 or below health to a tank!"); return;}
-    health += amount;
-    if (health > MAX_TANK_HEALTH){
-      health = MAX_TANK_HEALTH;
-    }
+    healthbar.receiveHealth(amount);
   }
-
+  public void takeDamage(int amount) {
+    healthbar.receiveDamage(amount);
+  }
+  @Override
+  public boolean getIsDead() {
+    return healthbar.getIsDead();
+  }
+  
   //set/get functions
-  public void takeDmg(int dmg){ this.health -= dmg; }
-  public int getHealth() { return health; }
-  public void setHealth(int health) { this.health = health; }
   public void setOnGround(boolean onGround) { this.onGround = onGround; }
   public boolean isOnGround() { return onGround; }
   public Player getMyPlayer() { return myPlayer; }
