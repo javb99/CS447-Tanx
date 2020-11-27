@@ -14,7 +14,7 @@ import org.newdawn.slick.Color;
 import jig.Entity;
 import jig.Vector;
 
-enum phase {MOVEFIRE, FIRING, TURNCHANGE};
+enum phase {MOVEFIRE, FIRING, CHARGING, TURNCHANGE};
 
 public class PlayingState extends BasicGameState {
   static private int TURNLENGTH = 11*1000;
@@ -123,36 +123,50 @@ public class PlayingState extends BasicGameState {
 	public void update(GameContainer container, StateBasedGame game,
 			int delta) throws SlickException {
 		Input input = container.getInput();
+		Player player = players.get(pIndex);
 
     turnTimer -= delta;
-		if (state == phase.MOVEFIRE){ ;
-		  Tank currentTank = players.get(pIndex).getTank();
-		  if (turnTimer <= 0){
-		    changePlayer();
-      }
 
-      if (input.isKeyDown(Input.KEY_E)){
-        currentTank.rotate(Direction.RIGHT, delta);
-      } else if (input.isKeyDown(Input.KEY_Q)){
-        currentTank.rotate(Direction.LEFT, delta);
-      }
-      if (input.isKeyPressed(Input.KEY_C)){
-        players.get(pIndex).nextWeapon();
-      }
-      if (input.isKeyPressed(Input.KEY_Z)){
-        players.get(pIndex).prevWeapon();
-      }
-      if (input.isKeyPressed(Input.KEY_SPACE)){
-        activeProjectile = currentTank.fire(1);
+    if (state == phase.CHARGING) {
+      if (input.isKeyDown(Input.KEY_SPACE) && turnTimer > 0){
+        player.charging(delta);
+      } else {
+        activeProjectile = player.fire();
         PE.addPhysicsEntity(activeProjectile);
         camera.trackObject(activeProjectile);
         state = phase.FIRING;
         turnTimer = FIRING_TIMEOUT;
       }
+    }
+
+		if (state == phase.MOVEFIRE) { ;
+		  if (turnTimer <= 0){
+		    changePlayer();
+      }
+
+      if (input.isKeyDown(Input.KEY_E)) {
+        player.rotate(Direction.RIGHT, delta);
+      } else if (input.isKeyDown(Input.KEY_Q)){
+        player.rotate(Direction.LEFT, delta);
+      }
+      if (input.isKeyPressed(Input.KEY_C)) {
+        player.nextWeapon();
+      }
+      if (input.isKeyPressed(Input.KEY_Z)) {
+        player.prevWeapon();
+      }
+      if (input.isKeyDown(Input.KEY_SPACE)) {
+        state = phase.CHARGING;
+
+      }
+
     } else if(state == phase.FIRING) {
-      if (turnTimer <= 0) { camera.stopTracking(); changePlayer(); }
+      if (turnTimer <= 0) {
+        camera.stopTracking();
+        changePlayer();
+      }
+
     } if (state == phase.TURNCHANGE) {
-		  //For safety, timeout if there are issues-soft bug
         if(camera.getState() == camState.IDLE) {
           state = phase.MOVEFIRE;
         }
@@ -171,8 +185,7 @@ public class PlayingState extends BasicGameState {
     pIndex ++;
     if (pIndex >= players.size()){pIndex = 0;}
     Player currentPlayer = players.get(pIndex);
-    currentPlayer.getNextTank();
-    currentPlayer.checkWeapon();
+    currentPlayer.initTurn();
     camera.moveTo(currentPlayer.getTank().getPosition());
   }
 

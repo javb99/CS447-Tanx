@@ -32,7 +32,7 @@ public class Tank extends PhysicsEntity {
     this.addShape(new ConvexPolygon(64f, 32f), c, Color.red);
   }
 
-  public Projectile fire(int power){
+  public Projectile fire(float power){
     myPlayer.giveAmmo(cannon.getType(), -1);
     return cannon.fire(power);
   }

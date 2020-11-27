@@ -70,6 +70,7 @@ public class Cannon extends Entity {
   //output: projectile of the cannon's type on firing
   //onError: outputs null projectile
   public Projectile fire(float p){
+    System.out.println("Fired with: " + Float.toString(p) + " power!");
     if (power < 0) power = 0;
     float launchPower = p*power;
     double angle = Math.toRadians(rotationFactor + ANGLE_CORRECTION);
