@@ -7,6 +7,7 @@ This is a text file that provides what assets are inside the resources folder fo
 Tank sprites - Created by Henry Unruh
 Terrain tiles - Created by Henry Unruh
 Projectile sprites - Created by Henry Unruh
+Logo - Created by Henry Unruh
 
 //Audio/sounds
 Bow Fire - "Bow Fire Arrow Sound" by Stephan Schutze
@@ -23,3 +24,11 @@ LINK: http://soundbible.com/1771-Laser-Cannon.html
 
 Laser Machine Gun Fire - "Laser Machine Gun Sounds" by Mike Koenig
 LINK: http://soundbible.com/1774-Laser-Machine-Gun.html
+
+MUSIC - Album: Songs from an Unmade World 2,
+Artist - Visager
+Tanx! Theme/Main Menu Theme > Visager - Welcome Player[loop]
+Options Menu > Visager - Royal Entrance[loop]
+In-game music > Visager - Battle! [loop]
+
+LINK: https://freemusicarchive.org/music/Visager/Songs_From_An_Unmade_World_2#
