@@ -53,7 +53,7 @@ public class PlayingState extends BasicGameState {
     players = new ArrayList<Player>();
 
 
-    PlayerConfigurator PC = new PlayerConfigurator(container.getWidth()*2, 4, 2);
+    PlayerConfigurator PC = new PlayerConfigurator(container.getWidth()*2, 2, 1);
     players = PC.config();
     
 
@@ -86,9 +86,17 @@ public class PlayingState extends BasicGameState {
       if (projectile == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
       projectile.explode();
       int blastRadius = 64;
+      int damage = 50;
       Vector location = projectile.getPosition();
       explosionSystem.addExplosion(location, (float)blastRadius);
       world.terrain.setTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN);
+      
+      PE.forEachEntityInCircle(location, (float)blastRadius, (e) -> {
+        if (e instanceof Tank) {
+          Tank tank = (Tank)e;
+          tank.takeDamage(damage);
+        }
+      });
     });
     
     camera.toggleDebug();
@@ -111,6 +119,7 @@ public class PlayingState extends BasicGameState {
 		//placeholder, should put an arrow sprite pointing to currently active tank
     if (state == phase.MOVEFIRE){
       Tank currentTank = players.get(pIndex).getTank();
+      g.setColor(Color.white);
       g.drawString("Active", currentTank.getX() - 20, currentTank.getY() + 30);
       g.drawString(Integer.toString(turnTimer/1000), currentTank.getX() - 40, currentTank.getY() + 30);
       g.drawString(Integer.toString(players.get(pIndex).getAmmo()), currentTank.getX() + 40, currentTank.getY() + 30);
@@ -174,15 +183,29 @@ public class PlayingState extends BasicGameState {
 	}
 
   private void changePlayer() {
+    if (isGameOver()) {
+      System.out.println("Game is over!");
+      return;
+    }
     activeProjectile = null;
     state = phase.TURNCHANGE;
     turnTimer = TURNLENGTH;
-    pIndex ++;
-    if (pIndex >= players.size()){pIndex = 0;}
-    Player currentPlayer = players.get(pIndex);
+    Player currentPlayer;
+    do {
+      pIndex ++;
+      if (pIndex >= players.size()){pIndex = 0;}
+      currentPlayer = players.get(pIndex);
+    } while (currentPlayer.isDead());
     currentPlayer.getNextTank();
     currentPlayer.startTurn();
     camera.moveTo(currentPlayer.getTank().getPosition());
+  }
+  private boolean isGameOver() {
+    int livingPlayersCount = 0;
+    for (Player p : players) {
+      if (!p.isDead()) { livingPlayersCount++; }
+    }
+    return livingPlayersCount < 2;
   }
 
   private void controlCamera(int delta, Input input) {
