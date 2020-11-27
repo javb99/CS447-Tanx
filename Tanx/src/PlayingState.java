@@ -40,7 +40,6 @@ public class PlayingState extends BasicGameState {
 		Rectangle worldBounds = new Rectangle(0, 0, container.getWidth()*2, container.getHeight()*2);
 		Rectangle screenBounds = new Rectangle(0, 0, container.getWidth(), container.getHeight() - BOTTOM_UI_HEIGHT/2);//new Rectangle(0, 0, container.getScreenWidth(), container.getScreenHeight());
     Rectangle bottomUiBounds = new Rectangle(0, 0, screenBounds.getWidth(), BOTTOM_UI_HEIGHT);
-    System.out.println(screenBounds.getHeight());
     Vector bottomUiPosition = new Vector(screenBounds.getWidth()/4, BOTTOM_UI_HEIGHT);
     ui = new Ui(bottomUiBounds, bottomUiPosition);
 		world = new World(worldBounds);
@@ -129,8 +128,6 @@ public class PlayingState extends BasicGameState {
 			int delta) throws SlickException {
 		Input input = container.getInput();
 
-		System.out.println("turnTimer: " + Integer.toString(turnTimer));
-		System.out.println("state: " + state.toString());
     turnTimer -= delta;
 		if (state == phase.MOVEFIRE){ ;
 		  Tank currentTank = players.get(pIndex).getTank();
@@ -181,7 +178,6 @@ public class PlayingState extends BasicGameState {
 	}
 
   private void changePlayer() {
-
     activeProjectile = null;
     state = phase.TURNCHANGE;
     turnTimer = FIRING_TIMEOUT;
