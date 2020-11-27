@@ -5,8 +5,6 @@ import jig.Vector;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Rectangle;
-import org.pushingpixels.substance.api.colorscheme.OliveColorScheme;
-import org.w3c.dom.css.Rect;
 
 import java.util.ArrayList;
 
@@ -27,9 +25,9 @@ public class Ui {
     outCamUi.render(g);
   }
 
-  public void update(int delta, ArrayList<Player> players, Player currentPlayer){
+  public void update(int delta, Player currentPlayer, int turnTimer, phase state){
     inCamUi.update();
-    outCamUi.update(delta, currentPlayer);
+    outCamUi.update(delta, currentPlayer, turnTimer, state);
   }
 
   public void initPlayerUi(ArrayList<Player> players) {
@@ -76,29 +74,39 @@ class OutFocusUi {
     bottomUi.render(g);
   }
 
-  public void update(int delta, Player player){
-    bottomUi.update(delta, player);
+  public void update(int delta, Player player, int turnTimer, phase state){
+    bottomUi.update(delta, player,turnTimer, state );
   }
 }
 
 class BottomUi extends UiContainer{
-  final float JET_ELEMENT_MIN_ANGLE = -120f;
-  final float JET_ELEMENT_MAX_ANGLE = 120f;
-  final Vector fuelPosOffset = new Vector(100, 250);
-  final Vector weaponPosOffset = new Vector(200, 200);
+  final float JET_ELEMENT_MIN_ANGLE = -135;
+  final float JET_ELEMENT_MAX_ANGLE = 135f;
+  final float TIMER_ELEMENT_MIN_ANGLE = -135f;
+  final float TIMER_ELEMENT_MAX_ANGLE = 135f;
+  final Vector FUEL_POS_OFFSET = new Vector(800, 250);
+  final Vector WEP_POS_OFFSET = new Vector(200, 200);
+  final Vector TIMER_POS_OFFSET = new Vector(-100, 250);
+  final float GAUGE_SCALE = 1.5f;
   GaugeElement jetFuelElement;
   WeaponSelect weaponSelect;
+  GaugeElement timerElement;
 
   public BottomUi(Rectangle bounds, Vector pos){
     super(bounds, pos);
     Entity uiBack = new Entity(position.getX(), position.getY());
     uiBack.addShape(new ConvexPolygon(bounds.getWidth(), bounds.getHeight()), Color.black, Color.red);
     addEntity(uiBack, position);
-    Vector fuelPos = position.add(fuelPosOffset);
-    Vector weaponPos = position.add(weaponPosOffset);
+    Vector fuelPos = position.add(FUEL_POS_OFFSET);
+    Vector weaponPos = position.add(WEP_POS_OFFSET);
+    Vector timerPos = position.add(TIMER_POS_OFFSET);
     jetFuelElement = new GaugeElement(fuelPos, Tank.INIT_FUEL_BURNTIME,
-        JET_ELEMENT_MIN_ANGLE, JET_ELEMENT_MAX_ANGLE,Tanx.FUEL_GAUGE_OVERLAY, Tanx.Fuel_GAUGE_ARROW);
+        JET_ELEMENT_MIN_ANGLE, JET_ELEMENT_MAX_ANGLE,Tanx.FUEL_GAUGE_OVERLAY, Tanx.FUEL_GAUGE_ARROW);
+    jetFuelElement.setScale(GAUGE_SCALE);
     weaponSelect = new WeaponSelect(weaponPos);
+    timerElement = new GaugeElement(timerPos, PlayingState.TURNLENGTH,
+        TIMER_ELEMENT_MIN_ANGLE, TIMER_ELEMENT_MAX_ANGLE, Tanx.TIMER_GAUGE, Tanx.FUEL_GAUGE_ARROW);
+    timerElement.setScale(GAUGE_SCALE);
   }
 
   @Override
@@ -106,11 +114,15 @@ class BottomUi extends UiContainer{
     super.render(g);
     jetFuelElement.render(g);
     weaponSelect.render(g);
+    timerElement.render(g);
   }
 
-  public void update(int delta, Player player) {
+  public void update(int delta, Player player, int turnTimer, phase state) {
     jetFuelElement.setValue(player.getTank().getFuel());
     weaponSelect.update(delta, player);
+    if (state == phase.MOVEFIRE){
+      timerElement.setValue(turnTimer);
+    }
   }
 }
 
@@ -297,6 +309,11 @@ class GaugeElement extends StatusBarElement {
 
   private void setMinAngle(float minA) { minAngle = minA; }
   private void setMaxAngle(float maxA) { maxAngle = maxA; }
+
+  public void setScale(float gauge_scale) {
+    arrow.setScale(gauge_scale);
+    overlay.setScale(gauge_scale);
+  }
 }
 
 class StatusBarElement {

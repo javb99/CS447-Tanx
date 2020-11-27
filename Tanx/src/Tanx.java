@@ -1,18 +1,9 @@
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import jig.Entity;
 import jig.ResourceManager;
 
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
-
-import javax.naming.spi.ResolveResult;
 
 /**
  * A Simple Game of Tanx. (Skeleton leveraged from Bounce game.)
@@ -36,10 +27,11 @@ public class Tanx extends StateBasedGame {
 
 	public static final String BASIC_CANNON_SPRITE = "resource/cannon1.png";
 	public static final String FUEL_GAUGE_OVERLAY = "resource/FuelGauge.png";
-	public static final String Fuel_GAUGE_ARROW = "resource/FuelGaugeArrow.png";
+	public static final String FUEL_GAUGE_ARROW = "resource/FuelGaugeArrow.png";
 	public static final String WEAPON_POINTER = "resource/weaponPointer.png";
 	public static final String HEALTH_BAR = "resource/healthBar.png";
 	public static final String FOCUS_ARROW = "resource/tankPointer.png";
+	public static final String TIMER_GAUGE = "resource/timerGauge.png";
 
 	public final int ScreenWidth;
 	public final int ScreenHeight;
@@ -77,11 +69,12 @@ public class Tanx extends StateBasedGame {
 
 		// preload all the resources to avoid warnings & minimize latency...
 		//ex: ResourceManager.loadImage(BALL_BALLIMG_RSC);
-    ResourceManager.loadImage(Fuel_GAUGE_ARROW);
+    ResourceManager.loadImage(FUEL_GAUGE_ARROW);
     ResourceManager.loadImage(FUEL_GAUGE_OVERLAY);
     ResourceManager.loadImage(WEAPON_POINTER);
 		ResourceManager.loadImage(HEALTH_BAR);
 		ResourceManager.loadImage(FOCUS_ARROW);
+		ResourceManager.loadImage(TIMER_GAUGE);
 
 	}
 

@@ -17,7 +17,7 @@ import jig.Vector;
 enum phase {MOVEFIRE, FIRING, TURNCHANGE};
 
 public class PlayingState extends BasicGameState {
-  static public int TURNLENGTH = 11*1000;
+  static public int TURNLENGTH = 10*1000;
   static public int FIRING_TIMEOUT = 5*1000;
   static public int SHOTRESOLVE_TIMEOUT = 2*1000;
   static public int BOTTOM_UI_HEIGHT = 300;
@@ -115,9 +115,7 @@ public class PlayingState extends BasicGameState {
 
 		//placeholder, should put an arrow sprite pointing to currently active tank
     if (state == phase.MOVEFIRE){
-      Tank currentTank = players.get(pIndex).getTank();
       tankPointer.render(g);
-      g.drawString(Integer.toString(turnTimer/1000), currentTank.getX() - 40, currentTank.getY() + 30);
     }
 
     ui.renderInCam(g);
@@ -147,10 +145,10 @@ public class PlayingState extends BasicGameState {
       } else if (input.isKeyDown(Input.KEY_Q)){
         currentTank.rotate(Direction.LEFT, delta);
       }
-      if (input.isKeyPressed(Input.KEY_C)){
+      if (input.isKeyPressed(Input.KEY_F)){
         players.get(pIndex).nextWeapon();
       }
-      if (input.isKeyPressed(Input.KEY_Z)){
+      if (input.isKeyPressed(Input.KEY_R)){
         players.get(pIndex).prevWeapon();
       }
       if (input.isKeyDown(Input.KEY_LCONTROL)) {
@@ -176,7 +174,7 @@ public class PlayingState extends BasicGameState {
     PE.update(delta);
 		controlCamera(delta, input);
 		world.update(delta, PE, players);
-		ui.update(delta, players, players.get(pIndex));
+		ui.update(delta, players.get(pIndex), turnTimer, state);
 		tankPointer.update(delta);
 	}
 
