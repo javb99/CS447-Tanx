@@ -97,10 +97,6 @@ class UiContainer {
     }
   }
 
-  public void setContainerBounds(Rectangle r) {
-    containerBounds = r;
-  }
-
   public void render(Graphics g){
     for (Entity e: entities){ e.render(g); }
     for (UiContainer u: uiContainers) { u.render(g); }

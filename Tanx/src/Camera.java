@@ -162,9 +162,7 @@ public class Camera {
     }
     Vector move = velocity.scale(delta);
     if (move.length() >= dist){
-      state = camState.IDLE;
-      velocity = new Vector(0, 0);
-      setCenter(goalPosition);
+      stopMoving();
     } else {
       move(move);
     }
@@ -207,6 +205,11 @@ public class Camera {
 
   public camState getState() { return state; }
 
+  public void stopMoving() {
+    state = camState.IDLE;
+    velocity = new Vector(0, 0);
+    setCenter(goalPosition);
+  }
 }
 
 /// When debug is true, it shows the full world and an border for the viewport.

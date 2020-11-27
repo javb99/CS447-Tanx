@@ -129,6 +129,8 @@ public class PlayingState extends BasicGameState {
 			int delta) throws SlickException {
 		Input input = container.getInput();
 
+		System.out.println("turnTimer: " + Integer.toString(turnTimer));
+		System.out.println("state: " + state.toString());
     turnTimer -= delta;
 		if (state == phase.MOVEFIRE){ ;
 		  Tank currentTank = players.get(pIndex).getTank();
@@ -162,7 +164,10 @@ public class PlayingState extends BasicGameState {
       if (turnTimer <= 0) { camera.stopTracking(); changePlayer(); }
     } if (state == phase.TURNCHANGE) {
 		  //For safety, timeout if there are issues-soft bug
-        if(camera.getState() == camState.IDLE) {
+
+        if(camera.getState() == camState.IDLE || turnTimer <= 0) {
+          camera.stopMoving();
+          turnTimer = TURNLENGTH;
           state = phase.MOVEFIRE;
         }
     }
@@ -179,7 +184,7 @@ public class PlayingState extends BasicGameState {
 
     activeProjectile = null;
     state = phase.TURNCHANGE;
-    turnTimer = TURNLENGTH;
+    turnTimer = FIRING_TIMEOUT;
     pIndex ++;
     if (pIndex >= players.size()){pIndex = 0;}
     Player currentPlayer = players.get(pIndex);
