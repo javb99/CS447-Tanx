@@ -8,65 +8,10 @@ import org.newdawn.slick.geom.Rectangle;
 
 import java.util.ArrayList;
 
-public class Ui {
-  InFocusUi inCamUi;
-  OutFocusUi outCamUi;
-
-  public Ui(Rectangle bottomBounds, Vector bottomPostions){
-    inCamUi = new InFocusUi();
-    outCamUi = new OutFocusUi(bottomBounds, bottomPostions);
-  }
-
-  public void renderInCam(Graphics g){
-    inCamUi.render(g);
-  }
-
-  public void renderOutCam(Graphics g){
-    outCamUi.render(g);
-  }
-
-  public void update(int delta, Player currentPlayer, int turnTimer, phase state){
-    inCamUi.update();
-    outCamUi.update(delta, currentPlayer, turnTimer, state);
-  }
-
-  public void initPlayerUi(ArrayList<Player> players) {
-    //inCamUi.initTankHealthBars(players);
-  }
-}
-
-class InFocusUi {
-  //ArrayList<HealthBar> tankHealthBars;
-
-  public InFocusUi(){}
-
-  public void render(Graphics g){
-    //for (HealthBar h: tankHealthBars) { h.render(g); }
-  }
-
-/*  public void initTankHealthBars(ArrayList<Player> players){
-    tankHealthBars = new ArrayList<HealthBar>();
-    for (Player p: players){
-      for (Tank t: p.getTanks()){
-        tankHealthBars.add(new HealthBar(t.getPosition(), Tank.MAX_TANK_HEALTH, t));
-      }
-    }
-  }*/
-
-  public void update(){
-/*    for (HealthBar h: tankHealthBars) {
-      Tank t = (Tank) h.getOwner();
-      h.setPosition(t.getPosition());
-      h.setValue(t.getHealth());
-      h.update();
-    }*/
-  }
-}
-
-class OutFocusUi {
+class Ui {
   BottomUi bottomUi;
 
-  public OutFocusUi(Rectangle bottomUiBounds, Vector bottomUiPosition){
+  public Ui(Rectangle bottomUiBounds, Vector bottomUiPosition){
     bottomUi = new BottomUi(bottomUiBounds, bottomUiPosition);
   }
 
@@ -201,69 +146,6 @@ class WeaponSelect {
 
 }
 
-class HealthBar extends StatusBarElement{
-  final Vector BAR_OFFSET = new Vector(0, 40);
-  final float SCALE = .5f;
-  final float BAR_MAX_WIDTH = 100f;
-  final float BAR_MAX_HEIGHT = 30f;
-  private Entity overlay;
-  private Entity underLay;
-  private Entity bar;
-  private Entity owner;
-  private Vector barOffset;
-
-  public HealthBar(Vector pos, float maxHealth, Entity own){
-    super(pos, maxHealth);
-    owner = own;
-    overlay = new Entity(pos.getX(), pos.getY());
-    overlay.addImage(ResourceManager.getImage(Tanx.HEALTH_BAR));
-    overlay.setScale(SCALE);
-    underLay = new Entity(pos.getX(), pos.getY());
-    underLay.addShape(new ConvexPolygon(BAR_MAX_WIDTH, BAR_MAX_HEIGHT), Color.black, Color.black);
-    underLay.setScale(SCALE);
-    bar = new Entity(pos.getX(), pos.getY());
-    bar.setScale(SCALE);
-    barOffset = new Vector(0,0);
-  }
-
-  @Override
-  public void setValue(float val) {
-    super.setValue(val);
-    changeBarSize();
-  }
-
-  @Override
-  public void setPosition(Vector p) {
-    super.setPosition(p.add(BAR_OFFSET));
-  }
-
-  public void update(){
-    underLay.setPosition(position);
-    overlay.setPosition(position);
-    bar.setPosition(position.add(barOffset));
-  }
-
-  private void changeBarSize() {
-    ConvexPolygon barShape;
-    while (!bar.getShapes().isEmpty()){
-      bar.removeShape(bar.getShapes().getFirst());
-    }
-    float barWidth = BAR_MAX_WIDTH*(1 - value/maxValue);
-    float barXoffset = (BAR_MAX_WIDTH/2 - barWidth/2)*SCALE;
-    barOffset = new Vector(barXoffset, 0);
-    barShape = new ConvexPolygon(barWidth, BAR_MAX_HEIGHT);
-    bar.addShape(barShape, Color.black, Color.black);
-  }
-
-  public void render(Graphics g){
-    underLay.render(g);
-    overlay.render(g);
-    bar.render(g);
-  }
-
-  public Entity getOwner() { return owner; }
-}
-
 class GaugeElement extends StatusBarElement {
   private float maxAngle;
   private float minAngle;
@@ -338,8 +220,8 @@ class StatusBarElement {
   }
 
   private void checkValue() {
-    if (value > maxValue) { value = maxValue; }
-    if (value < 0) { value = 0; }
+    if (value > maxValue) { setValue(maxValue); }
+    if (value < 0) { setValue(0); }
   }
 
   public void setValue(float val) {

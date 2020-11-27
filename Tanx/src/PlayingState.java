@@ -74,7 +74,6 @@ public class PlayingState extends BasicGameState {
       }
     }
     tankPointer = new ActiveTankArrow(0, 0);
-    ui.initPlayerUi(players);
     pIndex = 0;
     changePlayer();
 
@@ -118,13 +117,11 @@ public class PlayingState extends BasicGameState {
       tankPointer.render(g);
     }
 
-    ui.renderInCam(g);
-
 		camera.renderDebugOverlay(g);
 
 		g.popTransform();
 		// Render anything that shouldn't be transformed below here.
-    ui.renderOutCam(g);
+    ui.render(g);
 	}
 
 	@Override
