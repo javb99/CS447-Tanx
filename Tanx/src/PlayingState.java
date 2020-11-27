@@ -31,6 +31,7 @@ public class PlayingState extends BasicGameState {
   Projectile activeProjectile;
   int pIndex;
   int turnTimer;
+  ActiveTankArrow tankPointer;
 
 	@Override
 	public void init(GameContainer container, StateBasedGame game)
@@ -72,6 +73,7 @@ public class PlayingState extends BasicGameState {
         PE_list.add(t);
       }
     }
+    tankPointer = new ActiveTankArrow(0, 0);
     ui.initPlayerUi(players);
     pIndex = 0;
     changePlayer();
@@ -114,7 +116,7 @@ public class PlayingState extends BasicGameState {
 		//placeholder, should put an arrow sprite pointing to currently active tank
     if (state == phase.MOVEFIRE){
       Tank currentTank = players.get(pIndex).getTank();
-      g.drawString("Active", currentTank.getX() - 20, currentTank.getY() + 30);
+      tankPointer.render(g);
       g.drawString(Integer.toString(turnTimer/1000), currentTank.getX() - 40, currentTank.getY() + 30);
     }
 
@@ -135,6 +137,7 @@ public class PlayingState extends BasicGameState {
     turnTimer -= delta;
 		if (state == phase.MOVEFIRE){ ;
 		  Tank currentTank = players.get(pIndex).getTank();
+		  tankPointer.pointTo(currentTank.getPosition());
 		  if (turnTimer <= 0){
 		    changePlayer();
       }
@@ -174,9 +177,11 @@ public class PlayingState extends BasicGameState {
 		controlCamera(delta, input);
 		world.update(delta, PE, players);
 		ui.update(delta, players, players.get(pIndex));
+		tankPointer.update(delta);
 	}
 
   private void changePlayer() {
+
     activeProjectile = null;
     state = phase.TURNCHANGE;
     turnTimer = TURNLENGTH;

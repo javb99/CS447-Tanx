@@ -39,6 +39,7 @@ public class Tanx extends StateBasedGame {
 	public static final String Fuel_GAUGE_ARROW = "resource/FuelGaugeArrow.png";
 	public static final String WEAPON_POINTER = "resource/weaponPointer.png";
 	public static final String HEALTH_BAR = "resource/healthBar.png";
+	public static final String FOCUS_ARROW = "resource/tankPointer.png";
 
 	public final int ScreenWidth;
 	public final int ScreenHeight;
@@ -80,6 +81,7 @@ public class Tanx extends StateBasedGame {
     ResourceManager.loadImage(FUEL_GAUGE_OVERLAY);
     ResourceManager.loadImage(WEAPON_POINTER);
 		ResourceManager.loadImage(HEALTH_BAR);
+		ResourceManager.loadImage(FOCUS_ARROW);
 
 	}
 
