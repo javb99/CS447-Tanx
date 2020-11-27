@@ -123,6 +123,8 @@ public class PlayingState extends BasicGameState {
       g.drawString("Active", currentTank.getX() - 20, currentTank.getY() + 30);
       g.drawString(Integer.toString(turnTimer/1000), currentTank.getX() - 40, currentTank.getY() + 30);
       g.drawString(Integer.toString(players.get(pIndex).getAmmo()), currentTank.getX() + 40, currentTank.getY() + 30);
+      g.drawString("Fuel: " + Integer.toString(currentTank.getFuelPercentage()) + "%",
+          currentTank.getX(), currentTank.getY() + 60);
     }
 		
 		camera.renderDebugOverlay(g);
@@ -153,6 +155,9 @@ public class PlayingState extends BasicGameState {
       }
       if (input.isKeyPressed(Input.KEY_Z)){
         players.get(pIndex).prevWeapon();
+      }
+      if (input.isKeyDown(Input.KEY_LCONTROL)) {
+        players.get(pIndex).getTank().jet(delta);
       }
       if (input.isKeyPressed(Input.KEY_SPACE)){
         activeProjectile = currentTank.fire(1);
@@ -192,7 +197,7 @@ public class PlayingState extends BasicGameState {
       currentPlayer = players.get(pIndex);
     } while (currentPlayer.isDead());
     currentPlayer.getNextTank();
-    currentPlayer.checkWeapon();
+    currentPlayer.startTurn();
     camera.moveTo(currentPlayer.getTank().getPosition());
   }
   private boolean isGameOver() {
