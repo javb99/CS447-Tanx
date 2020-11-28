@@ -169,7 +169,6 @@ public class PlayingState extends BasicGameState {
       if (turnTimer <= 0) { camera.stopTracking(); changePlayer(); }
     } if (state == phase.TURNCHANGE) {
 		  //For safety, timeout if there are issues-soft bug
-
         if(camera.getState() == camState.IDLE || turnTimer <= 0) {
           camera.stopMoving();
           turnTimer = TURNLENGTH;
@@ -203,6 +202,7 @@ public class PlayingState extends BasicGameState {
     currentPlayer.getNextTank();
     currentPlayer.startTurn();
     camera.moveTo(currentPlayer.getTank().getPosition());
+    tankPointer.pointTo(currentPlayer.getTank().getPosition());
   }
   private boolean isGameOver() {
     int livingPlayersCount = 0;

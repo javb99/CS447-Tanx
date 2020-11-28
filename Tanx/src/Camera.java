@@ -154,6 +154,7 @@ public class Camera {
 
   //camera smoothing code
   private void cameraMotionHandler(int delta){
+    final float MIN_CAMERA_VELOCITY = .5f;
     double dist = getDistToGoal();
     if (dist > distanceToGoal/2){
       velocity = velocity.scale(CAM_ACCELERATION);
@@ -161,6 +162,7 @@ public class Camera {
       velocity = velocity.scale(1/CAM_ACCELERATION);
     }
     Vector move = velocity.scale(delta);
+    if (move.length() <= MIN_CAMERA_VELOCITY){ move = move.setLength(MIN_CAMERA_VELOCITY); }
     if (move.length() >= dist){
       stopMoving();
     } else {
