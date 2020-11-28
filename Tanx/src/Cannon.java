@@ -10,9 +10,11 @@ public class Cannon extends Entity {
   public static float MAX_ROTATION_FACTOR = 90;
   public static float ANGLE_CORRECTION = -90;
   public static int BASE_CANNON = 0;
+  public static String BASE_CANNON_STR = "Basic Cannon";
   public static float BASE_CANNON_POWER = 1f;
   public static float BASE_CANNON_OFFSET = 50;
   public static int BIG_CANNON = 1;
+  public static String BIG_CANNON_STR = "Long Range Cannon";
   public static float BIG_CANNON_POWER = 1f;
   public static float BIG_CANNON_OFFSET = 50;
   //class variables
@@ -25,6 +27,12 @@ public class Cannon extends Entity {
     super(x,y);
     changeType(type);
     this.addShape(new ConvexPolygon(10f, 45f), Color.red, Color.blue);
+  }
+
+  public static String getTypeStr(int type) {
+    if (type == BIG_CANNON) { return BIG_CANNON_STR;
+    } else if (type == BASE_CANNON) { return BASE_CANNON_STR;
+    } else { return null; }
   }
 
   public void changeType(int newType){
