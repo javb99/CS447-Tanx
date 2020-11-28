@@ -139,7 +139,7 @@ public class PlayingState extends BasicGameState {
 
     turnTimer -= delta;
 		if (state == phase.MOVEFIRE){
-		  if (player.getTank().getVelocity().length() > 0) { camera.moveTo(player.getTank().getPosition()); }
+		  if (player.getTank().getVelocity().lengthSquared() > 0) { camera.moveTo(player.getTank().getPosition()); }
 		  Tank currentTank = players.get(pIndex).getTank();
 		  tankPointer.pointTo(currentTank.getPosition());
 		  if (turnTimer <= 0){
