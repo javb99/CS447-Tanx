@@ -137,9 +137,11 @@ public class PlayingState extends BasicGameState {
 	public void update(GameContainer container, StateBasedGame game,
 			int delta) throws SlickException {
 		Input input = container.getInput();
+		Player player = players.get(pIndex);
 
     turnTimer -= delta;
-		if (state == phase.MOVEFIRE){ ;
+		if (state == phase.MOVEFIRE){
+		  if (player.getTank().getVelocity().length() > 0) { camera.moveTo(player.getTank().getPosition()); }
 		  Tank currentTank = players.get(pIndex).getTank();
 		  if (turnTimer <= 0){
 		    changePlayer();
