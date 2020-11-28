@@ -25,12 +25,12 @@ public class Tanx extends StateBasedGame {
 	public static final int PLAYINGSTATE = 1;
 	public static final int GAMEOVERSTATE = 2;
 
-	public static final String FUEL_GAUGE_OVERLAY = "resource/FuelGauge.png";
-	public static final String FUEL_GAUGE_ARROW = "resource/FuelGaugeArrow.png";
-	public static final String WEAPON_POINTER = "resource/weaponPointer.png";
-	public static final String HEALTH_BAR = "resource/healthBar.png";
-	public static final String FOCUS_ARROW = "resource/tankPointer.png";
-	public static final String TIMER_GAUGE = "resource/timerGauge.png";
+	public static final String FUEL_GAUGE_OVERLAY = "resources/FuelGauge.png";
+	public static final String FUEL_GAUGE_ARROW = "resources/FuelGaugeArrow.png";
+	public static final String WEAPON_POINTER = "resources/weaponPointer.png";
+	public static final String HEALTH_BAR = "resources/healthBar.png";
+	public static final String FOCUS_ARROW = "resources/tankPointer.png";
+	public static final String TIMER_GAUGE = "resources/timerGauge.png";
 	public static final String BANG_EXPLOSIONIMG_RSC = "resources/explosion.png";
 	public static final String BANG_EXPLOSIONSND_RSC = "resources/explosion.wav";
 	public final int ScreenWidth;
