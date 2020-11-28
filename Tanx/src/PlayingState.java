@@ -17,11 +17,13 @@ import jig.Vector;
 enum phase {MOVEFIRE, FIRING, TURNCHANGE};
 
 public class PlayingState extends BasicGameState {
-  static private int TURNLENGTH = 11*1000;
-  static private int FIRING_TIMEOUT = 5*1000;
-  static private int SHOTRESOLVE_TIMEOUT = 2*1000;
+  static public int TURNLENGTH = 10*1000;
+  static public int FIRING_TIMEOUT = 5*1000;
+  static public int SHOTRESOLVE_TIMEOUT = 2*1000;
+  static public int BOTTOM_UI_HEIGHT = 300;
 	World world;
 	DebugCamera camera;
+	Ui ui;
   ArrayList<PhysicsEntity> PE_list;
   PhysicsEngine PE;
   ArrayList<Player> players;
@@ -30,13 +32,17 @@ public class PlayingState extends BasicGameState {
   Projectile activeProjectile;
   int pIndex;
   int turnTimer;
+  ActiveTankArrow tankPointer;
 
 	@Override
 	public void init(GameContainer container, StateBasedGame game)
 			throws SlickException {
 		Entity.setCoarseGrainedCollisionBoundary(Entity.CIRCLE);
 		Rectangle worldBounds = new Rectangle(0, 0, container.getWidth()*2, container.getHeight()*2);
-		Rectangle screenBounds = new Rectangle(0, 0, container.getWidth(), container.getHeight());//new Rectangle(0, 0, container.getScreenWidth(), container.getScreenHeight());
+		Rectangle screenBounds = new Rectangle(0, 0, container.getWidth(), container.getHeight() - BOTTOM_UI_HEIGHT/2);//new Rectangle(0, 0, container.getScreenWidth(), container.getScreenHeight());
+    Rectangle bottomUiBounds = new Rectangle(0, 0, screenBounds.getWidth(), BOTTOM_UI_HEIGHT);
+    Vector bottomUiPosition = new Vector(screenBounds.getWidth()/4, BOTTOM_UI_HEIGHT);
+    ui = new Ui(bottomUiBounds, bottomUiPosition);
 		world = new World(worldBounds);
 		camera = new DebugCamera(screenBounds, worldBounds);
 		System.out.println("world size: " + worldBounds + ", screen size: " + screenBounds);
@@ -52,19 +58,15 @@ public class PlayingState extends BasicGameState {
 
     players = new ArrayList<Player>();
 
-
     PlayerConfigurator PC = new PlayerConfigurator(container.getWidth()*2, 2, 1);
     players = PC.config();
-    
-
-    PE_list.add(new AmmoPowerup(50, 200, Cannon.BIG_CANNON, 1));
-
 
     for (Player p: players){
       for (Tank t: p.getTanks()){
         PE_list.add(t);
       }
     }
+    tankPointer = new ActiveTankArrow(0, 0);
     pIndex = 0;
     changePlayer();
 
@@ -118,19 +120,15 @@ public class PlayingState extends BasicGameState {
 
 		//placeholder, should put an arrow sprite pointing to currently active tank
     if (state == phase.MOVEFIRE){
+      tankPointer.render(g);
       Tank currentTank = players.get(pIndex).getTank();
-      g.setColor(Color.white);
-      g.drawString("Active", currentTank.getX() - 20, currentTank.getY() + 30);
-      g.drawString(Integer.toString(turnTimer/1000), currentTank.getX() - 40, currentTank.getY() + 30);
-      g.drawString(Integer.toString(players.get(pIndex).getAmmo()), currentTank.getX() + 40, currentTank.getY() + 30);
-      g.drawString("Fuel: " + Integer.toString(currentTank.getFuelPercentage()) + "%",
-          currentTank.getX(), currentTank.getY() + 60);
     }
-		
+
 		camera.renderDebugOverlay(g);
-		
+
 		g.popTransform();
 		// Render anything that shouldn't be transformed below here.
+    ui.render(g);
 	}
 
 	@Override
@@ -141,6 +139,7 @@ public class PlayingState extends BasicGameState {
     turnTimer -= delta;
 		if (state == phase.MOVEFIRE){ ;
 		  Tank currentTank = players.get(pIndex).getTank();
+		  tankPointer.pointTo(currentTank.getPosition());
 		  if (turnTimer <= 0){
 		    changePlayer();
       }
@@ -150,10 +149,10 @@ public class PlayingState extends BasicGameState {
       } else if (input.isKeyDown(Input.KEY_Q)){
         currentTank.rotate(Direction.LEFT, delta);
       }
-      if (input.isKeyPressed(Input.KEY_C)){
+      if (input.isKeyPressed(Input.KEY_F)){
         players.get(pIndex).nextWeapon();
       }
-      if (input.isKeyPressed(Input.KEY_Z)){
+      if (input.isKeyPressed(Input.KEY_R)){
         players.get(pIndex).prevWeapon();
       }
       if (input.isKeyDown(Input.KEY_LCONTROL)) {
@@ -170,7 +169,9 @@ public class PlayingState extends BasicGameState {
       if (turnTimer <= 0) { camera.stopTracking(); changePlayer(); }
     } if (state == phase.TURNCHANGE) {
 		  //For safety, timeout if there are issues-soft bug
-        if(camera.getState() == camState.IDLE) {
+        if(camera.getState() == camState.IDLE || turnTimer <= 0) {
+          camera.stopMoving();
+          turnTimer = TURNLENGTH;
           state = phase.MOVEFIRE;
         }
     }
@@ -180,6 +181,8 @@ public class PlayingState extends BasicGameState {
     PE.update(delta);
 		controlCamera(delta, input);
 		world.update(delta, PE, players);
+		ui.update(delta, players.get(pIndex), turnTimer, state);
+		tankPointer.update(delta);
 	}
 
   private void changePlayer() {
@@ -189,7 +192,7 @@ public class PlayingState extends BasicGameState {
     }
     activeProjectile = null;
     state = phase.TURNCHANGE;
-    turnTimer = TURNLENGTH;
+    turnTimer = FIRING_TIMEOUT;
     Player currentPlayer;
     do {
       pIndex ++;
@@ -199,6 +202,7 @@ public class PlayingState extends BasicGameState {
     currentPlayer.getNextTank();
     currentPlayer.startTurn();
     camera.moveTo(currentPlayer.getTank().getPosition());
+    tankPointer.pointTo(currentPlayer.getTank().getPosition());
   }
   private boolean isGameOver() {
     int livingPlayersCount = 0;
