@@ -134,14 +134,19 @@ public class Camera {
   }
 
   public void trackObject(Entity e){
-    if (state != camState.IDLE) {
-      System.out.println("camera.trackObjectERROR: Tried to track an object while not in IDLE state!");
-      return;
-    }
+    cleanCameraState();
     trackedObject = e;
     startTrackHeight = e.getY();
     startTrackZoom = getZoom();
     state = camState.TRACKING;
+  }
+
+  private void cleanCameraState() {
+    if (state == camState.TRACKING) {
+      stopTracking();
+    } else if (state == camState.MOVING) {
+      stopMoving();
+    }
   }
 
   public void stopTracking(){
@@ -162,12 +167,19 @@ public class Camera {
       velocity = velocity.scale(1/CAM_ACCELERATION);
     }
     Vector move = velocity.scale(delta);
+
     if (move.length() <= MIN_CAMERA_VELOCITY){ move = move.setLength(MIN_CAMERA_VELOCITY); }
-    if (move.length() >= dist){
+    if (move.length() >= dist || Float.isNaN(move.getX()) || Float.isNaN(move.getY())){
       stopMoving();
+      setCenter(goalPosition);
     } else {
       move(move);
     }
+  }
+
+  private void stopMoving() {
+    state = camState.IDLE;
+    velocity = new Vector(0, 0);
   }
 
   private double getDistToGoal() {
@@ -181,7 +193,7 @@ public class Camera {
   }
 
   public void moveTo(Vector position){
-    if (state != camState.IDLE) {System.out.println("camera.moveToERROR: Tried to move the camera while not in IDLE state!"); return;}
+    cleanCameraState();
     goalPosition = position;
     clampGoal();
     if (goalPosition == center){ return; }
