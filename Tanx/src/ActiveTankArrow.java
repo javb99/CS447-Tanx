@@ -10,7 +10,6 @@ public class ActiveTankArrow extends Entity {
   public static float SCALE = .8f;
 
   private Vector target;
-  private Vector velocity;
   private float timer;
 
   public ActiveTankArrow(final float x, final float y){
