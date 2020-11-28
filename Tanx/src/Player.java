@@ -7,7 +7,6 @@ public class Player {
   public static float TIME_TO_CHARGE = 1*1000;
   private ArrayList<Tank> tanks;
   private int tankIndex;
-  public boolean isDead;
   private Color playerColor;
   private int playerId;
   private ArrayList<Ammo> ammo;
@@ -19,7 +18,6 @@ public class Player {
   public Player(Color c, int id) {
     tanks = new ArrayList<Tank>();
     tankIndex = 0;
-    isDead = false;
     playerColor = c;
     playerId = id;
     ammo = new ArrayList<Ammo>();
@@ -29,17 +27,17 @@ public class Player {
     maxChargedPower = TIME_TO_CHARGE;
   }
 
-  public void initTurn() {
-    getNextTank();
-    checkWeapon();
-    chargedPower = 0;
-    chargeRising = true;
-  }
-
   public void render(Graphics g){
     for (Tank tank : tanks) {
       tank.render(g);
     }
+  }
+
+
+  public Tank addTank(float x, float y) {
+	Tank t = new Tank(x, y, playerColor, this);
+    tanks.add(t);
+    return t;
   }
 
   public void giveAmmo(int type, int amount) {
@@ -73,7 +71,15 @@ public class Player {
     tanks.get(tankIndex).changeWeapon(ammo.get(ammoIndex).type);
   }
 
-  public void checkWeapon() {
+  public void startTurn() {
+    getNextTank();
+    chargedPower = 0;
+    chargeRising = true;
+    checkWeapon();
+    tanks.get(tankIndex).setFuel(Tank.INIT_FUEL_BURNTIME);
+  }
+  
+  private void checkWeapon(){
     if (ammo.get(ammoIndex).amount == 0){
       nextWeapon();
     } else {
@@ -81,17 +87,9 @@ public class Player {
     }
   }
 
-  public void addTank(float x, float y) {
-    tanks.add(new Tank(x, y, playerColor, this));
-    isDead = false;
-  }
-
   public void removeTank(Tank t) {
     if (tanks.contains(t)){
       tanks.remove(t);
-      if (tanks.isEmpty()){
-        isDead = true;
-      }
     } else {
       System.out.println("removeTankERROR: Tank not in this player!");
     }
@@ -147,12 +145,13 @@ public class Player {
   }
 
   public void update(int delta){
-    for (Tank t: tanks){t.update(delta);}
+    for (Tank t: tanks) { t.update(delta); }
+    tanks.removeIf((t) -> t.getIsDead());
   }
 
   public int tanksLeft(){return tanks.size();}
 
-  public boolean isDead() { return isDead; }
+  public boolean isDead() { return tanks.isEmpty(); }
 
   public ArrayList<Tank> getTanks() { return tanks; }
 
