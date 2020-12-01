@@ -63,10 +63,10 @@ class BottomUi extends UiContainer{
   }
 
   public void update(int delta, Player player, int turnTimer, phase state) {
-    jetFuelElement.setValue(player.getTank().getFuel());
-    weaponSelect.update(delta, player);
-    if (state == phase.MOVEFIRE){
+    if (state == phase.MOVEFIRE) {
       timerElement.setValue(turnTimer);
+      jetFuelElement.setValue(player.getTank().getFuel());
+      weaponSelect.update(delta, player);
     }
   }
 }

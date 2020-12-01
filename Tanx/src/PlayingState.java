@@ -1,20 +1,21 @@
 import java.awt.*;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.newdawn.slick.GameContainer;
+import jig.ResourceManager;
+import org.newdawn.slick.*;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.Color;
 
 import jig.Entity;
 import jig.Vector;
 
-enum phase {MOVEFIRE, FIRING, TURNCHANGE};
+enum phase {MOVEFIRE, FIRING, TURNCHANGE, GAMEOVER};
 
 public class PlayingState extends BasicGameState {
   static public int TURNLENGTH = 10*1000;
@@ -37,23 +38,24 @@ public class PlayingState extends BasicGameState {
 	@Override
 	public void init(GameContainer container, StateBasedGame game)
 			throws SlickException {
-		Entity.setCoarseGrainedCollisionBoundary(Entity.CIRCLE);
-		Rectangle worldBounds = new Rectangle(0, 0, container.getWidth()*2, container.getHeight()*2);
-		Rectangle screenBounds = new Rectangle(0, 0, container.getWidth(), container.getHeight() - BOTTOM_UI_HEIGHT/2);//new Rectangle(0, 0, container.getScreenWidth(), container.getScreenHeight());
-    Rectangle bottomUiBounds = new Rectangle(0, 0, screenBounds.getWidth(), BOTTOM_UI_HEIGHT);
-    Vector bottomUiPosition = new Vector(screenBounds.getWidth()/4, BOTTOM_UI_HEIGHT);
-    ui = new Ui(bottomUiBounds, bottomUiPosition);
-		world = new World(worldBounds);
-		camera = new DebugCamera(screenBounds, worldBounds);
-		System.out.println("world size: " + worldBounds + ", screen size: " + screenBounds);
-		world.loadLevel("YAY");
-		explosionSystem = new ExplosionSystem();
+    Entity.setCoarseGrainedCollisionBoundary(Entity.CIRCLE);
 	}
 	
 	@Override
   public void enter(GameContainer container, StateBasedGame game)
     throws SlickException {
-    
+
+    Rectangle worldBounds = new Rectangle(0, 0, container.getWidth()*2, container.getHeight()*2);
+    Rectangle screenBounds = new Rectangle(0, 0, container.getWidth(), container.getHeight() - BOTTOM_UI_HEIGHT/2);//new Rectangle(0, 0, container.getScreenWidth(), container.getScreenHeight());
+    Rectangle bottomUiBounds = new Rectangle(0, 0, screenBounds.getWidth(), BOTTOM_UI_HEIGHT);
+    Vector bottomUiPosition = new Vector(screenBounds.getWidth()/4, BOTTOM_UI_HEIGHT);
+    ui = new Ui(bottomUiBounds, bottomUiPosition);
+    world = new World(worldBounds);
+    camera = new DebugCamera(screenBounds, worldBounds);
+    System.out.println("world size: " + worldBounds + ", screen size: " + screenBounds);
+    world.loadLevel("YAY");
+    explosionSystem = new ExplosionSystem();
+
     PE_list = new ArrayList<PhysicsEntity>();
 
     players = new ArrayList<Player>();
@@ -115,13 +117,12 @@ public class PlayingState extends BasicGameState {
 
     world.terrain.render(g);
 		PE_list.forEach((e)->e.render(g));
-		players.forEach((t) ->t.render(g));
+		players.forEach((p) ->p.render(g));
 		explosionSystem.render(g);
 
 		//placeholder, should put an arrow sprite pointing to currently active tank
     if (state == phase.MOVEFIRE){
       tankPointer.render(g);
-      Tank currentTank = players.get(pIndex).getTank();
     }
 
 		camera.renderDebugOverlay(g);
@@ -129,23 +130,70 @@ public class PlayingState extends BasicGameState {
 		g.popTransform();
 		// Render anything that shouldn't be transformed below here.
     ui.render(g);
+    if (state == phase.GAMEOVER) {
+      renderGameOver(g, bg);
+    }
 	}
 
-	@Override
+  private void renderGameOver(Graphics g, Tanx bg) {
+	  final int NO_WINNER_ID = -1;
+	  final float GAME_OVER_X = bg.ScreenWidth/2 - 200;
+	  final float GAME_OVER_Y = 0;
+    final float RESET_OFFSETX = 0;
+    final float RESET_OFFSETY = 100;
+    final float IMG_SCALE = 2f;
+
+
+    //setup gameover screen
+    Image playerWinImg;
+    int winningPlayer = NO_WINNER_ID;
+    if (players.size() < 1) { winningPlayer = players.get(0).getPlayerId(); }
+    switch(players.get(0).getPlayerId()) {
+      case 1:
+        playerWinImg = ResourceManager.getImage(Tanx.PLAYER_WIN_1);
+        break;
+      case 2:
+        playerWinImg = ResourceManager.getImage(Tanx.PLAYER_WIN_2);
+        break;
+      case 3:
+        playerWinImg = ResourceManager.getImage(Tanx.PLAYER_WIN_3);
+        break;
+      case 4:
+        playerWinImg = ResourceManager.getImage(Tanx.PLAYER_WIN_4);
+        break;
+      default:
+        playerWinImg = ResourceManager.getImage(Tanx.NO_WINNER_MSG);
+    }
+    g.drawImage(playerWinImg.getScaledCopy(IMG_SCALE), GAME_OVER_X, GAME_OVER_Y);
+    g.drawImage(ResourceManager.getImage(Tanx.RESET_MSG), GAME_OVER_X + RESET_OFFSETX, GAME_OVER_Y + RESET_OFFSETY);
+  }
+
+  @Override
 	public void update(GameContainer container, StateBasedGame game,
 			int delta) throws SlickException {
+	  Tanx tg = (Tanx)game;
 		Input input = container.getInput();
 		Player player = players.get(pIndex);
 
     turnTimer -= delta;
-		if (state == phase.MOVEFIRE){
-		  if (player.getTank().getVelocity().lengthSquared() > 0) { camera.moveTo(player.getTank().getPosition()); }
-		  Tank currentTank = players.get(pIndex).getTank();
-		  tankPointer.pointTo(currentTank.getPosition());
-		  if (turnTimer <= 0){
-		    changePlayer();
-      }
+    updateState(input, player, delta, tg);
+    explosionSystem.update(delta);
+		for(Player p: players){p.update(delta);}
+    PE.update(delta);
+		controlCamera(delta, input);
+		world.update(delta, PE, players);
+		ui.update(delta, players.get(pIndex), turnTimer, state);
+		tankPointer.update(delta);
+	}
 
+  private void updateState(Input input, Player player, int delta, Tanx tg) {
+    if (state == phase.MOVEFIRE){
+      if (player.getTank().getVelocity().lengthSquared() > 0) { camera.moveTo(player.getTank().getPosition()); }
+      Tank currentTank = players.get(pIndex).getTank();
+      tankPointer.pointTo(currentTank.getPosition());
+      if (turnTimer <= 0){
+        changePlayer();
+      }
       if (input.isKeyDown(Input.KEY_E)){
         currentTank.rotate(Direction.RIGHT, delta);
       } else if (input.isKeyDown(Input.KEY_Q)){
@@ -169,26 +217,21 @@ public class PlayingState extends BasicGameState {
       }
     } else if(state == phase.FIRING) {
       if (turnTimer <= 0) { camera.stopTracking(); changePlayer(); }
-    } if (state == phase.TURNCHANGE) {
-		  //For safety, timeout if there are issues-soft bug
-        if(camera.getState() == camState.IDLE || turnTimer <= 0) {
-          camera.stopMoving();
-          turnTimer = TURNLENGTH;
-          state = phase.MOVEFIRE;
-        }
+    } else if (state == phase.TURNCHANGE) {
+        turnTimer = TURNLENGTH;
+        state = phase.MOVEFIRE;
+    } else if (state == phase.GAMEOVER) {
+      if (input.isKeyPressed(Input.KEY_SPACE)) {
+        tg.enterState(Tanx.STARTUPSTATE);
+      }
     }
-    
-    explosionSystem.update(delta);
-		for(Player p: players){p.update(delta);}
-    PE.update(delta);
-		controlCamera(delta, input);
-		world.update(delta, PE, players);
-		ui.update(delta, players.get(pIndex), turnTimer, state);
-		tankPointer.update(delta);
-	}
+  }
 
   private void changePlayer() {
     if (isGameOver()) {
+      state = phase.GAMEOVER;
+      camera.setZoom(.1f);
+      turnTimer = TURNLENGTH;
       System.out.println("Game is over!");
       return;
     }

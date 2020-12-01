@@ -129,4 +129,6 @@ public class Player {
   public int getAmmoIndex() { return ammoIndex; }
 
   public int getCurrentAmmo() { return ammo.get(ammoIndex).type; }
+
+  public int getPlayerId() { return playerId; }
 }
