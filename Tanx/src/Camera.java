@@ -177,7 +177,7 @@ public class Camera {
     }
   }
 
-  private void stopMoving() {
+  public void stopMoving() {
     state = camState.IDLE;
     velocity = new Vector(0, 0);
   }
@@ -219,11 +219,6 @@ public class Camera {
 
   public camState getState() { return state; }
 
-  public void stopMoving() {
-    state = camState.IDLE;
-    velocity = new Vector(0, 0);
-    setCenter(goalPosition);
-  }
 }
 
 /// When debug is true, it shows the full world and an border for the viewport.
