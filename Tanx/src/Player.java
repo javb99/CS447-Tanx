@@ -130,7 +130,7 @@ public class Player {
   }
 
   public Projectile fire(){
-    return getTank().fire(chargedPower/1000);
+    return getTank().fire(chargedPower/TIME_TO_CHARGE);
   }
 
   public void getPrevTank() {
