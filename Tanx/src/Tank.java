@@ -7,7 +7,7 @@ enum Direction {LEFT, RIGHT};
 
 public class Tank extends PhysicsEntity {
   //Constants
-  public static final int INIT_TANK_HEALTH = 100;
+  public static final int INIT_TANK_HEALTH = 90;
   public static final int MAX_TANK_HEALTH = 100;
   public static final float INIT_FUEL_BURNTIME = 2*1000;
   public static final float TANK_MOVE_SPEED = .2f;
