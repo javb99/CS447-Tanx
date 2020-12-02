@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
 
@@ -12,7 +13,7 @@ public class PlayerConfigurator {
 	private final float TANK_SPACING = 50;
 	
 	private final float spawnWidth;
-	private boolean spawns[];
+	private ArrayList<Integer> spawns;
 	
 	private int width;
 
@@ -29,7 +30,10 @@ public class PlayerConfigurator {
 		if(this.numPlayers < 2) this.numPlayers = 2;
 		
 		spawnWidth = width / (this.numPlayers*this.numTanks);
-		spawns = new boolean[this.numPlayers*this.numTanks];
+		spawns = new ArrayList<Integer>();
+		for(int i = 0; i < this.numPlayers*this.numTanks; i++) {
+			spawns.add(new Integer(i));
+		}
 	}
 	
 	public void setNumPlayers(int p) {
@@ -54,23 +58,21 @@ public class PlayerConfigurator {
 			Player p = new Player(colors[i-1], i);
 			
 			while(p.getTanks().size() < numTanks) {
-				nextSpawn = rand.nextInt(numPlayers*numTanks);
-				while(spawns[nextSpawn]) {
-					nextSpawn = rand.nextInt(numPlayers*numTanks);
-				}
+				Collections.shuffle(spawns);
+				nextSpawn = spawns.get(0);
+				
 				Tank t = p.addTank(rand.nextFloat()*spawnWidth + nextSpawn*spawnWidth, 50);
-				while(t.getCoarseGrainedMinX() < EDGE_SPACING) {
-					t.translate(new Vector(1, 0));
+				if(t.getCoarseGrainedMinX() < EDGE_SPACING) {
+					t.translate(new Vector(t.getCoarseGrainedMinX() + EDGE_SPACING, 0));
 				}
-				while(t.getCoarseGrainedMaxX() > width - EDGE_SPACING) {
-					t.translate(new Vector(-1, 0));
+				if(t.getCoarseGrainedMaxX() > width - EDGE_SPACING) {
+					t.translate(new Vector(t.getCoarseGrainedMaxX() - EDGE_SPACING, 0));
 				}
 				if(!checkIfOpen(t, tankList)) {
 					p.removeTank(t);
 				} else {
 					tankList.add(t);
-					spawns[nextSpawn] = true;
-					System.out.println(t.getPosition());
+					spawns.remove(0);
 				}
 			}
 			
