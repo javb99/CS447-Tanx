@@ -15,6 +15,7 @@ enum phase {MOVEFIRE, FIRING, CHARGING, TURNCHANGE, GAMEOVER};
 public class PlayingState extends BasicGameState {
   final int NO_WINNER_ID = -1;
   static public int TURNLENGTH = 10*1000;
+  static public int INPUT_TIMER_CD = 500;
   static public int FIRING_TIMEOUT = 5*1000;
   static public int SHOTRESOLVE_TIMEOUT = 2*1000;
   static public int BOTTOM_UI_HEIGHT = 300;
@@ -30,6 +31,7 @@ public class PlayingState extends BasicGameState {
   int pIndex;
   int turnTimer;
   ActiveTankArrow tankPointer;
+  int cleanInputTimer;
 
 	@Override
 	public void init(GameContainer container, StateBasedGame game)
@@ -185,9 +187,18 @@ public class PlayingState extends BasicGameState {
 		world.update(delta, PE, players);
 		ui.update(delta, players.get(pIndex), turnTimer, state);
 		tankPointer.update(delta);
+		cleanInputHandler(delta, input);
 	}
 
-  private void updateState(Input input, Player player, int delta, Tanx tg) {    
+  private void cleanInputHandler(int delta, Input input) {
+	  cleanInputTimer += delta;
+	  if (cleanInputTimer <= INPUT_TIMER_CD) {
+	    input.clearKeyPressedRecord();
+	    cleanInputTimer = 0;
+    }
+  }
+
+  private void updateState(Input input, Player player, int delta, Tanx tg) {
     if (state == phase.CHARGING) {
       if (input.isKeyDown(Input.KEY_SPACE) && turnTimer > 0){
         player.charging(delta);
@@ -235,6 +246,7 @@ public class PlayingState extends BasicGameState {
     } else if (state == phase.GAMEOVER) {
       if (input.isKeyPressed(Input.KEY_SPACE)) {
         tg.enterState(Tanx.STARTUPSTATE);
+        input.clearKeyPressedRecord();
       }
     }
   }
