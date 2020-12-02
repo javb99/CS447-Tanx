@@ -25,6 +25,7 @@ public class Tanx extends StateBasedGame {
 	public static final int PLAYINGSTATE = 1;
 	public static final int GAMEOVERSTATE = 2;
 
+	public static final String POWER_GAUGE_OVERLAY = "resources/PowerGauge.png";
 	public static final String FUEL_GAUGE_OVERLAY = "resources/FuelGauge.png";
 	public static final String FUEL_GAUGE_ARROW = "resources/FuelGaugeArrow.png";
 	public static final String WEAPON_POINTER = "resources/weaponPointer.png";
@@ -70,6 +71,7 @@ public class Tanx extends StateBasedGame {
 		//ex: ResourceManager.loadImage(BALL_BALLIMG_RSC);
     ResourceManager.loadImage(FUEL_GAUGE_ARROW);
     ResourceManager.loadImage(FUEL_GAUGE_OVERLAY);
+    ResourceManager.loadImage(POWER_GAUGE_OVERLAY);
     ResourceManager.loadImage(WEAPON_POINTER);
 		ResourceManager.loadImage(HEALTH_BAR);
 		ResourceManager.loadImage(FOCUS_ARROW);

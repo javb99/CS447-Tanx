@@ -10,7 +10,7 @@ import org.newdawn.slick.state.StateBasedGame;
 import jig.Entity;
 import jig.Vector;
 
-enum phase {MOVEFIRE, FIRING, TURNCHANGE, GAMEOVER};
+enum phase {MOVEFIRE, FIRING, CHARGING, TURNCHANGE, GAMEOVER};
 
 public class PlayingState extends BasicGameState {
   final int NO_WINNER_ID = -1;
@@ -187,7 +187,18 @@ public class PlayingState extends BasicGameState {
 		tankPointer.update(delta);
 	}
 
-  private void updateState(Input input, Player player, int delta, Tanx tg) {
+  private void updateState(Input input, Player player, int delta, Tanx tg) {    
+    if (state == phase.CHARGING) {
+      if (input.isKeyDown(Input.KEY_SPACE) && turnTimer > 0){
+        player.charging(delta);
+      } else {
+        activeProjectile = player.fire();
+        PE.addPhysicsEntity(activeProjectile);
+        camera.trackObject(activeProjectile);
+        state = phase.FIRING;
+        turnTimer = FIRING_TIMEOUT;
+      }
+    }
     if (state == phase.MOVEFIRE){
       if (player.getTank().getVelocity().lengthSquared() > 0) { camera.moveTo(player.getTank().getPosition()); }
       Tank currentTank = players.get(pIndex).getTank();
@@ -198,24 +209,24 @@ public class PlayingState extends BasicGameState {
       if (input.isKeyDown(Input.KEY_E)){
         currentTank.rotate(Direction.RIGHT, delta);
       } else if (input.isKeyDown(Input.KEY_Q)){
-        currentTank.rotate(Direction.LEFT, delta);
+        player.rotate(Direction.LEFT, delta);
       }
-      if (input.isKeyPressed(Input.KEY_F)){
-        players.get(pIndex).nextWeapon();
+      
+      if (input.isKeyPressed(Input.KEY_C)) {
+        player.nextWeapon();
       }
-      if (input.isKeyPressed(Input.KEY_R)){
-        players.get(pIndex).prevWeapon();
+      if (input.isKeyPressed(Input.KEY_Z)) {
+        player.prevWeapon();
       }
+
+      if (input.isKeyDown(Input.KEY_SPACE)) {
+        state = phase.CHARGING;
+      }
+
       if (input.isKeyDown(Input.KEY_LCONTROL)) {
         players.get(pIndex).getTank().jet(delta);
       }
-      if (input.isKeyPressed(Input.KEY_SPACE)){
-        activeProjectile = currentTank.fire(1);
-        PE.addPhysicsEntity(activeProjectile);
-        camera.trackObject(activeProjectile);
-        state = phase.FIRING;
-        turnTimer = FIRING_TIMEOUT;
-      }
+                                  
     } else if(state == phase.FIRING) {
       if (turnTimer <= 0) { camera.stopTracking(); changePlayer(); }
     } else if (state == phase.TURNCHANGE) {
