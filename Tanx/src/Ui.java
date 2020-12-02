@@ -45,7 +45,7 @@ class BottomUi extends UiContainer{
     Vector fuelPos = position.add(FUEL_POS_OFFSET);
     Vector weaponPos = position.add(WEP_POS_OFFSET);
     Vector timerPos = position.add(TIMER_POS_OFFSET);
-    jetFuelElement = new GaugeElement(fuelPos, Tank.INIT_FUEL_BURNTIME,
+    jetFuelElement = new GaugeElement(fuelPos, Player.MAX_FUEL_BURNTIME,
         JET_ELEMENT_MIN_ANGLE, JET_ELEMENT_MAX_ANGLE,Tanx.FUEL_GAUGE_OVERLAY, Tanx.FUEL_GAUGE_ARROW);
     jetFuelElement.setScale(GAUGE_SCALE);
     weaponSelect = new WeaponSelect(weaponPos);
@@ -63,7 +63,7 @@ class BottomUi extends UiContainer{
   }
 
   public void update(int delta, Player player, int turnTimer, phase state) {
-    jetFuelElement.setValue(player.getTank().getFuel());
+    jetFuelElement.setValue(player.getFuel());
     weaponSelect.update(delta, player);
     if (state == phase.MOVEFIRE){
       timerElement.setValue(turnTimer);

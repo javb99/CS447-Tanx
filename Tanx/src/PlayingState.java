@@ -1,6 +1,4 @@
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -9,7 +7,6 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.Color;
 
 import jig.Entity;
 import jig.Vector;
@@ -33,6 +30,7 @@ public class PlayingState extends BasicGameState {
   int pIndex;
   int turnTimer;
   ActiveTankArrow tankPointer;
+  boolean toggleCheats;
 
 	@Override
 	public void init(GameContainer container, StateBasedGame game)
@@ -129,6 +127,19 @@ public class PlayingState extends BasicGameState {
 		g.popTransform();
 		// Render anything that shouldn't be transformed below here.
     ui.render(g);
+    if (toggleCheats) {
+      Player current = players.get(pIndex);
+      float yOffset = 20;
+      g.drawString("CHEATS ON", 0, yOffset);
+      if (current.isInfFuel()) {
+        yOffset += 20;
+        g.drawString("Infinate Fuel On!", 0, yOffset);
+      }
+      if (current.isInfHealth()){
+        yOffset += 20;
+        g.drawString("Current Tank has Infinate Health!", 0, yOffset);
+      }
+    }
 	}
 
 	@Override
@@ -136,8 +147,9 @@ public class PlayingState extends BasicGameState {
 			int delta) throws SlickException {
 		Input input = container.getInput();
 		Player player = players.get(pIndex);
+		cheatCodeHandler(input, player);
 
-    turnTimer -= delta;
+		turnTimer -= delta;
 		if (state == phase.MOVEFIRE){
 		  if (player.getTank().getVelocity().lengthSquared() > 0) { camera.moveTo(player.getTank().getPosition()); }
 		  Tank currentTank = players.get(pIndex).getTank();
@@ -158,7 +170,7 @@ public class PlayingState extends BasicGameState {
         players.get(pIndex).prevWeapon();
       }
       if (input.isKeyDown(Input.KEY_LCONTROL)) {
-        players.get(pIndex).getTank().jet(delta);
+        players.get(pIndex).useJets(delta);
       }
       if (input.isKeyPressed(Input.KEY_SPACE)){
         activeProjectile = currentTank.fire(1);
@@ -186,6 +198,32 @@ public class PlayingState extends BasicGameState {
 		ui.update(delta, players.get(pIndex), turnTimer, state);
 		tankPointer.update(delta);
 	}
+
+  private void cheatCodeHandler(Input input, Player player) {
+    if (input.isKeyPressed(Input.KEY_F1)){
+      toggleCheats = !toggleCheats;
+    }
+    if (toggleCheats){
+      if (input.isKeyPressed(Input.KEY_F2)) {
+        //give player all weapons
+        player.giveAllWeapons();
+      }
+      if (input.isKeyPressed(Input.KEY_F3)) {
+        //infinate jet fuel
+        player.toggleInfFuel();
+      }
+      if (input.isKeyPressed(Input.KEY_F4)) {
+        //infinate health
+        player.toggleInfHealth();
+      }
+      if (input.isKeyPressed(Input.KEY_F5)) {
+        //kill tank
+        player.getTank().killTank();
+        changePlayer();
+      }
+    }
+
+  }
 
   private void changePlayer() {
     if (isGameOver()) {

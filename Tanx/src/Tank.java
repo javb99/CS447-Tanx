@@ -7,20 +7,20 @@ enum Direction {LEFT, RIGHT};
 
 public class Tank extends PhysicsEntity {
   //Constants
-  public static final int INIT_TANK_HEALTH = 90;
+  public static final float INF_HEALTH = -9999;
+  public static final int INIT_TANK_HEALTH = 100;
   public static final int MAX_TANK_HEALTH = 100;
-  public static final float INIT_FUEL_BURNTIME = 2*1000;
   public static final float TANK_MOVE_SPEED = .2f;
   public static final float TANK_TERMINAL_VELOCITY = 2f;
   public static final float ACCELERATION = .05f;
   public static final Vector ACCELERATION_JETS = new Vector(0, -.0015f);
 
   //Class Variables
-  private float fuel;
   private Cannon cannon;
   private boolean onGround;
   private Player myPlayer;
   private Healthbar healthbar;
+  private boolean invuln;
 
 
   public Tank(final float x, final float y, Color c, Player player){
@@ -32,6 +32,7 @@ public class Tank extends PhysicsEntity {
     cannon = new Cannon(x, y, Cannon.BASE_CANNON);
     myPlayer = player;
     this.addShape(new ConvexPolygon(64f, 32f), c, Color.red);
+    invuln = false;
   }
 
   public Projectile fire(int power){
@@ -50,10 +51,7 @@ public class Tank extends PhysicsEntity {
   }
 
   public void jet(int delta){
-    if (fuel > 0){
-      setVelocity(getVelocity().add(ACCELERATION_JETS.scale(delta)));
-      fuel -= delta;
-    }
+    setVelocity(getVelocity().add(ACCELERATION_JETS.scale(delta)));
   }
 
   public void update(int delta){ }
@@ -76,7 +74,7 @@ public class Tank extends PhysicsEntity {
     healthbar.receiveHealth(amount);
   }
   public void takeDamage(int amount) {
-    healthbar.receiveDamage(amount);
+    if (!invuln) healthbar.receiveDamage(amount);
   }
   @Override
   public boolean getIsDead() {
@@ -88,7 +86,16 @@ public class Tank extends PhysicsEntity {
   public boolean isOnGround() { return onGround; }
   public Player getMyPlayer() { return myPlayer; }
 
-  public void setFuel(float fuel) { this.fuel = fuel; }
-  public float getFuel() { return fuel; }
-  public int getFuelPercentage() {return (int)(fuel/INIT_FUEL_BURNTIME*100);}
+  //tank cheat handlers
+  public void toggleInfHealth() {
+    invuln = !invuln;
+  }
+
+  public boolean isInfHealth() {
+    return invuln;
+  }
+
+  public void killTank() {
+    healthbar.receiveDamage(healthbar.health);
+  }
 }
