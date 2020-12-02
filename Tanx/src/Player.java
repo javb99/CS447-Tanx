@@ -4,13 +4,16 @@ import org.newdawn.slick.Color;
 import java.util.*;
 
 public class Player {
+  public static float TIME_TO_CHARGE = 1*1000;
   private ArrayList<Tank> tanks;
   private int tankIndex;
   private Color playerColor;
   private int playerId;
   private ArrayList<Ammo> ammo;
   private int ammoIndex;
-  //tbd weapons available to player listed here?
+  private float chargedPower;
+  private float maxChargedPower;
+  private boolean chargeRising;
 
   public Player(Color c, int id) {
     tanks = new ArrayList<Tank>();
@@ -21,6 +24,7 @@ public class Player {
     giveAmmo(Cannon.BASE_CANNON, Ammo.INF_AMMO);
     giveAmmo(Cannon.BIG_CANNON, 10);
     ammoIndex = 0;
+    maxChargedPower = TIME_TO_CHARGE;
   }
 
   public void render(Graphics g){
@@ -47,7 +51,7 @@ public class Player {
     ammo.add(new Ammo(type, amount));
   }
 
-  private void newAmmoIndex(int amount){
+  private void newAmmoIndex(int amount) {
     ammoIndex += amount;
     if (ammoIndex >= ammo.size()){
       ammoIndex = 0;
@@ -56,20 +60,25 @@ public class Player {
     }
     if (ammo.get(ammoIndex).amount == 0){ newAmmoIndex(amount); }
   }
-  public void nextWeapon(){
+
+  public void nextWeapon() {
     newAmmoIndex(1);
     tanks.get(tankIndex).changeWeapon(ammo.get(ammoIndex).type);
   }
 
-  public void prevWeapon(){
+  public void prevWeapon() {
     newAmmoIndex(-1);
     tanks.get(tankIndex).changeWeapon(ammo.get(ammoIndex).type);
   }
 
-  public void startTurn(){
+  public void startTurn() {
+    getNextTank();
+    chargedPower = 0;
+    chargeRising = true;
     checkWeapon();
     tanks.get(tankIndex).setFuel(Tank.INIT_FUEL_BURNTIME);
   }
+  
   private void checkWeapon(){
     if (ammo.get(ammoIndex).amount == 0){
       nextWeapon();
@@ -93,9 +102,6 @@ public class Player {
     }
     return tanks.get(index);
   }
-  public Tank getTank() {
-    return getTank(tankIndex);
-  }
 
   public void getNextTank() {
     tankIndex++;
@@ -104,11 +110,38 @@ public class Player {
     }
   }
 
+  public void charging(int delta) {
+    if (chargeRising){
+      chargedPower += delta;
+    } else {
+      chargedPower -= delta;
+    }
+    if (chargedPower >= TIME_TO_CHARGE) {
+      chargeRising = false;
+      chargedPower = maxChargedPower;
+    } else if (chargedPower <= 0) {
+      chargeRising = true;
+      chargedPower = 0;
+    }
+  }
+
+  public void rotate (Direction d, int delta){
+    getTank().rotate(d, delta);
+  }
+
+  public Projectile fire(){
+    return getTank().fire(chargedPower/TIME_TO_CHARGE);
+  }
+
   public void getPrevTank() {
     tankIndex--;
     if (tankIndex < 0){
       tankIndex = tanks.size() - 1;
     }
+  }
+
+  public Tank getTank() {
+    return getTank(tankIndex);
   }
 
   public void update(int delta){
@@ -129,4 +162,6 @@ public class Player {
   public int getAmmoIndex() { return ammoIndex; }
 
   public int getCurrentAmmo() { return ammo.get(ammoIndex).type; }
+
+  public float getChargedPower() { return chargedPower; }
 }

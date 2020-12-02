@@ -14,7 +14,7 @@ import org.newdawn.slick.Color;
 import jig.Entity;
 import jig.Vector;
 
-enum phase {MOVEFIRE, FIRING, TURNCHANGE};
+enum phase {MOVEFIRE, FIRING, CHARGING, TURNCHANGE};
 
 public class PlayingState extends BasicGameState {
   static public int TURNLENGTH = 10*1000;
@@ -138,38 +138,55 @@ public class PlayingState extends BasicGameState {
 		Player player = players.get(pIndex);
 
     turnTimer -= delta;
-		if (state == phase.MOVEFIRE){
-		  if (player.getTank().getVelocity().lengthSquared() > 0) { camera.moveTo(player.getTank().getPosition()); }
-		  Tank currentTank = players.get(pIndex).getTank();
-		  tankPointer.pointTo(currentTank.getPosition());
-		  if (turnTimer <= 0){
-		    changePlayer();
-      }
 
-      if (input.isKeyDown(Input.KEY_E)){
-        currentTank.rotate(Direction.RIGHT, delta);
-      } else if (input.isKeyDown(Input.KEY_Q)){
-        currentTank.rotate(Direction.LEFT, delta);
-      }
-      if (input.isKeyPressed(Input.KEY_F)){
-        players.get(pIndex).nextWeapon();
-      }
-      if (input.isKeyPressed(Input.KEY_R)){
-        players.get(pIndex).prevWeapon();
-      }
-      if (input.isKeyDown(Input.KEY_LCONTROL)) {
-        players.get(pIndex).getTank().jet(delta);
-      }
-      if (input.isKeyPressed(Input.KEY_SPACE)){
-        activeProjectile = currentTank.fire(1);
+    if (state == phase.CHARGING) {
+      if (input.isKeyDown(Input.KEY_SPACE) && turnTimer > 0){
+        player.charging(delta);
+      } else {
+        activeProjectile = player.fire();
         PE.addPhysicsEntity(activeProjectile);
         camera.trackObject(activeProjectile);
         state = phase.FIRING;
         turnTimer = FIRING_TIMEOUT;
       }
+    }
+    
+		if (state == phase.MOVEFIRE){
+		  if (player.getTank().getVelocity().lengthSquared() > 0) { camera.moveTo(player.getTank().getPosition()); }
+		  tankPointer.pointTo(player.getTank().getPosition());
+		  if (turnTimer <= 0){
+		    changePlayer();
+      }
+
+      if (input.isKeyDown(Input.KEY_E)) {
+        player.rotate(Direction.RIGHT, delta);
+      } else if (input.isKeyDown(Input.KEY_Q)){
+        player.rotate(Direction.LEFT, delta);
+      }
+      
+      if (input.isKeyPressed(Input.KEY_C)) {
+        player.nextWeapon();
+      }
+      if (input.isKeyPressed(Input.KEY_Z)) {
+        player.prevWeapon();
+      }
+
+      if (input.isKeyDown(Input.KEY_SPACE)) {
+        state = phase.CHARGING;
+      }
+
+      if (input.isKeyDown(Input.KEY_LCONTROL)) {
+        players.get(pIndex).getTank().jet(delta);
+      }
+                                  
     } else if(state == phase.FIRING) {
-      if (turnTimer <= 0) { camera.stopTracking(); changePlayer(); }
+      if (turnTimer <= 0) {
+        camera.stopTracking();
+        changePlayer();
+      }
+
     } if (state == phase.TURNCHANGE) {
+
 		  //For safety, timeout if there are issues-soft bug
         if(camera.getState() == camState.IDLE || turnTimer <= 0) {
           camera.stopMoving();
