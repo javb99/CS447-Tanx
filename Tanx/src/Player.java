@@ -163,5 +163,7 @@ public class Player {
 
   public int getCurrentAmmo() { return ammo.get(ammoIndex).type; }
 
+  public int getPlayerId() { return playerId; }
+  
   public float getChargedPower() { return chargedPower; }
 }

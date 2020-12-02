@@ -218,7 +218,6 @@ public class Camera {
   }
 
   public camState getState() { return state; }
-
 }
 
 /// When debug is true, it shows the full world and an border for the viewport.
