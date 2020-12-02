@@ -8,9 +8,11 @@ import jig.Vector;
 
 public class PlayerConfigurator {
 
-	private final float TANK_SPACING = 250;
 	private final float EDGE_SPACING = 25;
+	private final float TANK_SPACING = 50;
 	
+	private final float spawnWidth;
+	private boolean spawns[];
 	
 	private int width;
 
@@ -25,6 +27,9 @@ public class PlayerConfigurator {
 		
 		if(this.numPlayers > 4) this.numPlayers = 4;
 		if(this.numPlayers < 2) this.numPlayers = 2;
+		
+		spawnWidth = width / (this.numPlayers*this.numTanks);
+		spawns = new boolean[this.numPlayers*this.numTanks];
 	}
 	
 	public void setNumPlayers(int p) {
@@ -43,12 +48,17 @@ public class PlayerConfigurator {
 		ArrayList<Tank> tankList = new ArrayList<Tank>();
 		Date d = new Date();
 		Random rand = new Random(d.getTime());
+		int nextSpawn;
 		
 		for(int i = 1; i <= numPlayers; i++) {
 			Player p = new Player(colors[i-1], i);
 			
 			while(p.getTanks().size() < numTanks) {
-				Tank t = p.addTank(rand.nextFloat()*width, 100);
+				nextSpawn = rand.nextInt(numPlayers*numTanks);
+				while(spawns[nextSpawn]) {
+					nextSpawn = rand.nextInt(numPlayers*numTanks);
+				}
+				Tank t = p.addTank(rand.nextFloat()*spawnWidth + nextSpawn*spawnWidth, 50);
 				while(t.getCoarseGrainedMinX() < EDGE_SPACING) {
 					t.translate(new Vector(1, 0));
 				}
@@ -59,6 +69,8 @@ public class PlayerConfigurator {
 					p.removeTank(t);
 				} else {
 					tankList.add(t);
+					spawns[nextSpawn] = true;
+					System.out.println(t.getPosition());
 				}
 			}
 			
