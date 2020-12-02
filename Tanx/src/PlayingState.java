@@ -109,26 +109,26 @@ public class PlayingState extends BasicGameState {
 	@Override
 	public void render(GameContainer container, StateBasedGame game,
 			Graphics g) throws SlickException {
-		Tanx bg = (Tanx) game;
-		
-		g.pushTransform();
-		camera.transformContext(g);
-		// Render anything that should be affected by the camera location.
+    Tanx bg = (Tanx) game;
+
+    g.pushTransform();
+    camera.transformContext(g);
+    // Render anything that should be affected by the camera location.
 
     world.terrain.render(g);
-		PE_list.forEach((e)->e.render(g));
-		players.forEach((p) ->p.render(g));
-		explosionSystem.render(g);
+    PE_list.forEach((e) -> e.render(g));
+    players.forEach((p) -> p.render(g));
+    explosionSystem.render(g);
 
-		//placeholder, should put an arrow sprite pointing to currently active tank
-    if (state == phase.MOVEFIRE){
+    //placeholder, should put an arrow sprite pointing to currently active tank
+    if (state == phase.MOVEFIRE) {
       tankPointer.render(g);
     }
 
-		camera.renderDebugOverlay(g);
+    camera.renderDebugOverlay(g);
 
-		g.popTransform();
-		// Render anything that shouldn't be transformed below here.
+    g.popTransform();
+    // Render anything that shouldn't be transformed below here.
     ui.render(g);
     if (toggleCheats) {
       Player current = players.get(pIndex);
@@ -138,14 +138,15 @@ public class PlayingState extends BasicGameState {
         yOffset += 20;
         g.drawString("Infinate Fuel On!", 0, yOffset);
       }
-      if (current.isInfHealth()){
+      if (current.isInfHealth()) {
         yOffset += 20;
         g.drawString("Current Tank has Infinate Health!", 0, yOffset);
       }
+    }
     if (state == phase.GAMEOVER) {
       renderGameOver(g, bg);
     }
-	}
+  }
 
   private void renderGameOver(Graphics g, Tanx bg) {
 	  final float GAME_OVER_X = bg.ScreenWidth/2 - 200;
@@ -201,7 +202,6 @@ public class PlayingState extends BasicGameState {
 		world.update(delta, PE, players);
 		ui.update(delta, players.get(pIndex), turnTimer, state);
 		tankPointer.update(delta);
-    cheatCodeHandler(input, player);
 		cleanInputHandler(delta, input);
 	}
 
@@ -226,6 +226,7 @@ public class PlayingState extends BasicGameState {
       }
     }
     if (state == phase.MOVEFIRE){
+      cheatCodeHandler(input, player);
       if (player.getTank().getVelocity().lengthSquared() > 0) { camera.moveTo(player.getTank().getPosition()); }
       Tank currentTank = players.get(pIndex).getTank();
       tankPointer.pointTo(currentTank.getPosition());

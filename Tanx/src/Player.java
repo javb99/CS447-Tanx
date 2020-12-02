@@ -184,6 +184,8 @@ public class Player {
     return fuel;
   }
 
+  public float getChargedPower() { return chargedPower; }
+
   //cheats
   public void giveAllWeapons() {
     giveAmmo(Cannon.BASE_CANNON, Ammo.INF_AMMO);

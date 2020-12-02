@@ -53,7 +53,7 @@ class BottomUi extends UiContainer{
     powerElement = new GaugeElement(powerPos, Player.TIME_TO_CHARGE,
         POWER_ELEMENT_MIN_ANGLE, POWER_ELEMENT_MAX_ANGLE, Tanx.POWER_GAUGE_OVERLAY, Tanx.FUEL_GAUGE_ARROW);
     powerElement.setScale(GAUGE_SCALE);
-    jetFuelElement = new GaugeElement(fuelPos, Tank.INIT_FUEL_BURNTIME,
+    jetFuelElement = new GaugeElement(fuelPos, Player.MAX_FUEL_BURNTIME,
         JET_ELEMENT_MIN_ANGLE, JET_ELEMENT_MAX_ANGLE,Tanx.FUEL_GAUGE_OVERLAY, Tanx.FUEL_GAUGE_ARROW);
     jetFuelElement.setScale(GAUGE_SCALE);
     weaponSelect = new WeaponSelect(weaponPos);
@@ -75,7 +75,7 @@ class BottomUi extends UiContainer{
     weaponSelect.update(delta, player);
     if (state == phase.MOVEFIRE || state == phase.CHARGING){
       timerElement.setValue(turnTimer);
-      jetFuelElement.setValue(player.getTank().getFuel());
+      jetFuelElement.setValue(player.getFuel());
       powerElement.setValue(player.getChargedPower());
     }
   }
