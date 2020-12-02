@@ -4,8 +4,14 @@ import java.util.Random;
 
 import org.newdawn.slick.Color;
 
+import jig.Vector;
+
 public class PlayerConfigurator {
 
+	private final float TANK_SPACING = 250;
+	private final float EDGE_SPACING = 25;
+	
+	
 	private int width;
 
 	private int numPlayers;
@@ -43,6 +49,12 @@ public class PlayerConfigurator {
 			
 			while(p.getTanks().size() < numTanks) {
 				Tank t = p.addTank(rand.nextFloat()*width, 100);
+				while(t.getCoarseGrainedMinX() < EDGE_SPACING) {
+					t.translate(new Vector(1, 0));
+				}
+				while(t.getCoarseGrainedMaxX() > width - EDGE_SPACING) {
+					t.translate(new Vector(-1, 0));
+				}
 				if(!checkIfOpen(t, tankList)) {
 					p.removeTank(t);
 				} else {
@@ -58,7 +70,7 @@ public class PlayerConfigurator {
 	
 	private boolean checkIfOpen(Tank newTank, ArrayList<Tank> oldTanks) {
 		for(int i = 0; i < oldTanks.size(); i++) {
-			if(oldTanks.get(i).collides(newTank) != null) {
+			if(oldTanks.get(i).getPosition().distance(newTank.getPosition()) < TANK_SPACING) {
 				return false;
 			}
 		}
