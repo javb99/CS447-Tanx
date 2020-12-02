@@ -35,7 +35,7 @@ public class Tank extends PhysicsEntity {
     invuln = false;
   }
 
-  public Projectile fire(int power){
+  public Projectile fire(float power){
     myPlayer.giveAmmo(cannon.getType(), -1);
     return cannon.fire(power);
   }

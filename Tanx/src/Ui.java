@@ -29,13 +29,17 @@ class BottomUi extends UiContainer{
   final float JET_ELEMENT_MAX_ANGLE = 135f;
   final float TIMER_ELEMENT_MIN_ANGLE = -135f;
   final float TIMER_ELEMENT_MAX_ANGLE = 135f;
+  final float POWER_ELEMENT_MIN_ANGLE = -135f;
+  final float POWER_ELEMENT_MAX_ANGLE = 135f;
+  final Vector POWER_POS_OFFSET = new Vector(0, 250);
   final Vector FUEL_POS_OFFSET = new Vector(800, 250);
   final Vector WEP_POS_OFFSET = new Vector(200, 200);
-  final Vector TIMER_POS_OFFSET = new Vector(-100, 250);
+  final Vector TIMER_POS_OFFSET = new Vector(-200, 250);
   final float GAUGE_SCALE = 1.5f;
   GaugeElement jetFuelElement;
   WeaponSelect weaponSelect;
   GaugeElement timerElement;
+  GaugeElement powerElement;
 
   public BottomUi(Rectangle bounds, Vector pos){
     super(bounds, pos);
@@ -45,7 +49,11 @@ class BottomUi extends UiContainer{
     Vector fuelPos = position.add(FUEL_POS_OFFSET);
     Vector weaponPos = position.add(WEP_POS_OFFSET);
     Vector timerPos = position.add(TIMER_POS_OFFSET);
-    jetFuelElement = new GaugeElement(fuelPos, Player.MAX_FUEL_BURNTIME,
+    Vector powerPos = position.add(POWER_POS_OFFSET);
+    powerElement = new GaugeElement(powerPos, Player.TIME_TO_CHARGE,
+        POWER_ELEMENT_MIN_ANGLE, POWER_ELEMENT_MAX_ANGLE, Tanx.POWER_GAUGE_OVERLAY, Tanx.FUEL_GAUGE_ARROW);
+    powerElement.setScale(GAUGE_SCALE);
+    jetFuelElement = new GaugeElement(fuelPos, Tank.INIT_FUEL_BURNTIME,
         JET_ELEMENT_MIN_ANGLE, JET_ELEMENT_MAX_ANGLE,Tanx.FUEL_GAUGE_OVERLAY, Tanx.FUEL_GAUGE_ARROW);
     jetFuelElement.setScale(GAUGE_SCALE);
     weaponSelect = new WeaponSelect(weaponPos);
@@ -60,13 +68,15 @@ class BottomUi extends UiContainer{
     jetFuelElement.render(g);
     weaponSelect.render(g);
     timerElement.render(g);
+    powerElement.render(g);
   }
 
   public void update(int delta, Player player, int turnTimer, phase state) {
-    jetFuelElement.setValue(player.getFuel());
     weaponSelect.update(delta, player);
-    if (state == phase.MOVEFIRE){
+    if (state == phase.MOVEFIRE || state == phase.CHARGING){
       timerElement.setValue(turnTimer);
+      jetFuelElement.setValue(player.getTank().getFuel());
+      powerElement.setValue(player.getChargedPower());
     }
   }
 }
