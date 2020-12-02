@@ -1,11 +1,6 @@
-import java.awt.*;
-import java.awt.Font;
 import java.util.ArrayList;
-import java.util.Iterator;
-
 import jig.ResourceManager;
 import org.newdawn.slick.*;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Rectangle;
@@ -18,6 +13,7 @@ import jig.Vector;
 enum phase {MOVEFIRE, FIRING, TURNCHANGE, GAMEOVER};
 
 public class PlayingState extends BasicGameState {
+  final int NO_WINNER_ID = -1;
   static public int TURNLENGTH = 10*1000;
   static public int FIRING_TIMEOUT = 5*1000;
   static public int SHOTRESOLVE_TIMEOUT = 2*1000;
@@ -136,7 +132,6 @@ public class PlayingState extends BasicGameState {
 	}
 
   private void renderGameOver(Graphics g, Tanx bg) {
-	  final int NO_WINNER_ID = -1;
 	  final float GAME_OVER_X = bg.ScreenWidth/2 - 200;
 	  final float GAME_OVER_Y = 0;
     final float RESET_OFFSETX = 0;
@@ -146,9 +141,8 @@ public class PlayingState extends BasicGameState {
 
     //setup gameover screen
     Image playerWinImg;
-    int winningPlayer = NO_WINNER_ID;
-    if (players.size() < 1) { winningPlayer = players.get(0).getPlayerId(); }
-    switch(players.get(0).getPlayerId()) {
+    int winningPlayer = getWinningPlayer();
+    switch(winningPlayer) {
       case 1:
         playerWinImg = ResourceManager.getImage(Tanx.PLAYER_WIN_1);
         break;
@@ -166,6 +160,13 @@ public class PlayingState extends BasicGameState {
     }
     g.drawImage(playerWinImg.getScaledCopy(IMG_SCALE), GAME_OVER_X, GAME_OVER_Y);
     g.drawImage(ResourceManager.getImage(Tanx.RESET_MSG), GAME_OVER_X + RESET_OFFSETX, GAME_OVER_Y + RESET_OFFSETY);
+  }
+
+  private int getWinningPlayer() {
+    for (Player p: players) {
+      if (!p.isDead()) { return p.getPlayerId(); }
+    }
+    return NO_WINNER_ID;
   }
 
   @Override
