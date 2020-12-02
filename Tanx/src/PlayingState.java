@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import org.newdawn.slick.GameContainer;
 import jig.ResourceManager;
 import org.newdawn.slick.*;
 import org.newdawn.slick.Graphics;
@@ -31,6 +32,7 @@ public class PlayingState extends BasicGameState {
   int pIndex;
   int turnTimer;
   ActiveTankArrow tankPointer;
+  boolean toggleCheats;
   int cleanInputTimer;
 
 	@Override
@@ -107,31 +109,44 @@ public class PlayingState extends BasicGameState {
 	@Override
 	public void render(GameContainer container, StateBasedGame game,
 			Graphics g) throws SlickException {
-		Tanx bg = (Tanx) game;
-		
-		g.pushTransform();
-		camera.transformContext(g);
-		// Render anything that should be affected by the camera location.
+    Tanx bg = (Tanx) game;
+
+    g.pushTransform();
+    camera.transformContext(g);
+    // Render anything that should be affected by the camera location.
 
     world.terrain.render(g);
-		PE_list.forEach((e)->e.render(g));
-		players.forEach((p) ->p.render(g));
-		explosionSystem.render(g);
+    PE_list.forEach((e) -> e.render(g));
+    players.forEach((p) -> p.render(g));
+    explosionSystem.render(g);
 
-		//placeholder, should put an arrow sprite pointing to currently active tank
-    if (state == phase.MOVEFIRE){
+    //placeholder, should put an arrow sprite pointing to currently active tank
+    if (state == phase.MOVEFIRE) {
       tankPointer.render(g);
     }
 
-		camera.renderDebugOverlay(g);
+    camera.renderDebugOverlay(g);
 
-		g.popTransform();
-		// Render anything that shouldn't be transformed below here.
+    g.popTransform();
+    // Render anything that shouldn't be transformed below here.
     ui.render(g);
+    if (toggleCheats) {
+      Player current = players.get(pIndex);
+      float yOffset = 20;
+      g.drawString("CHEATS ON", 0, yOffset);
+      if (current.isInfFuel()) {
+        yOffset += 20;
+        g.drawString("Infinate Fuel On!", 0, yOffset);
+      }
+      if (current.isInfHealth()) {
+        yOffset += 20;
+        g.drawString("Current Tank has Infinate Health!", 0, yOffset);
+      }
+    }
     if (state == phase.GAMEOVER) {
       renderGameOver(g, bg);
     }
-	}
+  }
 
   private void renderGameOver(Graphics g, Tanx bg) {
 	  final float GAME_OVER_X = bg.ScreenWidth/2 - 200;
@@ -177,8 +192,8 @@ public class PlayingState extends BasicGameState {
 	  Tanx tg = (Tanx)game;
 		Input input = container.getInput();
 		Player player = players.get(pIndex);
-
     turnTimer -= delta;
+    
     updateState(input, player, delta, tg);
     explosionSystem.update(delta);
 		for(Player p: players){p.update(delta);}
@@ -211,6 +226,7 @@ public class PlayingState extends BasicGameState {
       }
     }
     if (state == phase.MOVEFIRE){
+      cheatCodeHandler(input, player);
       if (player.getTank().getVelocity().lengthSquared() > 0) { camera.moveTo(player.getTank().getPosition()); }
       Tank currentTank = players.get(pIndex).getTank();
       tankPointer.pointTo(currentTank.getPosition());
@@ -235,7 +251,7 @@ public class PlayingState extends BasicGameState {
       }
 
       if (input.isKeyDown(Input.KEY_LCONTROL)) {
-        players.get(pIndex).getTank().jet(delta);
+        players.get(pIndex).useJets(delta);
       }
                                   
     } else if(state == phase.FIRING) {
@@ -249,6 +265,32 @@ public class PlayingState extends BasicGameState {
         input.clearKeyPressedRecord();
       }
     }
+  }
+
+  private void cheatCodeHandler(Input input, Player player) {
+    if (input.isKeyPressed(Input.KEY_F1)){
+      toggleCheats = !toggleCheats;
+    }
+    if (toggleCheats){
+      if (input.isKeyPressed(Input.KEY_F2)) {
+        //give player all weapons
+        player.giveAllWeapons();
+      }
+      if (input.isKeyPressed(Input.KEY_F3)) {
+        //infinate jet fuel
+        player.toggleInfFuel();
+      }
+      if (input.isKeyPressed(Input.KEY_F4)) {
+        //infinate health
+        player.toggleInfHealth();
+      }
+      if (input.isKeyPressed(Input.KEY_F5)) {
+        //kill tank
+        player.getTank().killTank();
+        changePlayer();
+      }
+    }
+
   }
 
   private void changePlayer() {

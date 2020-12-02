@@ -4,6 +4,7 @@ import org.newdawn.slick.Color;
 import java.util.*;
 
 public class Player {
+  public static final float MAX_FUEL_BURNTIME = 2*1000;
   public static float TIME_TO_CHARGE = 1*1000;
   private ArrayList<Tank> tanks;
   private int tankIndex;
@@ -11,6 +12,8 @@ public class Player {
   private int playerId;
   private ArrayList<Ammo> ammo;
   private int ammoIndex;
+  private float fuel;
+  private boolean infFuel;
   private float chargedPower;
   private float maxChargedPower;
   private boolean chargeRising;
@@ -24,6 +27,7 @@ public class Player {
     giveAmmo(Cannon.BASE_CANNON, Ammo.INF_AMMO);
     giveAmmo(Cannon.BIG_CANNON, 10);
     ammoIndex = 0;
+    infFuel = false;
     maxChargedPower = TIME_TO_CHARGE;
   }
 
@@ -44,6 +48,7 @@ public class Player {
     for (Ammo a: ammo ){
       if (a.type == type){
         if(a.amount == Ammo.INF_AMMO) { return; }
+        if (amount == Ammo.INF_AMMO) { a.amount = amount; return;}
         a.amount += amount;
         return;
       }
@@ -76,7 +81,7 @@ public class Player {
     chargedPower = 0;
     chargeRising = true;
     checkWeapon();
-    tanks.get(tankIndex).setFuel(Tank.INIT_FUEL_BURNTIME);
+    setFuel(MAX_FUEL_BURNTIME);
   }
   
   private void checkWeapon(){
@@ -84,6 +89,14 @@ public class Player {
       nextWeapon();
     } else {
       tanks.get(tankIndex).changeWeapon(ammo.get(ammoIndex).type);
+    }
+  }
+
+  public void useJets(int delta) {
+    if (fuel > 0 || infFuel){
+      getTank().jet(delta);
+      if (infFuel) return;
+      fuel -= delta;
     }
   }
 
@@ -163,7 +176,34 @@ public class Player {
 
   public int getCurrentAmmo() { return ammo.get(ammoIndex).type; }
 
+  public void setFuel(float fuel) { this.fuel = fuel; }
+
   public int getPlayerId() { return playerId; }
   
+  public float getFuel() {
+    return fuel;
+  }
+
   public float getChargedPower() { return chargedPower; }
+
+  //cheats
+  public void giveAllWeapons() {
+    giveAmmo(Cannon.BASE_CANNON, Ammo.INF_AMMO);
+    giveAmmo(Cannon.BIG_CANNON, Ammo.INF_AMMO);
+  }
+
+
+  public void toggleInfFuel() {
+    infFuel = !infFuel;
+  }
+
+  public void toggleInfHealth() {
+    getTank().toggleInfHealth();
+  }
+
+  public boolean isInfFuel() { return infFuel; }
+
+  public boolean isInfHealth() {
+    return getTank().isInfHealth();
+  }
 }
