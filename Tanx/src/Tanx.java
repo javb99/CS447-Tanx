@@ -40,6 +40,7 @@ public class Tanx extends StateBasedGame {
   public static final String PLAYER_WIN_4 = "resources/Player4_win.png";
   public static final String NO_WINNER_MSG = "resources/no_winner.png";
   public static final String RESET_MSG = "resources/pushSpaceResetMsg.png";
+  	public static final String TERRAIN_IMG = "resources/test_terrain.png";
 	public final int ScreenWidth;
 	public final int ScreenHeight;
 
@@ -82,6 +83,7 @@ public class Tanx extends StateBasedGame {
     ResourceManager.loadImage(PLAYER_WIN_4);
     ResourceManager.loadImage(NO_WINNER_MSG);
     ResourceManager.loadImage(RESET_MSG);
+    ResourceManager.loadImage(TERRAIN_IMG);
 		ResourceManager.loadImage(Tanx.BANG_EXPLOSIONIMG_RSC);
 		ResourceManager.loadSound(Tanx.BANG_EXPLOSIONSND_RSC);
 
