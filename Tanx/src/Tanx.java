@@ -16,7 +16,19 @@ import org.newdawn.slick.state.StateBasedGame;
  *
  *
  * Skeleton Code Copied from Bounce by wallaces
- * @author Matthew Scofield
+ * @authors:
+ * Matthew Scofield
+ * Joseph Van Boxtel
+ * Benjamin Eavenson
+ * Henry Unruh
+ *
+ *    Flame Effect
+ *    Artist: Division Plus
+ *    links: https://opengameart.org/content/fantasy-character-npc-sprites
+ *
+ *    Sound Effects
+ *    Artist: Juhani Junkala
+ *    link: https://opengameart.org/content/512-sound-effects-8-bit-style
  *
  */
 public class Tanx extends StateBasedGame {
@@ -55,9 +67,15 @@ public class Tanx extends StateBasedGame {
 	 * @param height
 	 *            the window's height
    *
-   *    * Flame Effect
-   *    * Artist: Division Plus
-   *    * links: https://opengameart.org/content/fantasy-character-npc-sprites
+   *    Flame Effect
+   *    Artist: Division Plus
+   *    links: https://opengameart.org/content/fantasy-character-npc-sprites
+   *
+   *    Sound Effects
+   *    Artist: Juhani Junkala
+   *    link: https://opengameart.org/content/512-sound-effects-8-bit-style
+   *
+   *
 	 */
 	public Tanx(String title, int width, int height) {
 		super(title);
