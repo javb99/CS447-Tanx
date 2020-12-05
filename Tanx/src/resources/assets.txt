@@ -8,6 +8,8 @@ Tank sprites - Created by Henry Unruh
 Terrain tiles - Created by Henry Unruh
 Projectile sprites - Created by Henry Unruh
 Logo - Created by Henry Unruh
+UI elements - Created by Matt Schofield, Henry Unruh
+Background scene sprites - Created by Henry Unruh
 
 //Audio/sounds
 Bow Fire - "Bow Fire Arrow Sound" by Stephan Schutze
