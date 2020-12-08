@@ -3,6 +3,7 @@ import jig.ResourceManager;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
@@ -16,7 +17,6 @@ public class StartUpState extends BasicGameState {
 	private ArrayList<MenuOption> credits;
 	private ArrayList<MenuOption> setup;
 	private int selectedOption;
-	private MultiValueOption captiveOption;
 	
 	enum Menu{
 		MAIN,
@@ -48,12 +48,11 @@ public class StartUpState extends BasicGameState {
     clearInputBuffer(input);
     
     selectedOption = 0;
-    captiveOption = null;
     currentMenu = Menu.MAIN;
     
     main = new ArrayList<MenuOption>();
-    main.add(new MenuOption(container.getWidth()/2, container.getHeight()/2, MAIN_PLAY));
-    main.add(new MenuOption(container.getWidth()/2, container.getHeight()/2 + 20, MAIN_CREDITS));
+    main.add(new MenuOption(container.getWidth()/2, container.getHeight()/2 - 80, MAIN_PLAY));
+    main.add(new MenuOption(container.getWidth()/2, container.getHeight()/2 - 60, MAIN_CREDITS));
     
     credits = new ArrayList<MenuOption>();
     credits.add(new MenuOption(container.getWidth()/2, container.getHeight() - 100, CREDITS_RETURN));
@@ -87,6 +86,9 @@ public class StartUpState extends BasicGameState {
     switch(currentMenu) {
     case MAIN:
     	options = main;
+    	Image logo = ResourceManager.getImage(Tanx.SPLASH_LOGO).getScaledCopy(.5f);
+    	
+    	g.drawImage(logo, container.getWidth()/2 - logo.getWidth()/2, container.getHeight()/2 - 100);
     	break;
     case CREDITS:
     	options = credits;
@@ -99,11 +101,7 @@ public class StartUpState extends BasicGameState {
     }
     
     for(int i=0; i<options.size(); i++) {
-    	if(captiveOption == options.get(i)) {
-    		g.setColor(Color.yellow);
-    	}
     	options.get(i).render(g, i == selectedOption ? true : false);
-    	g.setColor(Color.white);
     }
 
   }
@@ -113,20 +111,6 @@ public class StartUpState extends BasicGameState {
                      int delta) throws SlickException {
 	  
 	Input input = container.getInput();
-	  
-	if(captiveOption != null) {
-		if(input.isKeyPressed(Input.KEY_A) || input.isKeyPressed(Input.KEY_LEFT)) {
-			captiveOption.prev();
-		}
-		if(input.isKeyPressed(Input.KEY_D) || input.isKeyPressed(Input.KEY_RIGHT)) {
-			captiveOption.next();
-		}
-		if(input.isKeyPressed(Input.KEY_ENTER) || input.isKeyPressed(Input.KEY_SPACE)) {
-			captiveOption = null;
-			clearInputBuffer(input);
-		}
-		return;
-	}
 	  
     
     Tanx bg = (Tanx) game;
@@ -155,14 +139,25 @@ public class StartUpState extends BasicGameState {
     	if(selectedOption > options.size() - 1) selectedOption = 0;
     }
     if(input.isKeyPressed(Input.KEY_ENTER) || input.isKeyPressed(Input.KEY_SPACE)) {
-    	handleOption(currentMenu, selectedOption, bg, input);
+    	handleOption(currentMenu, selectedOption, bg);
     }
-    
-    
-
+    if(input.isKeyPressed(Input.KEY_A) || input.isKeyPressed(Input.KEY_LEFT)) {
+    	if(currentMenu == Menu.SETUP) {
+    		if(setup.get(selectedOption).getClass().toString().equals("class MultiValueOption")) {
+    			((MultiValueOption)setup.get(selectedOption)).prev();
+    		}
+    	}
+    }
+    if(input.isKeyPressed(Input.KEY_D) || input.isKeyPressed(Input.KEY_RIGHT)) {
+    	if(currentMenu == Menu.SETUP) {
+    		if(setup.get(selectedOption).getClass().toString().equals("class MultiValueOption")) {
+    			((MultiValueOption)setup.get(selectedOption)).next();
+    		}
+    	}
+    }
   }
   
-  void handleOption(Menu menu, int option, Tanx game, Input input){
+  void handleOption(Menu menu, int option, Tanx game){
 	  switch(menu) {
 	  case MAIN:
 		  switch(main.get(option).getLabel()) {
@@ -189,11 +184,7 @@ public class StartUpState extends BasicGameState {
 		  case SETUP_START:
 			  game.enterState(Tanx.PLAYINGSTATE);
 			  break;
-		  case SETUP_PLAYERS:
-		  case SETUP_TANKS:
-		  case SETUP_WORLD_SIZE:
-			  captiveOption = (MultiValueOption)setup.get(option);
-			  clearInputBuffer(input);
+		  default:
 			  break;
 		  }
 		  break;

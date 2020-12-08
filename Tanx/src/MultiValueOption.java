@@ -2,6 +2,8 @@ import java.util.ArrayList;
 
 import org.newdawn.slick.Graphics;
 
+import jig.ResourceManager;
+
 public class MultiValueOption extends MenuOption {
 
 	ArrayList<String> options;
@@ -14,9 +16,14 @@ public class MultiValueOption extends MenuOption {
 	}
 	
 	public void render(Graphics g, boolean selected) {
-		super.render(g, selected);
+		g.drawString(label, x, y);
 		int width = g.getFont().getWidth(label);
 		g.drawString(options.get(curr), x + width + 5, y);
+		if(selected) {
+			int optionWidth = g.getFont().getWidth(options.get(curr));
+			g.drawImage(ResourceManager.getImage(Tanx.WEAPON_POINTER), x + width + optionWidth + 10, y);
+			g.drawImage(ResourceManager.getImage(Tanx.WEAPON_POINTER).getFlippedCopy(true, false), x - 25, y);
+		}
 	}
 	
 	public void next() {
