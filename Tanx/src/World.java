@@ -1,3 +1,9 @@
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.function.Consumer;
+
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Rectangle;
 
@@ -7,37 +13,67 @@ public class World {
 	
 	public static int tileLength = 32;
 	
-	/// Stored as a row of columns
-	/// [column][row] AKA [x][y]
-	TerrainTile[][] tiles;
+	Terrain terrain;
 	TileGeometry geometry;
+	Rectangle worldBounds;
 
 	public World(Rectangle worldBounds) {
+	  this.worldBounds = worldBounds;
 		int xTilesCount = (int) (worldBounds.getWidth()/((float)World.tileLength));
 		int yTilesCount = (int) (worldBounds.getHeight()/((float)World.tileLength));
 		this.geometry = new TileGeometry(worldBounds, xTilesCount, yTilesCount);
-		tiles = new TerrainTile[xTilesCount][yTilesCount];
+		availPowerups = new ArrayList<Powerup>();
+		availPowerups.add(new AmmoPowerup(0, 0, Cannon.BIG_CANNON, 1));
+		availPowerups.add(new HealthPowerup(0, 0, 20));
 	}
 	
 	public void loadLevel(String name) {
-		for (int x = 0; x < tiles.length; x++) {
-			for (int y = tiles[x].length-1; y >= tiles[x].length-3; y--) {
-				tiles[x][y] = new TerrainTile();
-				Vector position = geometry.centerLocationOfTile(x, y);
-				tiles[x][y].setPosition(position);
-			}
-		}
+	  int width = (int)worldBounds.getWidth();
+    int height = (int)worldBounds.getHeight();
+    BitmapGenerator bg = new BitmapGenerator(width, height);
+    terrain = new Terrain(width, height, bg.generateRandomSineMap());
 	}
-	
-	public void renderTerrain(Graphics g) {
-		for (int x = 0; x < tiles.length; x++) {
-			for (int y = 0; y < tiles[x].length; y++) {
-				if (tiles[x][y] != null) {
-					tiles[x][y].render(g);
-				}
-			}
-		}
-	}
+
+  //World update methods to run things such as powerup generation
+  public static int POWERUP_SPAWNRATE = 10*1000;
+	public static float POWERUP_SPAWN_HEIGHT = 100f;
+	public static float POWERUP_SPAWN_TANK_DIST = 50f;
+
+	private int pSpawnTimer;
+	private ArrayList<Powerup> availPowerups;
+
+  public void update(int delta, PhysicsEngine PE, ArrayList<Player> players) {
+    pSpawnTimer -= delta;
+    if (pSpawnTimer <= 0){
+      PE.addPhysicsEntity(randomPowerup(players));
+      pSpawnTimer = POWERUP_SPAWNRATE;
+    }
+  }
+
+  private Powerup randomPowerup(ArrayList<Player> players){
+    Random rand = new Random();
+    int upperBound = availPowerups.size();
+    Powerup newPowerup = availPowerups.get(rand.nextInt(upperBound)).copy();
+    float newX = rand.nextFloat()*worldBounds.getMaxX();
+    while (tankBelow(newX, players)){
+      newX = rand.nextFloat()*worldBounds.getMaxX();
+    }
+    newPowerup.setX(newX);
+    newPowerup.setY(POWERUP_SPAWN_HEIGHT);
+    return newPowerup;
+  }
+
+  private boolean tankBelow(float newX, ArrayList<Player> players) {
+    for (Player p: players) {
+      for (Tank t: p.getTanks()) {
+        if ((newX < (t.getX() + POWERUP_SPAWN_TANK_DIST))
+          && (newX > (t.getX() - POWERUP_SPAWN_TANK_DIST))) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 }
 
 /// Manages coodinate space transformations between tile coordinates and world locations.
