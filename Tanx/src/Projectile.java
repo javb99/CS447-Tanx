@@ -4,24 +4,16 @@ import jig.ConvexPolygon;
 import jig.Vector;
 
 public class Projectile extends PhysicsEntity {
-  private int explosionRadius;
-  private int damage;
 	
-	public Projectile(float x, float y, Vector v, int r, int d) {
+	public Projectile(float x, float y, Vector v) {
 		super(x, y, 0, new Vector(5f, 5f));
 		setVelocity(v);
 		setAcceleration(new Vector(0,0));
 		this.addShape(new ConvexPolygon(10), Color.blue, Color.blue);
-		explosionRadius = r;
-		damage = d;
 	}
 	
 	public void explode() {
 	  this.isDead = true;
 	}
-
-	public int getExplosionRadius() {return explosionRadius; }
-
-	public int getDamage() { return damage; }
 	
 }

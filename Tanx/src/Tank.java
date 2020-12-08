@@ -3,8 +3,6 @@ import jig.Vector;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 
-import java.util.function.Consumer;
-
 enum Direction {LEFT, RIGHT};
 
 public class Tank extends PhysicsEntity {
@@ -37,10 +35,9 @@ public class Tank extends PhysicsEntity {
     invuln = false;
   }
 
-
-  public void fire(float power, Consumer<Projectile> spawnP){
+  public Projectile fire(float power){
     myPlayer.giveAmmo(cannon.getType(), -1);
-    cannon.fire(power, spawnP);
+    return cannon.fire(power);
   }
 
   public void rotate(Direction direction, int delta){cannon.rotate(direction, delta);}
