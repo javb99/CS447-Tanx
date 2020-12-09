@@ -14,12 +14,16 @@ import jig.Vector;
 enum phase {MOVEFIRE, FIRING, CHARGING, TURNCHANGE, GAMEOVER};
 
 public class PlayingState extends BasicGameState {
+	
   final int NO_WINNER_ID = -1;
   static public int TURNLENGTH = 10*1000;
   static public int INPUT_TIMER_CD = 500;
   static public int FIRING_TIMEOUT = 5*1000;
   static public int SHOTRESOLVE_TIMEOUT = 2*1000;
   static public int BOTTOM_UI_HEIGHT = 300;
+  
+  PlayerConfigurator PC;
+	
 	World world;
 	DebugCamera camera;
 	Ui ui;
@@ -35,6 +39,10 @@ public class PlayingState extends BasicGameState {
   boolean toggleCheats;
   int cleanInputTimer;
 
+  	public void setPlayerConfig(PlayerConfigurator pc) {
+  		PC = pc;
+  	}
+  
 	@Override
 	public void init(GameContainer container, StateBasedGame game)
 			throws SlickException {
@@ -60,7 +68,6 @@ public class PlayingState extends BasicGameState {
 
     players = new ArrayList<Player>();
 
-    PlayerConfigurator PC = new PlayerConfigurator(container.getWidth()*2, 2, 1);
     players = PC.config();
 
     for (Player p: players){
