@@ -10,9 +10,10 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class StartUpState extends BasicGameState {
-
+	
 	private ArrayList<MenuOption> main;
 	private ArrayList<MenuOption> credits;
 	private ArrayList<MenuOption> setup;
@@ -33,6 +34,7 @@ public class StartUpState extends BasicGameState {
 	private final static String SETUP_PLAYERS = "Players:";
 	private final static String SETUP_TANKS = "Tanks per player:";
 	private final static String SETUP_WORLD_SIZE = "World Size:";
+	private final static String SETUP_RETURN = "Return to Main Menu";
 	
 	
   @Override
@@ -51,8 +53,8 @@ public class StartUpState extends BasicGameState {
     currentMenu = Menu.MAIN;
     
     main = new ArrayList<MenuOption>();
-    main.add(new MenuOption(container.getWidth()/2, container.getHeight()/2 - 80, MAIN_PLAY));
-    main.add(new MenuOption(container.getWidth()/2, container.getHeight()/2 - 60, MAIN_CREDITS));
+    main.add(new MenuOption(container.getWidth()/2 - 10, container.getHeight()/2 - 80, MAIN_PLAY));
+    main.add(new MenuOption(container.getWidth()/2 - 10, container.getHeight()/2 - 60, MAIN_CREDITS));
     
     credits = new ArrayList<MenuOption>();
     credits.add(new MenuOption(container.getWidth()/2, container.getHeight() - 100, CREDITS_RETURN));
@@ -64,15 +66,16 @@ public class StartUpState extends BasicGameState {
     list.add("2");
     list.add("3");
     list.add("4");
-    setup.add(new MultiValueOption(container.getWidth()/2, container.getHeight()/2, SETUP_TANKS, list));
+    setup.add(new MultiValueOption(container.getWidth()/2, container.getHeight()/2-15, SETUP_TANKS, list));
     list.remove("1");
-    setup.add(new MultiValueOption(container.getWidth()/2, container.getHeight()/2+20, SETUP_PLAYERS, list));
+    setup.add(new MultiValueOption(container.getWidth()/2, container.getHeight()/2+5, SETUP_PLAYERS, list));
     list = new ArrayList<String>();
     list.add("SMALL");
     list.add("MEDIUM");
     list.add("LARGE");
-    setup.add(new MultiValueOption(container.getWidth()/2, container.getHeight()/2+40, SETUP_WORLD_SIZE, list));
-    setup.add(new MenuOption(container.getWidth()/2, container.getHeight()/2+60, SETUP_START));
+    setup.add(new MultiValueOption(container.getWidth()/2, container.getHeight()/2+25, SETUP_WORLD_SIZE, list));
+    setup.add(new MenuOption(container.getWidth()/2, container.getHeight()/2+45, SETUP_START));
+    setup.add(new MenuOption(container.getWidth()/2, container.getHeight()/2+75, SETUP_RETURN));
   }
 
 
@@ -83,9 +86,12 @@ public class StartUpState extends BasicGameState {
     
     ArrayList<MenuOption> options;
     
+    g.drawImage(ResourceManager.getImage(Tanx.BACKGROUND_DESERT), 0, 0);
+    
     switch(currentMenu) {
     case MAIN:
     	options = main;
+    	
     	Image logo = ResourceManager.getImage(Tanx.SPLASH_LOGO).getScaledCopy(.5f);
     	
     	g.drawImage(logo, container.getWidth()/2 - logo.getWidth()/2, container.getHeight()/2 - 100);
@@ -100,9 +106,13 @@ public class StartUpState extends BasicGameState {
     	options = main;
     }
     
+    g.setColor(Color.black);
+    
     for(int i=0; i<options.size(); i++) {
     	options.get(i).render(g, i == selectedOption ? true : false);
     }
+    
+    g.setColor(Color.white);
 
   }
 
@@ -183,6 +193,10 @@ public class StartUpState extends BasicGameState {
 		  switch(setup.get(option).getLabel()) {
 		  case SETUP_START:
 			  game.enterState(Tanx.PLAYINGSTATE);
+			  break;
+		  case SETUP_RETURN:
+			  currentMenu = Menu.MAIN;
+			  selectedOption = 0;
 			  break;
 		  default:
 			  break;
