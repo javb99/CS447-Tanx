@@ -82,6 +82,9 @@ public class Player {
     chargeRising = true;
     checkWeapon();
     setFuel(MAX_FUEL_BURNTIME);
+    for (Tank t: tanks) {
+      t.updateTurn();
+    }
   }
   
   private void checkWeapon(){
@@ -144,13 +147,6 @@ public class Player {
 
   public Projectile fire(){
     return getTank().fire(chargedPower/TIME_TO_CHARGE);
-  }
-
-  public void getPrevTank() {
-    tankIndex--;
-    if (tankIndex < 0){
-      tankIndex = tanks.size() - 1;
-    }
   }
 
   public Tank getTank() {

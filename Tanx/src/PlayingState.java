@@ -11,6 +11,8 @@ import org.newdawn.slick.state.StateBasedGame;
 import jig.Entity;
 import jig.Vector;
 
+import javax.swing.*;
+
 enum phase {MOVEFIRE, FIRING, CHARGING, TURNCHANGE, GAMEOVER};
 
 public class PlayingState extends BasicGameState {
@@ -34,6 +36,8 @@ public class PlayingState extends BasicGameState {
   ActiveTankArrow tankPointer;
   boolean toggleCheats;
   int cleanInputTimer;
+
+  groundFire testFire;
 
 	@Override
 	public void init(GameContainer container, StateBasedGame game)
@@ -85,6 +89,10 @@ public class PlayingState extends BasicGameState {
       powerup.usePowerup(tank);
     });
 
+    PE.registerCollisionHandler(groundFire.class, Tank.class, (fire, tank, c) -> {
+      fire.applyFire(tank);
+    });
+
     PE.registerCollisionHandler(Projectile.class, PhysicsEntity.class, (projectile, obstacle, c) -> {
       if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
       if (projectile == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
@@ -104,6 +112,11 @@ public class PlayingState extends BasicGameState {
     });
     
     camera.toggleDebug();
+
+    //test fire debuff
+    testFire = new groundFire(500, 500);
+    testFire = new groundFire(players.get(0).getTank().getX(), players.get(0).getTank().getY() - 100);
+    PE.addPhysicsEntity(testFire);
   }
 
 	@Override

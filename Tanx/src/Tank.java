@@ -1,4 +1,5 @@
 import jig.ConvexPolygon;
+import jig.ResourceManager;
 import jig.Vector;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
@@ -21,6 +22,8 @@ public class Tank extends PhysicsEntity {
   private Player myPlayer;
   private Healthbar healthbar;
   private boolean invuln;
+  private int turnsOnFire;
+  private groundFire fireDebuff;
 
 
   public Tank(final float x, final float y, Color c, Player player){
@@ -33,6 +36,7 @@ public class Tank extends PhysicsEntity {
     myPlayer = player;
     this.addShape(new ConvexPolygon(64f, 32f), c, Color.red);
     invuln = false;
+    turnsOnFire = 0;
   }
 
   public Projectile fire(float power){
@@ -55,6 +59,15 @@ public class Tank extends PhysicsEntity {
   }
 
   public void update(int delta){ }
+
+  public void updateTurn() {
+    System.out.println(turnsOnFire);
+    if ( turnsOnFire > 0 ) {
+      turnsOnFire --;
+      ResourceManager.getSound(Tanx.FIRE_DEBUFF_SND).play(groundFire.FIRE_SOUND_PITCH, groundFire.FIRE_SOUND_VOLUME);
+      takeDamage(groundFire.FIRE_DAMAGE_PER_TURN);
+    }
+  }
   
   @Override
   public void render(Graphics g) {
@@ -64,12 +77,22 @@ public class Tank extends PhysicsEntity {
     cannon.render(g);
     float bottomSpacing = 20;
     healthbar.render(g, this.getCoarseGrainedMaxY() + bottomSpacing, this.getX());
+    if (turnsOnFire > 0 && fireDebuff != null) {
+      fireDebuff.setPosition(getPosition());
+      fireDebuff.render(g);
+    }
   }
   public void changeWeapon(int type){
     cannon.changeType(type);
   }
 
-  
+  public void applyFire(int turns, groundFire fire) {
+    turnsOnFire = turns;
+    System.out.println("TurnsSet: " + turns + " turnsOnFire: " + turnsOnFire);
+    fireDebuff = fire;
+  }
+
+  //health functions
   public void giveHealth(int amount) {
     healthbar.receiveHealth(amount);
   }
@@ -80,7 +103,7 @@ public class Tank extends PhysicsEntity {
   public boolean getIsDead() {
     return healthbar.getIsDead();
   }
-  
+
   //set/get functions
   public void setOnGround(boolean onGround) { this.onGround = onGround; }
   public boolean isOnGround() { return onGround; }
@@ -98,4 +121,6 @@ public class Tank extends PhysicsEntity {
   public void killTank() {
     healthbar.receiveDamage(healthbar.health);
   }
+
+
 }
