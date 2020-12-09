@@ -23,6 +23,7 @@ public class PlayingState extends BasicGameState {
   static public int BOTTOM_UI_HEIGHT = 300;
   
   PlayerConfigurator PC;
+  Rectangle worldBounds;
 	
 	World world;
 	DebugCamera camera;
@@ -42,6 +43,10 @@ public class PlayingState extends BasicGameState {
   	public void setPlayerConfig(PlayerConfigurator pc) {
   		PC = pc;
   	}
+  	
+  	public void setWorldBounds(Rectangle wb) {
+  		worldBounds = wb;
+  	}
   
 	@Override
 	public void init(GameContainer container, StateBasedGame game)
@@ -53,7 +58,6 @@ public class PlayingState extends BasicGameState {
   public void enter(GameContainer container, StateBasedGame game)
     throws SlickException {
 
-    Rectangle worldBounds = new Rectangle(0, 0, container.getWidth()*2, container.getHeight()*2);
     Rectangle screenBounds = new Rectangle(0, 0, container.getWidth(), container.getHeight() - BOTTOM_UI_HEIGHT/2);//new Rectangle(0, 0, container.getScreenWidth(), container.getScreenHeight());
     Rectangle bottomUiBounds = new Rectangle(0, 0, screenBounds.getWidth(), BOTTOM_UI_HEIGHT);
     Vector bottomUiPosition = new Vector(screenBounds.getWidth()/4, BOTTOM_UI_HEIGHT);

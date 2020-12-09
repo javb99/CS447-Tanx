@@ -6,6 +6,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -73,13 +74,15 @@ public class StartUpState extends BasicGameState {
     tanks = new MultiValueOption(container.getWidth()/2, container.getHeight()/2-15, SETUP_TANKS, list);
     setup.add(tanks);
     
-    list.remove("1");
+    list = new ArrayList<String>();
+    list.add("2");
+    list.add("3");
+    list.add("4");
     players = new MultiValueOption(container.getWidth()/2, container.getHeight()/2+5, SETUP_PLAYERS, list);
     setup.add(players);
     
     list = new ArrayList<String>();
     list.add("SMALL");
-    list.add("MEDIUM");
     list.add("LARGE");
     worldSize = new MultiValueOption(container.getWidth()/2, container.getHeight()/2+25, SETUP_WORLD_SIZE, list);
     setup.add(worldSize);
@@ -220,10 +223,26 @@ public class StartUpState extends BasicGameState {
   }
   
   private void transitionToPlayingState(GameContainer container, Tanx game) {
-	  PlayerConfigurator PC = new PlayerConfigurator(container.getWidth()*2, Integer.parseInt(players.getSelection()), Integer.parseInt(tanks.getSelection()));
+	  int width = 0;
+	  int height = 0;
+	  switch(worldSize.getSelection()) {
+	  case "LARGE":
+		  width = container.getWidth()*8;
+		  height = container.getHeight()*8;
+		  break;
+	  case "SMALL":
+	  default:
+		  width = container.getWidth()*4;
+		  height = container.getHeight()*4;
+		  break;
+	  }
+	  Rectangle bounds = new Rectangle(0, 0, width, height);
+	  PlayerConfigurator PC = new PlayerConfigurator(width, Integer.parseInt(players.getSelection()), Integer.parseInt(tanks.getSelection()));
 	  ((PlayingState)game.getState(Tanx.PLAYINGSTATE)).setPlayerConfig(PC);
+	  ((PlayingState)game.getState(Tanx.PLAYINGSTATE)).setWorldBounds(bounds);
 	  game.enterState(Tanx.PLAYINGSTATE);
   }
+  
   
   private void clearInputBuffer(Input in) {
 	  in.isKeyPressed(Input.KEY_W);
