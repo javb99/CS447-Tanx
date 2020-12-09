@@ -34,7 +34,7 @@ public class PhysicsEngine {
 	
 	static public float GRAV_CONSTANT = 1f;
 	static public float NORMAL_FRICTION = .1f;
-	
+	static public int PHYSICS_TICK_LENGTH = 5;
 	
 	private ArrayList<PhysicsEntity> objects;
 	private ArrayList<CollisionHandler<PhysicsEntity, PhysicsEntity>> collisionHandlers;
@@ -68,16 +68,22 @@ public class PhysicsEngine {
     collisionHandlers.add(new TypeMatchingHandler<A,B>(aClass, bClass, handler));
   }
 	
-	public void update(int delta) {
-		
-		objects.forEach((n) -> applyPhysics(n, delta));
-
-		applyCollisionDetection(delta);
-
+  public void update(int delta) {
+    int steps = delta / PHYSICS_TICK_LENGTH;
+    for (int i = 0; i < steps; i++) {
+      updatePhysics(PHYSICS_TICK_LENGTH);
+    }
+    updatePhysics(delta % PHYSICS_TICK_LENGTH);
+  }
+	
+  private void updatePhysics(int delta) {
+    objects.forEach((n) -> applyPhysics(n, delta));
+    
+    applyCollisionDetection(delta);
+    
     checkObjectBounds();
-		objects.removeIf(e -> e.getIsDead() );
-
-	}
+    objects.removeIf(e -> e.getIsDead() );
+  }
 
   private void checkObjectBounds() {
 	  final float OUT_BOUNDS_LENGTH = 100f;
