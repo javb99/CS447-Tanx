@@ -25,6 +25,7 @@ public class World {
 		availPowerups = new ArrayList<Powerup>();
 		availPowerups.add(new AmmoPowerup(0, 0, Cannon.BIG_CANNON, 1));
 		availPowerups.add(new HealthPowerup(0, 0, 20));
+		availPowerups.add(new AmmoPowerup(0, 0, Cannon.MOUNTAIN_MAKER, 1));
 	}
 	
 	public void loadLevel(String name) {
