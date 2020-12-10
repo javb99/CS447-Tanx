@@ -1,11 +1,20 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
 
 import org.newdawn.slick.Color;
 
+import jig.Vector;
+
 public class PlayerConfigurator {
 
+	private final float EDGE_SPACING = 25;
+	private final float TANK_SPACING = 50;
+	
+	private final float spawnWidth;
+	private ArrayList<Integer> spawns;
+	
 	private int width;
 
 	private int numPlayers;
@@ -19,6 +28,12 @@ public class PlayerConfigurator {
 		
 		if(this.numPlayers > 4) this.numPlayers = 4;
 		if(this.numPlayers < 2) this.numPlayers = 2;
+		
+		spawnWidth = width / (this.numPlayers*this.numTanks);
+		spawns = new ArrayList<Integer>();
+		for(int i = 0; i < this.numPlayers*this.numTanks; i++) {
+			spawns.add(new Integer(i));
+		}
 	}
 	
 	public void setNumPlayers(int p) {
@@ -37,16 +52,27 @@ public class PlayerConfigurator {
 		ArrayList<Tank> tankList = new ArrayList<Tank>();
 		Date d = new Date();
 		Random rand = new Random(d.getTime());
+		int nextSpawn;
 		
 		for(int i = 1; i <= numPlayers; i++) {
 			Player p = new Player(colors[i-1], i);
 			
 			while(p.getTanks().size() < numTanks) {
-				Tank t = p.addTank(rand.nextFloat()*width, 100);
+				Collections.shuffle(spawns);
+				nextSpawn = spawns.get(0);
+				
+				Tank t = p.addTank(rand.nextFloat()*spawnWidth + nextSpawn*spawnWidth, 50);
+				if(t.getCoarseGrainedMinX() < EDGE_SPACING) {
+					t.translate(new Vector(t.getCoarseGrainedMinX() + EDGE_SPACING, 0));
+				}
+				if(t.getCoarseGrainedMaxX() > width - EDGE_SPACING) {
+					t.translate(new Vector(t.getCoarseGrainedMaxX() - EDGE_SPACING, 0));
+				}
 				if(!checkIfOpen(t, tankList)) {
 					p.removeTank(t);
 				} else {
 					tankList.add(t);
+					spawns.remove(0);
 				}
 			}
 			
@@ -58,7 +84,7 @@ public class PlayerConfigurator {
 	
 	private boolean checkIfOpen(Tank newTank, ArrayList<Tank> oldTanks) {
 		for(int i = 0; i < oldTanks.size(); i++) {
-			if(oldTanks.get(i).collides(newTank) != null) {
+			if(oldTanks.get(i).getPosition().distance(newTank.getPosition()) < TANK_SPACING) {
 				return false;
 			}
 		}

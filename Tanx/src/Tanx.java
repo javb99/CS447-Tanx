@@ -16,7 +16,19 @@ import org.newdawn.slick.state.StateBasedGame;
  *
  *
  * Skeleton Code Copied from Bounce by wallaces
- * @author Matthew Scofield
+ * @authors:
+ * Matthew Scofield
+ * Joseph Van Boxtel
+ * Benjamin Eavenson
+ * Henry Unruh
+ *
+ *    Flame Effect
+ *    Artist: Division Plus
+ *    links: https://opengameart.org/content/fantasy-character-npc-sprites
+ *
+ *    Sound Effects
+ *    Artist: Juhani Junkala
+ *    link: https://opengameart.org/content/512-sound-effects-8-bit-style
  *
  */
 public class Tanx extends StateBasedGame {
@@ -40,8 +52,11 @@ public class Tanx extends StateBasedGame {
   public static final String PLAYER_WIN_4 = "resources/Player4_win.png";
   public static final String NO_WINNER_MSG = "resources/no_winner.png";
   public static final String RESET_MSG = "resources/pushSpaceResetMsg.png";
-  	public static final String TERRAIN_IMG = "resources/dirtTile.png";
-	public final int ScreenWidth;
+  public static final String TERRAIN_IMG = "resources/dirtTile.png";
+  public static final String FIRE_ANIMATION = "resources/Flame.png";
+  public static final String JET_SOUND = "resources/sfx_exp_shortest_hard5.wav";
+  
+  public final int ScreenWidth;
 	public final int ScreenHeight;
 
 	/**
@@ -53,6 +68,16 @@ public class Tanx extends StateBasedGame {
 	 *            the window's width
 	 * @param height
 	 *            the window's height
+   *
+   *    Flame Effect
+   *    Artist: Division Plus
+   *    links: https://opengameart.org/content/fantasy-character-npc-sprites
+   *
+   *    Sound Effects
+   *    Artist: Juhani Junkala
+   *    link: https://opengameart.org/content/512-sound-effects-8-bit-style
+   *
+   *
 	 */
 	public Tanx(String title, int width, int height) {
 		super(title);
@@ -86,6 +111,8 @@ public class Tanx extends StateBasedGame {
     ResourceManager.loadImage(TERRAIN_IMG);
 		ResourceManager.loadImage(Tanx.BANG_EXPLOSIONIMG_RSC);
 		ResourceManager.loadSound(Tanx.BANG_EXPLOSIONSND_RSC);
+		ResourceManager.loadImage(FIRE_ANIMATION);
+		ResourceManager.loadSound(JET_SOUND);
 
 	}
 
