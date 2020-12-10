@@ -86,6 +86,7 @@ public class PlayingState extends BasicGameState {
     });
 
     PE.registerCollisionHandler(Projectile.class, PhysicsEntity.class, (projectile, obstacle, c) -> {
+      if (projectile.getType() != Projectile.Type.BASIC) { return; }	//dont use this handler for non-basic projectiles 
       if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
       if (projectile == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
       projectile.explode();
@@ -102,6 +103,28 @@ public class PlayingState extends BasicGameState {
         }
       });
     });
+    
+    PE.registerCollisionHandler(MountainMaker.class, PhysicsEntity.class, (mm, obstacle, c) -> {
+        if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
+        if (mm == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
+        mm.explode();
+        int blastRadius = 100;
+        int damage = 10;
+        Vector location = mm.getPosition();
+        
+        world.terrain.changeTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN, Terrain.TerrainType.NORMAL);
+        
+        PE.forEachEntityInCircle(location, (float)blastRadius, (e) -> {
+          if (e instanceof Tank) {
+            Tank tank = (Tank)e;
+            tank.takeDamage(damage);
+          }
+          if (!(e instanceof Projectile || e instanceof Terrain)) {
+        	  world.terrain.setTerrainInCircle(e.getPosition(), e.getCoarseGrainedRadius() + 30, Terrain.TerrainType.OPEN);
+        	  explosionSystem.addExplosion(e.getPosition(), e.getCoarseGrainedRadius() + 30);
+          }
+        });
+      });
     
     camera.toggleDebug();
   }

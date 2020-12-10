@@ -6,17 +6,21 @@ import org.newdawn.slick.Color;
 
 public class Cannon extends Entity {
   //constants
-  public static float ROTATION_SPEED = 100;
-  public static float MAX_ROTATION_FACTOR = 90;
-  public static float ANGLE_CORRECTION = -90;
-  public static int BASE_CANNON = 0;
-  public static String BASE_CANNON_STR = "Basic Cannon";
-  public static float BASE_CANNON_POWER = 1f;
-  public static float BASE_CANNON_OFFSET = 50;
-  public static int BIG_CANNON = 1;
-  public static String BIG_CANNON_STR = "Long Range Cannon";
-  public static float BIG_CANNON_POWER = 1f;
-  public static float BIG_CANNON_OFFSET = 50;
+  public static final float ROTATION_SPEED = 100;
+  public static final float MAX_ROTATION_FACTOR = 90;
+  public static final float ANGLE_CORRECTION = -90;
+  public static final int BASE_CANNON = 0;
+  public static final String BASE_CANNON_STR = "Basic Cannon";
+  public static final float BASE_CANNON_POWER = 1f;
+  public static final float BASE_CANNON_OFFSET = 50;
+  public static final int BIG_CANNON = 1;
+  public static final String BIG_CANNON_STR = "Long Range Cannon";
+  public static final float BIG_CANNON_POWER = 1f;
+  public static final float BIG_CANNON_OFFSET = 50;
+  public static final int MOUNTAIN_MAKER = 2;
+  public static final String MOUNTAIN_MAKER_STR = "Mountain Maker";
+  public static final float MOUNTAIN_MAKER_POWER = 1f;
+  public static final float MOUNTAIN_MAKER_OFFSET = 50;
   //class variables
   private int type;
   private float power;
@@ -30,22 +34,38 @@ public class Cannon extends Entity {
   }
 
   public static String getTypeStr(int type) {
-    if (type == BIG_CANNON) { return BIG_CANNON_STR;
-    } else if (type == BASE_CANNON) { return BASE_CANNON_STR;
-    } else { return null; }
+	switch(type) {
+	case BIG_CANNON:
+		return BIG_CANNON_STR;
+	case BASE_CANNON:
+		return BASE_CANNON_STR;
+	case MOUNTAIN_MAKER:
+		return MOUNTAIN_MAKER_STR;
+	default:
+		return null;
+	}
+    
   }
 
   public void changeType(int newType){
     type = newType;
-    if (newType == BASE_CANNON){
-      power = BASE_CANNON_POWER;
-      fireOffset = BASE_CANNON_OFFSET;
-      //changeSprite(Tanx.BASIC_CANNON_SPRITE);
-    } else if (newType == BIG_CANNON){
-      power = BIG_CANNON_POWER;
-      fireOffset = BIG_CANNON_OFFSET;
-      //changeSprite(tanx.BIG_CANNON_SPRITE);
+    switch(newType) {
+    case BASE_CANNON:
+    	power = BASE_CANNON_POWER;
+        fireOffset = BASE_CANNON_OFFSET;
+        //changeSprite(Tanx.BASIC_CANNON_SPRITE);
+    	break;
+    case BIG_CANNON:
+    	power = BIG_CANNON_POWER;
+        fireOffset = BIG_CANNON_OFFSET;
+        //changeSprite(tanx.BIG_CANNON_SPRITE);
+    	break;
+    case MOUNTAIN_MAKER:
+    	power = MOUNTAIN_MAKER_POWER;
+    	fireOffset = MOUNTAIN_MAKER_OFFSET;
+    	break;
     }
+   
   }
 
   public void changeSprite(String sprite){
@@ -86,7 +106,12 @@ public class Cannon extends Entity {
     projVelocity = projVelocity.setLength(launchPower);
     float x = getX() + fireOffset*(float)Math.cos(angle);
     float y = getY() + fireOffset*(float)Math.sin(angle);
-    return new Projectile(x, y, projVelocity);
+    switch(type) {
+    case MOUNTAIN_MAKER:
+    	return new MountainMaker(x, y, projVelocity);
+    default:
+    	return new Projectile(x, y, projVelocity);
+    }
   }
 
   public int getType() { return type; }
