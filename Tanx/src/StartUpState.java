@@ -41,6 +41,8 @@ public class StartUpState extends BasicGameState {
 	private MultiValueOption tanks;
 	private MultiValueOption worldSize;
 	
+	private boolean loading;
+	
 	
   @Override
   public void init(GameContainer container, StateBasedGame game)
@@ -88,6 +90,8 @@ public class StartUpState extends BasicGameState {
     setup.add(worldSize);
     setup.add(new MenuOption(container.getWidth()/2, container.getHeight()/2+45, SETUP_START));
     setup.add(new MenuOption(container.getWidth()/2, container.getHeight()/2+75, SETUP_RETURN));
+    
+    loading = false;
   }
 
 
@@ -99,6 +103,14 @@ public class StartUpState extends BasicGameState {
     ArrayList<MenuOption> options;
     
     g.drawImage(ResourceManager.getImage(Tanx.BACKGROUND_DESERT), 0, 0);
+    
+    
+    if(loading) {
+    	g.setColor(Color.black);
+    	g.drawString("LOADING", container.getWidth()/2, container.getHeight()/2+25);
+    	g.setColor(Color.white);
+    	return;
+    }
     
     switch(currentMenu) {
     case MAIN:
@@ -223,17 +235,18 @@ public class StartUpState extends BasicGameState {
   }
   
   private void transitionToPlayingState(GameContainer container, Tanx game) {
+	  loading = true;
 	  int width = 0;
 	  int height = 0;
 	  switch(worldSize.getSelection()) {
 	  case "LARGE":
-		  width = container.getWidth()*8;
-		  height = container.getHeight()*8;
+		  width = 4*container.getWidth();
+		  height = 7*container.getHeight()/4;
 		  break;
 	  case "SMALL":
 	  default:
-		  width = container.getWidth()*4;
-		  height = container.getHeight()*4;
+		  width = 2*container.getWidth();
+		  height = 3*container.getHeight()/4;
 		  break;
 	  }
 	  Rectangle bounds = new Rectangle(0, 0, width, height);

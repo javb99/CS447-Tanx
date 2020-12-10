@@ -114,7 +114,7 @@ public class PlayingState extends BasicGameState {
       });
     });
     
-    camera.toggleDebug();
+    //camera.toggleDebug();
   }
 
 	@Override
