@@ -3,6 +3,7 @@ import jig.Entity;
 import jig.ResourceManager;
 import jig.Vector;
 import org.newdawn.slick.Color;
+import org.newdawn.slick.Graphics;
 
 public class Cannon extends Entity {
   //constants
@@ -72,6 +73,11 @@ public class Cannon extends Entity {
       }
     }
     setRotation(rotationFactor);
+  }
+
+  public void render(Graphics g, final float x, final float y) {
+    setPosition(x, y);
+    super.render(g);
   }
 
   //input:float from 0 to 1 determing power strength
