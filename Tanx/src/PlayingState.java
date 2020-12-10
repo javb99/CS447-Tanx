@@ -136,11 +136,11 @@ public class PlayingState extends BasicGameState {
       g.drawString("CHEATS ON", 0, yOffset);
       if (current.isInfFuel()) {
         yOffset += 20;
-        g.drawString("Infinate Fuel On!", 0, yOffset);
+        g.drawString("Infinite Fuel On!", 0, yOffset);
       }
       if (current.isInfHealth()) {
         yOffset += 20;
-        g.drawString("Current Tank has Infinate Health!", 0, yOffset);
+        g.drawString("Current Tank has Infinite Health!", 0, yOffset);
       }
     }
     if (state == phase.GAMEOVER) {
