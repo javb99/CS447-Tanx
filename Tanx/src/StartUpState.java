@@ -36,12 +36,14 @@ public class StartUpState extends BasicGameState {
 	private final static String SETUP_TANKS = "Tanks per player:";
 	private final static String SETUP_WORLD_SIZE = "World Size:";
 	private final static String SETUP_RETURN = "Return to Main Menu";
+	private final static String SETUP_INVALID = "SMALL MAPS CAN ONLY HANDLE SIX OR LESS TANKS TOTAL";
 	
 	private MultiValueOption players;
 	private MultiValueOption tanks;
 	private MultiValueOption worldSize;
 	
 	private boolean loading;
+	private boolean validSettings;
 	
 	
   @Override
@@ -124,6 +126,10 @@ public class StartUpState extends BasicGameState {
     	options = credits;
     	break;
     case SETUP:
+    	if(!validSettings) {
+    		g.setColor(Color.red);
+    		g.drawString(SETUP_INVALID, container.getWidth()/2 - g.getFont().getWidth(SETUP_INVALID)/2, container.getHeight()/2 - 120);
+    	}
     	options = setup;
     	break;
     default:
@@ -133,7 +139,11 @@ public class StartUpState extends BasicGameState {
     g.setColor(Color.black);
     
     for(int i=0; i<options.size(); i++) {
+    	if(!validSettings && options.get(i).getLabel().equals(SETUP_START)) {
+    		g.setColor(Color.red);
+    	}
     	options.get(i).render(g, i == selectedOption ? true : false);
+    	g.setColor(Color.black);
     }
     
     g.setColor(Color.white);
@@ -189,6 +199,14 @@ public class StartUpState extends BasicGameState {
     		}
     	}
     }
+    
+    
+    validSettings = true;
+    if(Integer.parseInt(players.getSelection()) * Integer.parseInt(tanks.getSelection()) > 6){
+    	if(worldSize.getSelection().equals("SMALL")) {
+    		validSettings = false;
+    	}
+    }
   }
   
   void handleOption(Menu menu, int option, Tanx game, GameContainer container){
@@ -216,7 +234,9 @@ public class StartUpState extends BasicGameState {
 	  case SETUP:
 		  switch(setup.get(option).getLabel()) {
 		  case SETUP_START:
-			  transitionToPlayingState(container, game);
+			  if(validSettings) {
+				  transitionToPlayingState(container, game);
+			  }
 			  break;
 		  case SETUP_RETURN:
 			  currentMenu = Menu.MAIN;
