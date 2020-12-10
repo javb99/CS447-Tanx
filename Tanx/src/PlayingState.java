@@ -310,7 +310,6 @@ public class PlayingState extends BasicGameState {
       if (pIndex >= players.size()){pIndex = 0;}
       currentPlayer = players.get(pIndex);
     } while (currentPlayer.isDead());
-    currentPlayer.getNextTank();
     currentPlayer.startTurn();
     camera.moveTo(currentPlayer.getTank().getPosition());
     tankPointer.pointTo(currentPlayer.getTank().getPosition());
