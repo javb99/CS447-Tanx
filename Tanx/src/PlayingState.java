@@ -7,6 +7,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.geom.Circle;
 
 import jig.Entity;
 import jig.Vector;
@@ -112,7 +113,8 @@ public class PlayingState extends BasicGameState {
         int damage = 10;
         Vector location = mm.getPosition();
         
-        world.terrain.changeTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN, Terrain.TerrainType.NORMAL);
+        world.terrain.changeTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN, Terrain.TerrainType.NORMAL, false);
+        ArrayList<Circle> holes = new ArrayList<Circle>();
         
         PE.forEachEntityInCircle(location, (float)blastRadius, (e) -> {
           if (e instanceof Tank) {
@@ -120,10 +122,12 @@ public class PlayingState extends BasicGameState {
             tank.takeDamage(damage);
           }
           if (!(e instanceof Projectile || e instanceof Terrain)) {
-        	  world.terrain.setTerrainInCircle(e.getPosition(), e.getCoarseGrainedRadius() + 30, Terrain.TerrainType.OPEN);
+        	  holes.add(new Circle(e.getX(), e.getY(), e.getCoarseGrainedRadius() + 30));
         	  explosionSystem.addExplosion(e.getPosition(), e.getCoarseGrainedRadius() + 30);
           }
         });
+        
+        world.terrain.changeTerrainInCircleList(holes, Terrain.TerrainType.NORMAL, Terrain.TerrainType.OPEN);
       });
     
     camera.toggleDebug();
