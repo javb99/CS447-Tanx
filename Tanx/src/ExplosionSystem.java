@@ -15,8 +15,8 @@ public class ExplosionSystem {
 		explosions = new ArrayList<Bang>();
 	}
 	
-	public void addExplosion(Vector position, float radius) {
-		explosions.add(new Bang(position.getX(), position.getY(), radius));
+	public void addExplosion(Vector position, float radius, String animation, String sound) {
+		explosions.add(new Bang(position.getX(), position.getY(), radius, animation, sound));
 	}
 	
 	public void update(int delta) {

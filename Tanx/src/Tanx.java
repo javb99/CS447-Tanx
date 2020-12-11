@@ -34,6 +34,8 @@ public class Tanx extends StateBasedGame {
 	public static final String TIMER_GAUGE = "resources/timerGauge.png";
 	public static final String BANG_EXPLOSIONIMG_RSC = "resources/explosion.png";
 	public static final String BANG_EXPLOSIONSND_RSC = "resources/explosion.wav";
+	public static final String BANG_MOUNTAINIMG_RSC = "resources/mountain_maker_anim.png";
+	public static final String BANG_MOUNTAINSND_RSC = "resources/mountain_maker_snd.wav";
 	public static final String PLAYER_WIN_1 = "resources/Player1_win.png";
   public static final String PLAYER_WIN_2 = "resources/Player2_win.png";
   public static final String PLAYER_WIN_3 = "resources/Player3_win.png";
@@ -84,6 +86,8 @@ public class Tanx extends StateBasedGame {
     ResourceManager.loadImage(RESET_MSG);
 		ResourceManager.loadImage(Tanx.BANG_EXPLOSIONIMG_RSC);
 		ResourceManager.loadSound(Tanx.BANG_EXPLOSIONSND_RSC);
+		ResourceManager.loadImage(Tanx.BANG_MOUNTAINIMG_RSC);
+		ResourceManager.loadSound(Tanx.BANG_MOUNTAINSND_RSC);
 
 	}
 

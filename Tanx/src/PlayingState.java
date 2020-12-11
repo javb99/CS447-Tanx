@@ -96,7 +96,7 @@ public class PlayingState extends BasicGameState {
       int blastRadius = projectile.getExplosionRadius();
       int damage = projectile.getDamage();
       Vector location = projectile.getPosition();
-      explosionSystem.addExplosion(location, (float)blastRadius);
+      explosionSystem.addExplosion(location, (float)blastRadius, Tanx.BANG_EXPLOSIONIMG_RSC, Tanx.BANG_EXPLOSIONSND_RSC);
       world.terrain.setTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN);
       
       PE.forEachEntityInCircle(location, (float)blastRadius, (e) -> {
@@ -115,7 +115,10 @@ public class PlayingState extends BasicGameState {
         int damage = mm.getDamage();
         Vector location = mm.getPosition();
         
+        
+        explosionSystem.addExplosion(location, (float)(blastRadius*1.5), Tanx.BANG_MOUNTAINIMG_RSC, Tanx.BANG_MOUNTAINSND_RSC);
         world.terrain.changeTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN, Terrain.TerrainType.NORMAL, false);
+        
         ArrayList<Circle> holes = new ArrayList<Circle>();
         
         PE.forEachEntityInCircle(location, (float)blastRadius, (e) -> {
@@ -125,7 +128,6 @@ public class PlayingState extends BasicGameState {
           }
           if (!(e instanceof Projectile || e instanceof Terrain)) {
         	  holes.add(new Circle(e.getX(), e.getY(), e.getCoarseGrainedRadius() + 30));
-        	  explosionSystem.addExplosion(e.getPosition(), e.getCoarseGrainedRadius() + 30);
           }
         });
         

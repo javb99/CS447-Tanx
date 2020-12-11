@@ -18,7 +18,7 @@ public class StartUpState extends BasicGameState {
 
   @Override
   public void enter(GameContainer container, StateBasedGame game) {
-    container.setSoundOn(false);
+    container.setSoundOn(true);
   }
 
 
