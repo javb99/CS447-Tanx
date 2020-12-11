@@ -27,6 +27,7 @@ public class Tanx extends StateBasedGame {
 
 	public static final String SPLASH_LOGO = "resources/tanxlogo.png";
 	public static final String BACKGROUND_DESERT = "resources/desertBG.png";
+	public static final String MENU_MUSIC = "resources/tanxMenuTheme.wav";
 	public static final String POWER_GAUGE_OVERLAY = "resources/PowerGauge.png";
 	public static final String FUEL_GAUGE_OVERLAY = "resources/FuelGauge.png";
 	public static final String FUEL_GAUGE_ARROW = "resources/FuelGaugeArrow.png";
@@ -73,6 +74,7 @@ public class Tanx extends StateBasedGame {
 		//ex: ResourceManager.loadImage(BALL_BALLIMG_RSC);
 		ResourceManager.loadImage(SPLASH_LOGO);
 		ResourceManager.loadImage(BACKGROUND_DESERT);
+		ResourceManager.loadSound(MENU_MUSIC);
     ResourceManager.loadImage(FUEL_GAUGE_ARROW);
     ResourceManager.loadImage(FUEL_GAUGE_OVERLAY);
     ResourceManager.loadImage(POWER_GAUGE_OVERLAY);

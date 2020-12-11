@@ -54,6 +54,7 @@ public class StartUpState extends BasicGameState {
   @Override
   public void enter(GameContainer container, StateBasedGame game) {
     container.setSoundOn(true);
+    ResourceManager.getSound(Tanx.MENU_MUSIC).loop();
     
     Input input = container.getInput();
     clearInputBuffer(input);
@@ -273,6 +274,9 @@ public class StartUpState extends BasicGameState {
 	  PlayerConfigurator PC = new PlayerConfigurator(width, Integer.parseInt(players.getSelection()), Integer.parseInt(tanks.getSelection()));
 	  ((PlayingState)game.getState(Tanx.PLAYINGSTATE)).setPlayerConfig(PC);
 	  ((PlayingState)game.getState(Tanx.PLAYINGSTATE)).setWorldBounds(bounds);
+	  if(ResourceManager.getSound(Tanx.MENU_MUSIC).playing()) {
+			ResourceManager.getSound(Tanx.MENU_MUSIC).stop();
+	  }
 	  game.enterState(Tanx.PLAYINGSTATE);
   }
   
