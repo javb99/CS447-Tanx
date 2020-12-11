@@ -126,7 +126,6 @@ public class PlayingState extends BasicGameState {
         int damage = mm.getDamage();
         Vector location = mm.getPosition();
         
-        
         explosionSystem.addExplosion(location, (float)(blastRadius*1.5), Tanx.BANG_MOUNTAINIMG_RSC, Tanx.BANG_MOUNTAINSND_RSC);
         world.terrain.changeTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN, Terrain.TerrainType.NORMAL, false);
         
@@ -142,7 +141,26 @@ public class PlayingState extends BasicGameState {
           }
         });
         
-        world.terrain.changeTerrainInCircleList(holes, Terrain.TerrainType.NORMAL, Terrain.TerrainType.OPEN);
+        world.terrain.setTerrainInCircleList(holes, Terrain.TerrainType.OPEN);
+      });
+    
+    PE.registerCollisionHandler(IceBomb.class, PhysicsEntity.class, (mm, obstacle, c) -> {
+        if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
+        if (mm == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
+        mm.explode();
+        int blastRadius = mm.getExplosionRadius();
+        int damage = mm.getDamage();
+        Vector location = mm.getPosition();
+        
+        //explosionSystem.addExplosion(location, (float)(blastRadius), Tanx.BANG_MOUNTAINIMG_RSC, Tanx.BANG_MOUNTAINSND_RSC);
+        world.terrain.changeTerrainInCircle(location, blastRadius, Terrain.TerrainType.NORMAL, Terrain.TerrainType.ICE, true);
+        
+        PE.forEachEntityInCircle(location, (float)blastRadius, (e) -> {
+          if (e instanceof Tank) {
+            Tank tank = (Tank)e;
+            tank.takeDamage(damage);
+          }
+        });
       });
     
 

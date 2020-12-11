@@ -30,6 +30,7 @@ public class Player {
     giveAmmo(Cannon.BIG_CANNON, 10);
     giveAmmo(Cannon.CLUSTER_CANNON, 10);
 	giveAmmo(Cannon.MOUNTAIN_MAKER, 10);
+	giveAmmo(Cannon.ICE_BOMB, 10);
 	
     ammoIndex = 0;
     infFuel = false;

@@ -19,7 +19,8 @@ public class Terrain extends PhysicsEntity {
 	
 	enum TerrainType{
 		OPEN,
-		NORMAL
+		NORMAL,
+		ICE
 	}
 	
 	public Terrain(int w, int h, TerrainType t) {	//create a new terrain object completely of the specified type
@@ -50,13 +51,20 @@ public class Terrain extends PhysicsEntity {
 	private void applyMask(){
 		for(int x = 0; x < width; x++) {
 			for(int y = 0; y < height; y++) {
+				Color pixel;
 				
 				switch(mask[x][y]) {	//individually set every pixel in the image buffer according to the mask
 				case OPEN:
 					IB.setRGBA(x, y, 0, 0, 0, 0);
 					break;
 				case NORMAL:
-					Color pixel = baseImage.getColor(x%baseImage.getWidth(), y%baseImage.getHeight());
+					pixel = baseImage.getColor(x%baseImage.getWidth(), y%baseImage.getHeight());
+					IB.setRGBA(x, y, pixel.getRed(), pixel.getGreen(), pixel.getBlue(), pixel.getAlpha());
+					break;
+				case ICE:
+					pixel = baseImage.getColor(x%baseImage.getWidth(), y%baseImage.getHeight());
+					pixel.add(Color.cyan);
+					pixel = pixel.brighter();
 					IB.setRGBA(x, y, pixel.getRed(), pixel.getGreen(), pixel.getBlue(), pixel.getAlpha());
 				}
 				
@@ -245,7 +253,7 @@ public class Terrain extends PhysicsEntity {
 		}
 	}
 	
-	public void changeTerrainInCircleList(ArrayList<Circle> list, TerrainType targetType, TerrainType newType) {
+	public void setTerrainInCircleList(ArrayList<Circle> list, TerrainType newType) {
 		for(int i = 0; i < list.size(); i++) {
 			
 			int cx = (int)list.get(i).getCenterX();
@@ -258,9 +266,7 @@ public class Terrain extends PhysicsEntity {
 					if(x < 0 || x >= width || y < 0 || y >= height) continue;	//dont set out of world
 					
 					if(Math.sqrt( Math.pow(Math.abs(x-cx), 2) + Math.pow(Math.abs(y-cy), 2) ) <= r) {	//pythagorean theorem
-						if(mask[x][y] == targetType) {
-							mask[x][y] = newType;
-						}
+						mask[x][y] = newType;
 					}
 				}
 			}

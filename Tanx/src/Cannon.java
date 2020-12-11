@@ -42,6 +42,13 @@ public class Cannon extends Entity {
   public static final float MOUNTAIN_MAKER_OFFSET = 50;
   public static final int MOUNTAIN_MAKER_DAMAGE = 10;
   public static final int MOUNTAIN_MAKER_RADIUS = 100;
+  
+  public static final int ICE_BOMB = 4;
+  public static final String ICE_BOMB_STR = "Ice Bomb";
+  public static final float ICE_BOMB_POWER = 1f;
+  public static final float ICE_BOMB_OFFSET = 50;
+  public static final int ICE_BOMB_DAMAGE = 10;
+  public static final int ICE_BOMB_RADIUS = 100;
 
   //class variables
   private int type;
@@ -68,6 +75,8 @@ public class Cannon extends Entity {
 		return CLUSTER_CANNON_STR;
 	case MOUNTAIN_MAKER:
 		return MOUNTAIN_MAKER_STR;
+	case ICE_BOMB:
+		return ICE_BOMB_STR;
 	default:
 		return null;
 	}
@@ -97,12 +106,19 @@ public class Cannon extends Entity {
         damage = CLUSTER_CANNON_DAMAGE;
         radius = CLUSTER_CANNON_RADIUS;
         //changeSprite(tanx.CLUSTER_CANNON_SPRITE);
+        break;
     case MOUNTAIN_MAKER:
     	power = MOUNTAIN_MAKER_POWER;
     	fireOffset = MOUNTAIN_MAKER_OFFSET;
     	damage = MOUNTAIN_MAKER_DAMAGE;
         radius = MOUNTAIN_MAKER_RADIUS;
     	break;
+    case ICE_BOMB:
+    	power = ICE_BOMB_POWER;
+    	fireOffset = ICE_BOMB_OFFSET;
+    	damage = ICE_BOMB_DAMAGE;
+        radius = ICE_BOMB_RADIUS;
+        break;
     }
    
   }
@@ -158,6 +174,9 @@ public class Cannon extends Entity {
     	break;
     case MOUNTAIN_MAKER:
     	spawnP.accept(new MountainMaker(x, y, projVelocity, radius, damage));
+    	break;
+    case ICE_BOMB:
+    	spawnP.accept(new IceBomb(x, y, projVelocity, radius, damage));
     	break;
     default:
     	spawnP.accept(new Projectile(x, y, projVelocity, radius, damage));
