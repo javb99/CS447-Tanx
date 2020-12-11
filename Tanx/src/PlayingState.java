@@ -172,16 +172,16 @@ public class PlayingState extends BasicGameState {
     int winningPlayer = getWinningPlayer();
     switch(winningPlayer) {
       case 1:
-        playerWinImg = ResourceManager.getImage(Tanx.PLAYER_WIN_1);
+        playerWinImg = ResourceManager.getImage(Tanx.PLAYER_WIN_BLUE);
         break;
       case 2:
-        playerWinImg = ResourceManager.getImage(Tanx.PLAYER_WIN_2);
+        playerWinImg = ResourceManager.getImage(Tanx.PLAYER_WIN_RED);
         break;
       case 3:
-        playerWinImg = ResourceManager.getImage(Tanx.PLAYER_WIN_3);
+        playerWinImg = ResourceManager.getImage(Tanx.PLAYER_WIN_GREEN);
         break;
       case 4:
-        playerWinImg = ResourceManager.getImage(Tanx.PLAYER_WIN_4);
+        playerWinImg = ResourceManager.getImage(Tanx.PLAYER_WIN_YELLOW);
         break;
       default:
         playerWinImg = ResourceManager.getImage(Tanx.NO_WINNER_MSG);
