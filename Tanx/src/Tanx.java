@@ -29,6 +29,7 @@ public class Tanx extends StateBasedGame {
 	public static final String FUEL_GAUGE_OVERLAY = "resources/FuelGauge.png";
 	public static final String FUEL_GAUGE_ARROW = "resources/FuelGaugeArrow.png";
 	public static final String WEAPON_POINTER = "resources/weaponPointer.png";
+	public static final String DASH_BACKGROUND = "resources/Dashboard_resize.png";
 	public static final String HEALTH_BAR = "resources/healthBar.png";
 	public static final String FOCUS_ARROW = "resources/tankPointer.png";
 	public static final String TIMER_GAUGE = "resources/timerGauge.png";
