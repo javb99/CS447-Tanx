@@ -53,9 +53,7 @@ public class StartUpState extends BasicGameState {
 
   @Override
   public void enter(GameContainer container, StateBasedGame game) {
-    container.setSoundOn(true);
-    ResourceManager.getSound(Tanx.MENU_MUSIC).loop();
-    
+
     Input input = container.getInput();
     clearInputBuffer(input);
     
@@ -95,6 +93,11 @@ public class StartUpState extends BasicGameState {
     setup.add(new MenuOption(container.getWidth()/2, container.getHeight()/2+75, SETUP_RETURN));
     
     loading = false;
+
+
+    container.setSoundOn(true);
+    container.setSoundVolume(.5f);
+    ResourceManager.getSound(Tanx.MENU_MUSIC).loop();
   }
 
 

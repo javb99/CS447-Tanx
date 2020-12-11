@@ -17,7 +17,7 @@ public class PlayingState extends BasicGameState {
 	
   final int NO_WINNER_ID = -1;
   static public int TURNLENGTH = 10*1000;
-  static public int INPUT_TIMER_CD = 500;
+  static public int INPUT_TIMER_CD = 100;
   static public int FIRING_TIMEOUT = 5*1000;
   static public int SHOTRESOLVE_TIMEOUT = 2*1000;
   static public int BOTTOM_UI_HEIGHT = 300;
@@ -147,11 +147,11 @@ public class PlayingState extends BasicGameState {
       g.drawString("CHEATS ON", 0, yOffset);
       if (current.isInfFuel()) {
         yOffset += 20;
-        g.drawString("Infinate Fuel On!", 0, yOffset);
+        g.drawString("Infinite Fuel On!", 0, yOffset);
       }
       if (current.isInfHealth()) {
         yOffset += 20;
-        g.drawString("Current Tank has Infinate Health!", 0, yOffset);
+        g.drawString("Current Tank has Infinite Health!", 0, yOffset);
       }
     }
     if (state == phase.GAMEOVER) {
@@ -271,7 +271,7 @@ public class PlayingState extends BasicGameState {
         turnTimer = TURNLENGTH;
         state = phase.MOVEFIRE;
     } else if (state == phase.GAMEOVER) {
-      if (input.isKeyPressed(Input.KEY_SPACE)) {
+      if (input.isKeyDown(Input.KEY_SPACE)) {
         tg.enterState(Tanx.STARTUPSTATE);
         input.clearKeyPressedRecord();
       }
@@ -321,7 +321,6 @@ public class PlayingState extends BasicGameState {
       if (pIndex >= players.size()){pIndex = 0;}
       currentPlayer = players.get(pIndex);
     } while (currentPlayer.isDead());
-    currentPlayer.getNextTank();
     currentPlayer.startTurn();
     camera.moveTo(currentPlayer.getTank().getPosition());
     tankPointer.pointTo(currentPlayer.getTank().getPosition());
