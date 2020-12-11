@@ -10,6 +10,7 @@ Projectile sprites - Created by Henry Unruh
 Logo - Created by Henry Unruh
 UI elements - Created by Matt Schofield, Henry Unruh
 Background scene sprites - Created by Henry Unruh
+Mountain Maker Splat Animation - Created by Benjamin Eavenson
 
 //Audio/sounds
 Bow Fire - "Bow Fire Arrow Sound" by Stephan Schutze
@@ -26,6 +27,9 @@ LINK: http://soundbible.com/1771-Laser-Cannon.html
 
 Laser Machine Gun Fire - "Laser Machine Gun Sounds" by Mike Koenig
 LINK: http://soundbible.com/1774-Laser-Machine-Gun.html
+
+Mountain Maker Splat - "Slat_ish.WAV" by Benboncan
+LINK: https://freesound.org/people/Benboncan/sounds/147541/
 
 MUSIC - Album: Songs from an Unmade World 2,
 Artist - Visager
