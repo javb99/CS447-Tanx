@@ -16,7 +16,19 @@ import org.newdawn.slick.state.StateBasedGame;
  *
  *
  * Skeleton Code Copied from Bounce by wallaces
- * @author Matthew Scofield
+ * @authors:
+ * Matthew Scofield
+ * Joseph Van Boxtel
+ * Benjamin Eavenson
+ * Henry Unruh
+ *
+ *    Flame Effect
+ *    Artist: Division Plus
+ *    links: https://opengameart.org/content/fantasy-character-npc-sprites
+ *
+ *    Sound Effects
+ *    Artist: Juhani Junkala
+ *    link: https://opengameart.org/content/512-sound-effects-8-bit-style
  *
  */
 public class Tanx extends StateBasedGame {
@@ -25,6 +37,9 @@ public class Tanx extends StateBasedGame {
 	public static final int PLAYINGSTATE = 1;
 	public static final int GAMEOVERSTATE = 2;
 
+	public static final String SPLASH_LOGO = "resources/tanxlogo.png";
+	public static final String BACKGROUND_DESERT = "resources/desertBG.png";
+	public static final String MENU_MUSIC = "resources/tanxMenuTheme.wav";
 	public static final String POWER_GAUGE_OVERLAY = "resources/PowerGauge.png";
 	public static final String FUEL_GAUGE_OVERLAY = "resources/FuelGauge.png";
 	public static final String FUEL_GAUGE_ARROW = "resources/FuelGaugeArrow.png";
@@ -42,7 +57,11 @@ public class Tanx extends StateBasedGame {
   public static final String PLAYER_WIN_4 = "resources/Player4_win.png";
   public static final String NO_WINNER_MSG = "resources/no_winner.png";
   public static final String RESET_MSG = "resources/pushSpaceResetMsg.png";
-	public final int ScreenWidth;
+  public static final String TERRAIN_IMG = "resources/dirtTile.png";
+  public static final String FIRE_ANIMATION = "resources/Flame.png";
+  public static final String JET_SOUND = "resources/sfx_exp_shortest_hard5.wav";
+  
+  public final int ScreenWidth;
 	public final int ScreenHeight;
 
 	/**
@@ -54,6 +73,16 @@ public class Tanx extends StateBasedGame {
 	 *            the window's width
 	 * @param height
 	 *            the window's height
+   *
+   *    Flame Effect
+   *    Artist: Division Plus
+   *    links: https://opengameart.org/content/fantasy-character-npc-sprites
+   *
+   *    Sound Effects
+   *    Artist: Juhani Junkala
+   *    link: https://opengameart.org/content/512-sound-effects-8-bit-style
+   *
+   *
 	 */
 	public Tanx(String title, int width, int height) {
 		super(title);
@@ -71,6 +100,9 @@ public class Tanx extends StateBasedGame {
 
 		// preload all the resources to avoid warnings & minimize latency...
 		//ex: ResourceManager.loadImage(BALL_BALLIMG_RSC);
+		ResourceManager.loadImage(SPLASH_LOGO);
+		ResourceManager.loadImage(BACKGROUND_DESERT);
+		ResourceManager.loadSound(MENU_MUSIC);
     ResourceManager.loadImage(FUEL_GAUGE_ARROW);
     ResourceManager.loadImage(FUEL_GAUGE_OVERLAY);
     ResourceManager.loadImage(POWER_GAUGE_OVERLAY);
@@ -84,10 +116,13 @@ public class Tanx extends StateBasedGame {
     ResourceManager.loadImage(PLAYER_WIN_4);
     ResourceManager.loadImage(NO_WINNER_MSG);
     ResourceManager.loadImage(RESET_MSG);
+    ResourceManager.loadImage(TERRAIN_IMG);
 		ResourceManager.loadImage(Tanx.BANG_EXPLOSIONIMG_RSC);
 		ResourceManager.loadSound(Tanx.BANG_EXPLOSIONSND_RSC);
 		ResourceManager.loadImage(Tanx.BANG_MOUNTAINIMG_RSC);
 		ResourceManager.loadSound(Tanx.BANG_MOUNTAINSND_RSC);
+		ResourceManager.loadImage(FIRE_ANIMATION);
+		ResourceManager.loadSound(JET_SOUND);
 
 	}
 

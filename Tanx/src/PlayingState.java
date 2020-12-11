@@ -15,12 +15,17 @@ import jig.Vector;
 enum phase {MOVEFIRE, FIRING, CHARGING, TURNCHANGE, GAMEOVER};
 
 public class PlayingState extends BasicGameState {
+	
   final int NO_WINNER_ID = -1;
   static public int TURNLENGTH = 10*1000;
-  static public int INPUT_TIMER_CD = 500;
+  static public int INPUT_TIMER_CD = 100;
   static public int FIRING_TIMEOUT = 5*1000;
   static public int SHOTRESOLVE_TIMEOUT = 2*1000;
   static public int BOTTOM_UI_HEIGHT = 300;
+  
+  PlayerConfigurator PC;
+  Rectangle worldBounds;
+	
 	World world;
 	DebugCamera camera;
 	Ui ui;
@@ -37,6 +42,14 @@ public class PlayingState extends BasicGameState {
   boolean toggleCheats;
   int cleanInputTimer;
 
+  	public void setPlayerConfig(PlayerConfigurator pc) {
+  		PC = pc;
+  	}
+  	
+  	public void setWorldBounds(Rectangle wb) {
+  		worldBounds = wb;
+  	}
+  
 	@Override
 	public void init(GameContainer container, StateBasedGame game)
 			throws SlickException {
@@ -46,8 +59,7 @@ public class PlayingState extends BasicGameState {
 	@Override
   public void enter(GameContainer container, StateBasedGame game)
     throws SlickException {
-
-    Rectangle worldBounds = new Rectangle(0, 0, container.getWidth()*2, container.getHeight()*2);
+	
     Rectangle screenBounds = new Rectangle(0, 0, container.getWidth(), container.getHeight() - BOTTOM_UI_HEIGHT/2);//new Rectangle(0, 0, container.getScreenWidth(), container.getScreenHeight());
     Rectangle bottomUiBounds = new Rectangle(0, 0, screenBounds.getWidth(), BOTTOM_UI_HEIGHT);
     Vector bottomUiPosition = new Vector(screenBounds.getWidth()/4, BOTTOM_UI_HEIGHT);
@@ -63,7 +75,6 @@ public class PlayingState extends BasicGameState {
 
     players = new ArrayList<Player>();
 
-    PlayerConfigurator PC = new PlayerConfigurator(container.getWidth()*2, 2, 1);
     players = PC.config();
 
     for (Player p: players){
@@ -134,7 +145,9 @@ public class PlayingState extends BasicGameState {
         world.terrain.changeTerrainInCircleList(holes, Terrain.TerrainType.NORMAL, Terrain.TerrainType.OPEN);
       });
     
-    camera.toggleDebug();
+
+    //camera.toggleDebug();
+
   }
 
 	@Override
@@ -168,11 +181,11 @@ public class PlayingState extends BasicGameState {
       g.drawString("CHEATS ON", 0, yOffset);
       if (current.isInfFuel()) {
         yOffset += 20;
-        g.drawString("Infinate Fuel On!", 0, yOffset);
+        g.drawString("Infinite Fuel On!", 0, yOffset);
       }
       if (current.isInfHealth()) {
         yOffset += 20;
-        g.drawString("Current Tank has Infinate Health!", 0, yOffset);
+        g.drawString("Current Tank has Infinite Health!", 0, yOffset);
       }
     }
     if (state == phase.GAMEOVER) {
@@ -296,7 +309,7 @@ public class PlayingState extends BasicGameState {
         turnTimer = TURNLENGTH;
         state = phase.MOVEFIRE;
     } else if (state == phase.GAMEOVER) {
-      if (input.isKeyPressed(Input.KEY_SPACE)) {
+      if (input.isKeyDown(Input.KEY_SPACE)) {
         tg.enterState(Tanx.STARTUPSTATE);
         input.clearKeyPressedRecord();
       }
@@ -346,7 +359,6 @@ public class PlayingState extends BasicGameState {
       if (pIndex >= players.size()){pIndex = 0;}
       currentPlayer = players.get(pIndex);
     } while (currentPlayer.isDead());
-    currentPlayer.getNextTank();
     currentPlayer.startTurn();
     camera.moveTo(currentPlayer.getTank().getPosition());
     tankPointer.pointTo(currentPlayer.getTank().getPosition());
