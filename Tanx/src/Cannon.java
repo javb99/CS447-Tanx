@@ -3,9 +3,12 @@ import jig.Entity;
 import jig.ResourceManager;
 import jig.Vector;
 import org.newdawn.slick.Color;
+import org.newdawn.slick.Image;
 
 public class Cannon extends Entity {
   //constants
+  private static final float CANNON_SPRITE_SCALE = 3f;
+  public static float SPRITE_ROTATION_OFFSET = -90;
   public static float ROTATION_SPEED = 100;
   public static float MAX_ROTATION_FACTOR = 90;
   public static float ANGLE_CORRECTION = -90;
@@ -17,16 +20,18 @@ public class Cannon extends Entity {
   public static String BIG_CANNON_STR = "Long Range Cannon";
   public static float BIG_CANNON_POWER = 1f;
   public static float BIG_CANNON_OFFSET = 50;
+
   //class variables
   private int type;
   private float power;
   private float fireOffset;
   private float rotationFactor;
+  private Image cannonSprite;
 
   public Cannon(final float x, final float y, int type){
     super(x,y);
     changeType(type);
-    this.addShape(new ConvexPolygon(10f, 45f), Color.red, Color.blue);
+    //this.addShape(new ConvexPolygon(10f, 45f), Color.red, Color.blue);
   }
 
   public static String getTypeStr(int type) {
@@ -40,7 +45,7 @@ public class Cannon extends Entity {
     if (newType == BASE_CANNON){
       power = BASE_CANNON_POWER;
       fireOffset = BASE_CANNON_OFFSET;
-      //changeSprite(Tanx.BASIC_CANNON_SPRITE);
+      changeSprite(Tanx.BASE_CANNON_SPRITE);
     } else if (newType == BIG_CANNON){
       power = BIG_CANNON_POWER;
       fireOffset = BIG_CANNON_OFFSET;
@@ -49,9 +54,11 @@ public class Cannon extends Entity {
   }
 
   public void changeSprite(String sprite){
-    //removeImage(ResourceManager.getImage(Tanx.BASIC_CANNON_SPRITE));
-    //removeImage(ResourceManager.getImage(Tanx.BIG_CANNON_SPRITE));
-    addImage(ResourceManager.getImage(sprite));
+    removeImage(cannonSprite);
+    cannonSprite = ResourceManager.getImage(sprite);
+    cannonSprite = cannonSprite.getScaledCopy(CANNON_SPRITE_SCALE);
+    cannonSprite.rotate(SPRITE_ROTATION_OFFSET);
+    addImage(cannonSprite);
   }
 
   /* This Method rotates the cannon with a set speed defined above
