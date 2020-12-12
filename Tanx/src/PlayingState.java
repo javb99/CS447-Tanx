@@ -152,7 +152,7 @@ public class PlayingState extends BasicGameState {
         int damage = mm.getDamage();
         Vector location = mm.getPosition();
         
-        //explosionSystem.addExplosion(location, (float)(blastRadius), Tanx.BANG_MOUNTAINIMG_RSC, Tanx.BANG_MOUNTAINSND_RSC);
+        explosionSystem.addExplosion(location, (float)(blastRadius), Tanx.BANG_ICEIMG_RSC, Tanx.BANG_ICESND_RSC);
         world.terrain.changeTerrainInCircle(location, blastRadius, Terrain.TerrainType.NORMAL, Terrain.TerrainType.ICE, true);
         
         PE.forEachEntityInCircle(location, (float)blastRadius, (e) -> {

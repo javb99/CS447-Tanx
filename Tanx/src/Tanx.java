@@ -51,6 +51,8 @@ public class Tanx extends StateBasedGame {
 	public static final String BANG_EXPLOSIONSND_RSC = "resources/explosion.wav";
 	public static final String BANG_MOUNTAINIMG_RSC = "resources/mountain_maker_anim.png";
 	public static final String BANG_MOUNTAINSND_RSC = "resources/mountain_maker_snd.wav";
+	public static final String BANG_ICEIMG_RSC = "resources/ice_bomb_anim.png";
+	public static final String BANG_ICESND_RSC = "resources/ice_bomb_snd.wav";
 	public static final String PLAYER_WIN_1 = "resources/Player1_win.png";
   public static final String PLAYER_WIN_2 = "resources/Player2_win.png";
   public static final String PLAYER_WIN_3 = "resources/Player3_win.png";
@@ -121,6 +123,8 @@ public class Tanx extends StateBasedGame {
 		ResourceManager.loadSound(Tanx.BANG_EXPLOSIONSND_RSC);
 		ResourceManager.loadImage(Tanx.BANG_MOUNTAINIMG_RSC);
 		ResourceManager.loadSound(Tanx.BANG_MOUNTAINSND_RSC);
+		ResourceManager.loadImage(Tanx.BANG_ICEIMG_RSC);
+		ResourceManager.loadSound(Tanx.BANG_ICESND_RSC);
 		ResourceManager.loadImage(FIRE_ANIMATION);
 		ResourceManager.loadSound(JET_SOUND);
 
