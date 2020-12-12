@@ -265,12 +265,12 @@ public class StartUpState extends BasicGameState {
 	  switch(worldSize.getSelection()) {
 	  case "LARGE":
 		  width = 4*container.getWidth();
-		  height = 7*container.getHeight()/4;
+		  height = 2*container.getHeight();
 		  break;
 	  case "SMALL":
 	  default:
 		  width = 2*container.getWidth();
-		  height = 3*container.getHeight()/4;
+		  height = 2*container.getHeight();
 		  break;
 	  }
 	  Rectangle bounds = new Rectangle(0, 0, width, height);
