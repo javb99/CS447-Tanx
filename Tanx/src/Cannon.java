@@ -67,21 +67,21 @@ public class Cannon extends Entity {
     type = newType;
     if (newType == BASE_CANNON){
       power = BASE_CANNON_POWER;
-      fireOffset = BASE_CANNON_OFFSET;
+      fireOffset = PROJECTILE_FIRE_OFFSET;
       damage = BASE_CANNON_DAMAGE;
       radius = BASE_CANNON_RADIUS;
       cannonMountOffset = BASE_CANNON_MOUNT;
       changeSprite(Tanx.BASE_CANNON_SPRITE);
     } else if (newType == BIG_CANNON){
       power = BIG_CANNON_POWER;
-      fireOffset = BIG_CANNON_OFFSET;
+      fireOffset = PROJECTILE_FIRE_OFFSET;
       damage = BIG_CANNON_DAMAGE;
       radius = BIG_CANNON_RADIUS;
       cannonMountOffset = BASE_CANNON_MOUNT;
       changeSprite(Tanx.BASE_CANNON_SPRITE);
     } else if (newType == CLUSTER_CANNON) {
       power = CLUSTER_CANNON_POWER;
-      fireOffset = CLUSTER_CANNON_OFFSET;
+      fireOffset = PROJECTILE_FIRE_OFFSET;
       damage = CLUSTER_CANNON_DAMAGE;
       radius = CLUSTER_CANNON_RADIUS;
       cannonMountOffset = BASE_CANNON_MOUNT;
