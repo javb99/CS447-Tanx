@@ -43,6 +43,8 @@ public class Tanx extends StateBasedGame {
   public static final String RESET_MSG = "resources/pushSpaceResetMsg.png";
 	public static final String TANK_SPRITE = "resources/tankBase.png";
 	public static final String BASE_CANNON_SPRITE = "tankBaseCannon.png";
+	public static final String AMMO_POWERUP_SPRITE = "weaponPowerupSprite.png";
+	public static final String HEALTH_POWERUP_SPRITE = "hpPowerupSprite.png";
 	public final int ScreenWidth;
 	public final int ScreenHeight;
 
@@ -89,6 +91,8 @@ public class Tanx extends StateBasedGame {
 		ResourceManager.loadSound(Tanx.BANG_EXPLOSIONSND_RSC);
 		ResourceManager.loadImage(TANK_SPRITE);
 		ResourceManager.loadImage(BASE_CANNON_SPRITE);
+		ResourceManager.loadImage(AMMO_POWERUP_SPRITE);
+		ResourceManager.loadImage(HEALTH_POWERUP_SPRITE);
 
 	}
 
