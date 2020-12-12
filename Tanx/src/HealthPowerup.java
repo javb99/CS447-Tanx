@@ -18,12 +18,6 @@ public class HealthPowerup extends Powerup{
   }
 
   @Override
-  public void render(Graphics g) {
-    super.render(g);
-    g.drawString(Integer.toString(amount), getX()-10, getY()-10);
-  }
-
-  @Override
   public Powerup copy() {
     return new HealthPowerup(getX(), getY(), amount);
   }
