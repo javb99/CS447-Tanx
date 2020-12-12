@@ -31,6 +31,7 @@ public class PlayingState extends BasicGameState {
   ArrayList<PhysicsEntity> PE_list;
   PhysicsEngine PE;
   ArrayList<Player> players;
+  ProjectileSystem projectileSystem;
   ExplosionSystem explosionSystem;
   phase state;
   Projectile activeProjectile;
@@ -67,6 +68,7 @@ public class PlayingState extends BasicGameState {
     System.out.println("world size: " + worldBounds + ", screen size: " + screenBounds);
     world.loadLevel("YAY");
     explosionSystem = new ExplosionSystem();
+    projectileSystem = new ProjectileSystem();
 
     PE_list = new ArrayList<PhysicsEntity>();
 
@@ -110,9 +112,9 @@ public class PlayingState extends BasicGameState {
     PE.registerCollisionHandler(Projectile.class, PhysicsEntity.class, (projectile, obstacle, c) -> {
       if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
       if (projectile == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
-      projectile.explode();
-      int blastRadius = 64;
-      int damage = 50;
+        projectile.explode();
+      int blastRadius = projectile.getExplosionRadius();
+      int damage = projectile.getDamage();
       Vector location = projectile.getPosition();
       explosionSystem.addExplosion(location, (float)blastRadius);
       world.terrain.setTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN);
@@ -141,6 +143,7 @@ public class PlayingState extends BasicGameState {
     PE_list.forEach((e) -> e.render(g));
     players.forEach((p) -> p.render(g));
     explosionSystem.render(g);
+    projectileSystem.render(g);
 
     //placeholder, should put an arrow sprite pointing to currently active tank
     if (state == phase.MOVEFIRE) {
@@ -218,6 +221,7 @@ public class PlayingState extends BasicGameState {
     
     updateState(input, player, delta, tg);
     explosionSystem.update(delta);
+    projectileSystem.update(delta);
 		for(Player p: players){p.update(delta);}
     PE.update(delta);
 		controlCamera(delta, input);
@@ -240,9 +244,12 @@ public class PlayingState extends BasicGameState {
       if (input.isKeyDown(Input.KEY_SPACE) && turnTimer > 0){
         player.charging(delta);
       } else {
-        activeProjectile = player.fire();
-        PE.addPhysicsEntity(activeProjectile);
-        camera.trackObject(activeProjectile);
+        player.fire((Projectile p) -> {
+          activeProjectile = p;
+          projectileSystem.addProjectile(p);
+          PE.addPhysicsEntity(activeProjectile);
+          camera.trackObject(activeProjectile);
+        });
         state = phase.FIRING;
         turnTimer = FIRING_TIMEOUT;
       }
