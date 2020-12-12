@@ -17,6 +17,7 @@ public class Tank extends PhysicsEntity {
   public static final float ACCELERATION = .05f;
   public static final Vector ACCELERATION_JETS = new Vector(0, -.0015f);
   public static final float TANK_SPRITE_SCALE = 3f;
+  private static final Vector TANK_MOUNT_OFFSET = new Vector(15, 0);
 
   //Class Variables
   private Cannon cannon;
@@ -73,8 +74,8 @@ public class Tank extends PhysicsEntity {
   public void render(Graphics g) {
     super.render(g);
     g.drawImage(activeTankSprite, getX() - activeTankSprite.getWidth()/2, getY() - activeTankSprite.getHeight()/2, myPlayer.getColor());
-    cannon.setX(this.getX());
-    cannon.setY(this.getY());
+    Vector cannonMount = TANK_MOUNT_OFFSET.rotate(getRotation()).add(getPosition());
+    cannon.setMountPoint(cannonMount);
     cannon.render(g);
     float bottomSpacing = 20;
     healthbar.render(g, this.getCoarseGrainedMaxY() + bottomSpacing, this.getX());

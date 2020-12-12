@@ -3,10 +3,12 @@ import jig.Entity;
 import jig.ResourceManager;
 import jig.Vector;
 import org.newdawn.slick.Color;
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
 public class Cannon extends Entity {
   //constants
+  private static float PROJECTILE_FIRE_OFFSET = 50;
   private static final float CANNON_SPRITE_SCALE = 3f;
   public static float SPRITE_ROTATION_OFFSET = -90;
   public static float ROTATION_SPEED = 100;
@@ -15,21 +17,22 @@ public class Cannon extends Entity {
   public static int BASE_CANNON = 0;
   public static String BASE_CANNON_STR = "Basic Cannon";
   public static float BASE_CANNON_POWER = 1f;
-  public static float BASE_CANNON_OFFSET = 50;
+  public static Vector BASE_CANNON_MOUNT = new Vector(-5, 12);
   public static int BIG_CANNON = 1;
   public static String BIG_CANNON_STR = "Long Range Cannon";
   public static float BIG_CANNON_POWER = 1f;
-  public static float BIG_CANNON_OFFSET = 50;
 
   //class variables
   private int type;
   private float power;
-  private float fireOffset;
   private float rotationFactor;
   private Image cannonSprite;
+  private Vector cannonMountOffset;
 
   public Cannon(final float x, final float y, int type){
     super(x,y);
+    rotationFactor = MAX_ROTATION_FACTOR;
+    rotate(MAX_ROTATION_FACTOR);
     changeType(type);
     //this.addShape(new ConvexPolygon(10f, 45f), Color.red, Color.blue);
   }
@@ -44,11 +47,10 @@ public class Cannon extends Entity {
     type = newType;
     if (newType == BASE_CANNON){
       power = BASE_CANNON_POWER;
-      fireOffset = BASE_CANNON_OFFSET;
+      cannonMountOffset = BASE_CANNON_MOUNT;
       changeSprite(Tanx.BASE_CANNON_SPRITE);
     } else if (newType == BIG_CANNON){
       power = BIG_CANNON_POWER;
-      fireOffset = BIG_CANNON_OFFSET;
       //changeSprite(tanx.BIG_CANNON_SPRITE);
     }
   }
@@ -61,24 +63,28 @@ public class Cannon extends Entity {
     addImage(cannonSprite);
   }
 
+  @Override
+  public void render(Graphics g) {
+    super.render(g);
+  }
+
   /* This Method rotates the cannon with a set speed defined above
-  The angle calculations are done in degrees
-  ROTATIONSPEED should be in degrees per second
-  */
+    The angle calculations are done in degrees
+    ROTATIONSPEED should be in degrees per second
+    */
   public void rotate(Direction direction, int delta){
     float rotationAmount = ROTATION_SPEED *delta/1000;
     if (direction == Direction.RIGHT) {
-      rotationFactor += rotationAmount;
-      if (Math.abs(rotationFactor) > MAX_ROTATION_FACTOR){
-        rotationFactor = MAX_ROTATION_FACTOR;
+      if (rotationFactor <= MAX_ROTATION_FACTOR){
+        rotationFactor += rotationAmount;
+        rotate(rotationAmount);
       }
     } else {
-      rotationFactor -= rotationAmount;
-      if (Math.abs(rotationFactor) > MAX_ROTATION_FACTOR){
-        rotationFactor = -MAX_ROTATION_FACTOR;
+      if (rotationFactor >= -MAX_ROTATION_FACTOR){
+        rotationFactor -= rotationAmount;
+        rotate(-rotationAmount);
       }
     }
-    setRotation(rotationFactor);
   }
 
   //input:float from 0 to 1 determing power strength
@@ -88,13 +94,18 @@ public class Cannon extends Entity {
     System.out.println("Fired with: " + Float.toString(p) + " power!");
     if (power < 0) power = 0;
     float launchPower = p*power;
-    double angle = Math.toRadians(rotationFactor + ANGLE_CORRECTION);
+    double angle = Math.toRadians(getRotation() + ANGLE_CORRECTION);
     Vector projVelocity = new Vector((float)Math.cos(angle), (float)Math.sin(angle));
     projVelocity = projVelocity.setLength(launchPower);
-    float x = getX() + fireOffset*(float)Math.cos(angle);
-    float y = getY() + fireOffset*(float)Math.sin(angle);
+    float x = getX() + PROJECTILE_FIRE_OFFSET*(float)Math.cos(angle);
+    float y = getY() + PROJECTILE_FIRE_OFFSET*(float)Math.sin(angle);
     return new Projectile(x, y, projVelocity);
   }
 
   public int getType() { return type; }
+
+  public void setMountPoint(Vector cannonMount) {
+    //mount point is from center of cannon sprite
+    setPosition(cannonMount.add(cannonMountOffset.negate().rotate(rotationFactor)));
+  }
 }
