@@ -1,7 +1,9 @@
 import jig.ConvexPolygon;
+import jig.ResourceManager;
 import jig.Vector;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 
 enum Direction {LEFT, RIGHT};
 
@@ -14,6 +16,7 @@ public class Tank extends PhysicsEntity {
   public static final float TANK_TERMINAL_VELOCITY = 2f;
   public static final float ACCELERATION = .05f;
   public static final Vector ACCELERATION_JETS = new Vector(0, -.0015f);
+  public static final float TANK_SPRITE_SCALE = 3f;
 
   //Class Variables
   private Cannon cannon;
@@ -21,6 +24,9 @@ public class Tank extends PhysicsEntity {
   private Player myPlayer;
   private Healthbar healthbar;
   private boolean invuln;
+  private Image activeTankSprite;
+  private Image leftTankSprite;
+  private Image rightTankSprite;
 
 
   public Tank(final float x, final float y, Color c, Player player){
@@ -31,7 +37,12 @@ public class Tank extends PhysicsEntity {
     healthbar = new Healthbar(INIT_TANK_HEALTH);
     cannon = new Cannon(x, y, Cannon.BASE_CANNON);
     myPlayer = player;
-    this.addShape(new ConvexPolygon(64f, 32f), c, Color.red);
+    this.addShape(new ConvexPolygon(64f, 32f));
+    rightTankSprite = ResourceManager.getImage(Tanx.TANK_SPRITE);
+    rightTankSprite.setImageColor(c.r, c.g, c.b);
+    rightTankSprite = rightTankSprite.getScaledCopy(TANK_SPRITE_SCALE);
+    leftTankSprite = rightTankSprite.getFlippedCopy(true, false);
+    activeTankSprite = rightTankSprite;
     invuln = false;
   }
 
@@ -44,8 +55,10 @@ public class Tank extends PhysicsEntity {
 
   public void move(Direction direction){
     if (direction == Direction.LEFT){
+      activeTankSprite = leftTankSprite;
       setAcceleration(new Vector(-ACCELERATION, getAcceleration().getY()));
     } else {
+      activeTankSprite = rightTankSprite;
       setAcceleration(new Vector(ACCELERATION, getAcceleration().getY()));
     }
   }
@@ -59,6 +72,7 @@ public class Tank extends PhysicsEntity {
   @Override
   public void render(Graphics g) {
     super.render(g);
+    g.drawImage(activeTankSprite, getX() - activeTankSprite.getWidth()/2, getY() - activeTankSprite.getHeight()/2, myPlayer.getColor());
     cannon.setX(this.getX());
     cannon.setY(this.getY());
     cannon.render(g);

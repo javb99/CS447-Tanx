@@ -206,4 +206,8 @@ public class Player {
   public boolean isInfHealth() {
     return getTank().isInfHealth();
   }
+
+  public Color getColor() {
+    return playerColor;
+  }
 }
