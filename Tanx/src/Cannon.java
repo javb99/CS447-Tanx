@@ -51,7 +51,8 @@ public class Cannon extends Entity {
       changeSprite(Tanx.BASE_CANNON_SPRITE);
     } else if (newType == BIG_CANNON){
       power = BIG_CANNON_POWER;
-      //changeSprite(tanx.BIG_CANNON_SPRITE);
+      cannonMountOffset = BASE_CANNON_MOUNT;
+      changeSprite(Tanx.BASE_CANNON_SPRITE);
     }
   }
 
