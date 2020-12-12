@@ -57,9 +57,9 @@ public class Tanx extends StateBasedGame {
   public static final String NO_WINNER_MSG = "resources/no_winner.png";
   public static final String RESET_MSG = "resources/pushSpaceResetMsg.png";
 	public static final String TANK_SPRITE = "resources/tankBase.png";
-	public static final String BASE_CANNON_SPRITE = "tankBaseCannon.png";
-	public static final String AMMO_POWERUP_SPRITE = "weaponPowerupSprite.png";
-	public static final String HEALTH_POWERUP_SPRITE = "hpPowerupSprite.png";
+	public static final String BASE_CANNON_SPRITE = "resources/tankBaseCannon.png";
+	public static final String AMMO_POWERUP_SPRITE = "resources/weaponPowerupSprite.png";
+	public static final String HEALTH_POWERUP_SPRITE = "resources/hpPowerupSprite.png";
   public static final String TERRAIN_IMG = "resources/dirtTile.png";
   public static final String FIRE_ANIMATION = "resources/Flame.png";
   public static final String JET_SOUND = "resources/sfx_exp_shortest_hard5.wav";
