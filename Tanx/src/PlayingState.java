@@ -85,6 +85,17 @@ public class PlayingState extends BasicGameState {
 
     PE = new PhysicsEngine(PE_list, world);
     
+    PE.setCollisionPredicate((a, b) -> {
+      boolean isAProjectile = a instanceof Projectile;
+      boolean isBProjectile = b instanceof Projectile;
+      if (isAProjectile && isBProjectile) return false;
+      if (isAProjectile || isBProjectile) return true;
+      boolean isATank = a instanceof Tank;
+      boolean isBTank = b instanceof Tank;
+      if (isATank || isBTank) return true;
+      return false;
+    });
+    
     // Example use case. Probably not complete.
     PE.registerCollisionHandler(Tank.class, Terrain.class, (tank, terrain, c) -> {
       if (tank.getY() < terrain.getY()) {
