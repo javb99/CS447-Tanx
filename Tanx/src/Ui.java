@@ -31,10 +31,10 @@ class BottomUi extends UiContainer{
   final float TIMER_ELEMENT_MAX_ANGLE = 135f;
   final float POWER_ELEMENT_MIN_ANGLE = -135f;
   final float POWER_ELEMENT_MAX_ANGLE = 135f;
-  final Vector POWER_POS_OFFSET = new Vector(860, 250);
+  final Vector POWER_POS_OFFSET = new Vector(-230, 250);
   final Vector FUEL_POS_OFFSET = new Vector(-60, 250);
   final Vector WEP_POS_OFFSET = new Vector(250, 170);
-  final Vector TIMER_POS_OFFSET = new Vector(-230, 250);
+  final Vector TIMER_POS_OFFSET = new Vector(860, 250);
   final float GAUGE_SCALE = 1.5f;
   GaugeElement jetFuelElement;
   WeaponSelect weaponSelect;
