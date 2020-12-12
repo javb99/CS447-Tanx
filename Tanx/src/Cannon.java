@@ -6,6 +6,10 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
+
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
+import java.util.function.Consumer;
+
 public class Cannon extends Entity {
   //constants
   private static float PROJECTILE_FIRE_OFFSET = 50;
@@ -14,17 +18,32 @@ public class Cannon extends Entity {
   public static float ROTATION_SPEED = 100;
   public static float MAX_ROTATION_FACTOR = 90;
   public static float ANGLE_CORRECTION = -90;
+  public static Vector BASE_CANNON_MOUNT = new Vector(-5, 12);
+
   public static int BASE_CANNON = 0;
   public static String BASE_CANNON_STR = "Basic Cannon";
   public static float BASE_CANNON_POWER = 1f;
-  public static Vector BASE_CANNON_MOUNT = new Vector(-5, 12);
+  public static int BASE_CANNON_DAMAGE = 20;
+  public static int BASE_CANNON_RADIUS = 30;
+
   public static int BIG_CANNON = 1;
   public static String BIG_CANNON_STR = "Long Range Cannon";
   public static float BIG_CANNON_POWER = 1f;
+  public static int BIG_CANNON_DAMAGE = 50;
+  public static int BIG_CANNON_RADIUS = 60;
+
+  public static int CLUSTER_CANNON = 2;
+  public static String CLUSTER_CANNON_STR = "Cluster Bomb";
+  public static float CLUSTER_CANNON_POWER = 1f;
+  public static int CLUSTER_CANNON_DAMAGE = 0;
+  public static int CLUSTER_CANNON_RADIUS = 0;
 
   //class variables
   private int type;
   private float power;
+  private int damage;
+  private int radius;
+  private float fireOffset;
   private float rotationFactor;
   private Image cannonSprite;
   private Vector cannonMountOffset;
@@ -40,6 +59,7 @@ public class Cannon extends Entity {
   public static String getTypeStr(int type) {
     if (type == BIG_CANNON) { return BIG_CANNON_STR;
     } else if (type == BASE_CANNON) { return BASE_CANNON_STR;
+    } else if (type == CLUSTER_CANNON) { return CLUSTER_CANNON_STR;
     } else { return null; }
   }
 
@@ -47,10 +67,23 @@ public class Cannon extends Entity {
     type = newType;
     if (newType == BASE_CANNON){
       power = BASE_CANNON_POWER;
+      fireOffset = BASE_CANNON_OFFSET;
+      damage = BASE_CANNON_DAMAGE;
+      radius = BASE_CANNON_RADIUS;
       cannonMountOffset = BASE_CANNON_MOUNT;
       changeSprite(Tanx.BASE_CANNON_SPRITE);
     } else if (newType == BIG_CANNON){
       power = BIG_CANNON_POWER;
+      fireOffset = BIG_CANNON_OFFSET;
+      damage = BIG_CANNON_DAMAGE;
+      radius = BIG_CANNON_RADIUS;
+      cannonMountOffset = BASE_CANNON_MOUNT;
+      changeSprite(Tanx.BASE_CANNON_SPRITE);
+    } else if (newType == CLUSTER_CANNON) {
+      power = CLUSTER_CANNON_POWER;
+      fireOffset = CLUSTER_CANNON_OFFSET;
+      damage = CLUSTER_CANNON_DAMAGE;
+      radius = CLUSTER_CANNON_RADIUS;
       cannonMountOffset = BASE_CANNON_MOUNT;
       changeSprite(Tanx.BASE_CANNON_SPRITE);
     }
@@ -62,11 +95,6 @@ public class Cannon extends Entity {
     cannonSprite = cannonSprite.getScaledCopy(CANNON_SPRITE_SCALE);
     cannonSprite.rotate(SPRITE_ROTATION_OFFSET);
     addImage(cannonSprite);
-  }
-
-  @Override
-  public void render(Graphics g) {
-    super.render(g);
   }
 
   /* This Method rotates the cannon with a set speed defined above
@@ -88,10 +116,15 @@ public class Cannon extends Entity {
     }
   }
 
+  public void render(Graphics g, final float x, final float y) {
+    setPosition(x, y);
+    super.render(g);
+  }
+
   //input:float from 0 to 1 determing power strength
   //output: projectile of the cannon's type on firing
   //onError: outputs null projectile
-  public Projectile fire(float p){
+  public void fire(float p, Consumer<Projectile> spawnP){
     System.out.println("Fired with: " + Float.toString(p) + " power!");
     if (power < 0) power = 0;
     float launchPower = p*power;
@@ -100,7 +133,11 @@ public class Cannon extends Entity {
     projVelocity = projVelocity.setLength(launchPower);
     float x = getX() + PROJECTILE_FIRE_OFFSET*(float)Math.cos(angle);
     float y = getY() + PROJECTILE_FIRE_OFFSET*(float)Math.sin(angle);
-    return new Projectile(x, y, projVelocity);
+    if (type == CLUSTER_CANNON) {
+      spawnP.accept(new ClusterProjectile(x, y, projVelocity, radius, damage, spawnP));
+    } else {
+      spawnP.accept(new Projectile(x, y, projVelocity, radius, damage));
+    }
   }
 
   public int getType() { return type; }
