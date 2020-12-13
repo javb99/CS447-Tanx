@@ -22,7 +22,6 @@ public class ProjectileSystem {
     projectiles.removeIf(e -> e.getIsDead() );
     projectiles.addAll(toAdd);
     toAdd.clear();
-    System.out.println(projectiles);
   }
 
   public void render(Graphics g) {

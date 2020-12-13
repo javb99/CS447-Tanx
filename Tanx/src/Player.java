@@ -26,11 +26,12 @@ public class Player {
     playerId = id;
     ammo = new ArrayList<Ammo>();
     giveAmmo(Cannon.BASE_CANNON, Ammo.INF_AMMO);
-    giveAmmo(Cannon.BIG_CANNON, 10);
-    giveAmmo(Cannon.CLUSTER_CANNON, 10);
     ammoIndex = 0;
     infFuel = false;
     maxChargedPower = TIME_TO_CHARGE;
+
+    //REMOVE FROM RELEASE OF GAME BELOW
+    giveAllWeapons();
   }
 
   public void render(Graphics g){
@@ -190,6 +191,8 @@ public class Player {
   public void giveAllWeapons() {
     giveAmmo(Cannon.BASE_CANNON, Ammo.INF_AMMO);
     giveAmmo(Cannon.BIG_CANNON, Ammo.INF_AMMO);
+    giveAmmo(Cannon.CLUSTER_CANNON, Ammo.INF_AMMO);
+    giveAmmo(Cannon.FIRE_CLUSTER_CANNON, Ammo.INF_AMMO);
   }
 
 

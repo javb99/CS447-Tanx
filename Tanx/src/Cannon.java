@@ -38,6 +38,12 @@ public class Cannon extends Entity {
   public static int CLUSTER_CANNON_DAMAGE = 0;
   public static int CLUSTER_CANNON_RADIUS = 0;
 
+  public static int FIRE_CLUSTER_CANNON = 3;
+  public static String FIRE_CLUSTER_CANNON_STR = "Fire Cluster Bomb";
+  public static float FIRE_CLUSTER_CANNON_POWER = 1f;
+  public static int FIRE_CLUSTER_CANNON_DAMAGE = 20;
+  public static int FIRE_CLUSTER_RADIUS = 0;
+
   //class variables
   private int type;
   private float power;
@@ -59,7 +65,10 @@ public class Cannon extends Entity {
   public static String getTypeStr(int type) {
     if (type == BIG_CANNON) { return BIG_CANNON_STR;
     } else if (type == BASE_CANNON) { return BASE_CANNON_STR;
-    } else if (type == CLUSTER_CANNON) { return CLUSTER_CANNON_STR;
+    } else if (type == CLUSTER_CANNON) {
+      return CLUSTER_CANNON_STR;
+    } else if (type == FIRE_CLUSTER_CANNON) {
+      return FIRE_CLUSTER_CANNON_STR;
     } else { return null; }
   }
 
@@ -84,6 +93,13 @@ public class Cannon extends Entity {
       fireOffset = PROJECTILE_FIRE_OFFSET;
       damage = CLUSTER_CANNON_DAMAGE;
       radius = CLUSTER_CANNON_RADIUS;
+      cannonMountOffset = BASE_CANNON_MOUNT;
+      changeSprite(Tanx.BASE_CANNON_SPRITE);
+    } else if (newType == FIRE_CLUSTER_CANNON) {
+      power = FIRE_CLUSTER_CANNON_POWER;
+      fireOffset = PROJECTILE_FIRE_OFFSET;
+      damage = FIRE_CLUSTER_CANNON_DAMAGE;
+      radius = FIRE_CLUSTER_RADIUS;
       cannonMountOffset = BASE_CANNON_MOUNT;
       changeSprite(Tanx.BASE_CANNON_SPRITE);
     }
@@ -135,8 +151,10 @@ public class Cannon extends Entity {
     float y = getY() + PROJECTILE_FIRE_OFFSET*(float)Math.sin(angle);
     if (type == CLUSTER_CANNON) {
       spawnP.accept(new ClusterProjectile(x, y, projVelocity, radius, damage, spawnP));
+    } else if (type == FIRE_CLUSTER_CANNON) {
+      spawnP.accept(new FireClusterProjectile(x, y, projVelocity, radius, damage, spawnP));
     } else {
-      spawnP.accept(new Projectile(x, y, projVelocity, radius, damage));
+        spawnP.accept(new Projectile(x, y, projVelocity, radius, damage));
     }
   }
 

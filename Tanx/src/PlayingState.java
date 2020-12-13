@@ -33,6 +33,7 @@ public class PlayingState extends BasicGameState {
   ArrayList<Player> players;
   ProjectileSystem projectileSystem;
   ExplosionSystem explosionSystem;
+  FireSystem fireSystem;
   phase state;
   Projectile activeProjectile;
   int pIndex;
@@ -69,6 +70,7 @@ public class PlayingState extends BasicGameState {
     world.loadLevel("YAY");
     explosionSystem = new ExplosionSystem();
     projectileSystem = new ProjectileSystem();
+    fireSystem = new FireSystem();
 
     PE_list = new ArrayList<PhysicsEntity>();
 
@@ -109,8 +111,24 @@ public class PlayingState extends BasicGameState {
       powerup.usePowerup(tank);
     });
 
+    PE.registerCollisionHandler(GroundFire.class, Tank.class, (fire, tank, c) -> {
+      fire.applyFire(tank);
+    });
+
+    PE.registerCollisionHandler(Powerup.class, GroundFire.class, (powerup, fire, c) -> {
+      fire.setIsDead(true);
+      powerup.setIsDead(true);
+      ResourceManager.getSound(Tanx.FIRE_DEBUFF_SND).play();
+    });
+
     PE.registerCollisionHandler(Projectile.class, PhysicsEntity.class, (projectile, obstacle, c) -> {
       if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
+      if (obstacle instanceof GroundFire) { return; } //Don't explode on fire Entites
+      if (projectile instanceof FireMiniBomb && !projectile.getIsDead()) {
+        GroundFire newFire = new GroundFire(projectile.getX(), projectile.getY() + FireMiniBomb.Y_SPAWN_OFFSET);
+        fireSystem.addFire(newFire);
+        PE.addPhysicsEntity(newFire);
+      }
       if (projectile == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
         projectile.explode();
       int blastRadius = projectile.getExplosionRadius();
@@ -144,6 +162,7 @@ public class PlayingState extends BasicGameState {
     players.forEach((p) -> p.render(g));
     explosionSystem.render(g);
     projectileSystem.render(g);
+    fireSystem.render(g);
 
     //placeholder, should put an arrow sprite pointing to currently active tank
     if (state == phase.MOVEFIRE) {
@@ -342,6 +361,7 @@ public class PlayingState extends BasicGameState {
     currentPlayer.startTurn();
     camera.moveTo(currentPlayer.getTank().getPosition());
     tankPointer.pointTo(currentPlayer.getTank().getPosition());
+    fireSystem.updateTurn();
   }
   private boolean isGameOver() {
     int livingPlayersCount = 0;

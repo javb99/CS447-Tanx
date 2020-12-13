@@ -1,25 +1,34 @@
+import jig.ConvexPolygon;
 import jig.ResourceManager;
 import jig.Vector;
 import org.newdawn.slick.Animation;
+import org.newdawn.slick.Graphics;
 
-public class groundFire extends PhysicsEntity {
+public class GroundFire extends PhysicsEntity {
   public static int FIRE_DAMAGE_PER_TURN = 10;
   public static int TURNS_ON_FIRE = 3;
   public static float FIRE_SOUND_VOLUME = .5f;
   public static float FIRE_SOUND_PITCH = 1f;
   public static float FIRE_SCALE = 1.5f;
+  public static float FIRE_TURN_SCALAR = .2f;
   public static Vector FIRE_TERMINAL_VELOCITY = new Vector(2f, 2f);
+  public static int FIRE_DURATION = 5;
 
-  Animation fireAnim;
+  private Animation fireAnim;
+  private float currentScale;
+  private int turnsAlive;
 
-  public groundFire(final float x, final float y) {
+  public GroundFire(final float x, final float y) {
     super (x, y, 0, FIRE_TERMINAL_VELOCITY);
+    this.addShape(new ConvexPolygon(32f, 32f));
     fireAnim = new Animation(ResourceManager.getSpriteSheet(Tanx.FIRE_DEBUFF, 32, 32),
         0, 0, 3, 3, true, 100, true);
     addAnimation(fireAnim);
     fireAnim.setLooping(true);
     fireAnim.start();
-    setScale(FIRE_SCALE);
+    currentScale = FIRE_SCALE;
+    setScale(currentScale);
+    turnsAlive = FIRE_DURATION;
   }
 
   public void applyFire(Tank t) {
@@ -27,4 +36,21 @@ public class groundFire extends PhysicsEntity {
     isDead = true;
     t.applyFire(TURNS_ON_FIRE, this);
   }
+
+  public void render(Graphics g, Vector position) {
+    setPosition(position);
+    render(g);
+  }
+
+  public void updateTurn() {
+    if (turnsAlive > 0) {
+      turnsAlive--;
+      currentScale -= FIRE_TURN_SCALAR;
+      setScale(currentScale);
+    } else {
+      isDead = true;
+    }
+  }
+
+  public void setIsDead(Boolean val) { isDead = val; }
 }

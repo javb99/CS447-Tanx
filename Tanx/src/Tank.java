@@ -34,6 +34,8 @@ public class Tank extends PhysicsEntity {
   private Image rightTankSprite;
   private Effect jumpJetsEffect;
   private int jumpJetsCD;
+  private int onFireTurns;
+  private GroundFire fireDebuffEntity;
 
 
   public Tank(final float x, final float y, Color c, Player player){
@@ -56,6 +58,8 @@ public class Tank extends PhysicsEntity {
         0, 0, 3, 3, true, 50, true));
     jumpJetsEffect.setRotation(180);
     jumpJetsEffect.setSound(Tanx.JET_SOUND, 150, .2f, .5f);
+
+    onFireTurns = 0;
   }
 
 
@@ -82,6 +86,19 @@ public class Tank extends PhysicsEntity {
     jumpJetsEffect.turnOnSound();
   }
 
+  public void applyFire(int turnsOnFire, GroundFire groundFire) {
+    onFireTurns = turnsOnFire;
+    fireDebuffEntity = groundFire;
+    takeDamage(groundFire.FIRE_DAMAGE_PER_TURN);
+  }
+
+  public void updateTurn() {
+    if (onFireTurns > 0 ) {
+      onFireTurns--;
+      takeDamage(GroundFire.FIRE_DAMAGE_PER_TURN);
+    }
+  }
+
   public void update(int delta){
     jumpJetsCD -= delta;
     if (jumpJetsCD > 0) {
@@ -100,6 +117,9 @@ public class Tank extends PhysicsEntity {
     cannon.render(g);
     if (jumpJetsCD > 0){
       jumpJetsEffect.render(g, getX(), getY() + JET_OFFSET_Y);
+    }
+    if (onFireTurns > 0) {
+      fireDebuffEntity.render(g, getPosition());
     }
     float bottomSpacing = 20;
     healthbar.render(g, this.getCoarseGrainedMaxY() + bottomSpacing, this.getX());
