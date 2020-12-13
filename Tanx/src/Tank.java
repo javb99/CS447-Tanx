@@ -1,8 +1,12 @@
 import jig.ConvexPolygon;
 import jig.ResourceManager;
 import jig.Vector;
+import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
+
+import java.util.function.Consumer;
 
 enum Direction {LEFT, RIGHT};
 
@@ -15,6 +19,9 @@ public class Tank extends PhysicsEntity {
   public static final float TANK_TERMINAL_VELOCITY = 2f;
   public static final float ACCELERATION = .05f;
   public static final Vector ACCELERATION_JETS = new Vector(0, -.0015f);
+  public static final float TANK_SPRITE_SCALE = 3f;
+  private static final Vector TANK_MOUNT_OFFSET = new Vector(15, 0);
+  public static final float JET_OFFSET_Y = 40f;
 
   //Class Variables
   private Cannon cannon;
@@ -22,8 +29,11 @@ public class Tank extends PhysicsEntity {
   private Player myPlayer;
   private Healthbar healthbar;
   private boolean invuln;
-  private int turnsOnFire;
-  private groundFire fireDebuff;
+  private Image activeTankSprite;
+  private Image leftTankSprite;
+  private Image rightTankSprite;
+  private Effect jumpJetsEffect;
+  private int jumpJetsCD;
 
 
   public Tank(final float x, final float y, Color c, Player player){
@@ -34,65 +44,71 @@ public class Tank extends PhysicsEntity {
     healthbar = new Healthbar(INIT_TANK_HEALTH);
     cannon = new Cannon(x, y, Cannon.BASE_CANNON);
     myPlayer = player;
-    this.addShape(new ConvexPolygon(64f, 32f), c, Color.red);
+    this.addShape(new ConvexPolygon(64f, 32f));
+    rightTankSprite = ResourceManager.getImage(Tanx.TANK_SPRITE);
+    rightTankSprite.setImageColor(c.r, c.g, c.b);
+    rightTankSprite = rightTankSprite.getScaledCopy(TANK_SPRITE_SCALE);
+    leftTankSprite = rightTankSprite.getFlippedCopy(true, false);
+    activeTankSprite = rightTankSprite;
     invuln = false;
-    turnsOnFire = 0;
+    jumpJetsEffect = new Effect(x, y, new Animation(
+        ResourceManager.getSpriteSheet(Tanx.FIRE_ANIMATION, 32, 32),
+        0, 0, 3, 3, true, 50, true));
+    jumpJetsEffect.setRotation(180);
+    jumpJetsEffect.setSound(Tanx.JET_SOUND, 150, .2f, .5f);
   }
 
-  public Projectile fire(float power){
+
+  public void fire(float power, Consumer<Projectile> spawnP){
     myPlayer.giveAmmo(cannon.getType(), -1);
-    return cannon.fire(power);
+    cannon.fire(power, spawnP);
   }
 
   public void rotate(Direction direction, int delta){cannon.rotate(direction, delta);}
 
   public void move(Direction direction){
     if (direction == Direction.LEFT){
+      activeTankSprite = leftTankSprite;
       setAcceleration(new Vector(-ACCELERATION, getAcceleration().getY()));
     } else {
+      activeTankSprite = rightTankSprite;
       setAcceleration(new Vector(ACCELERATION, getAcceleration().getY()));
     }
   }
 
   public void jet(int delta){
     setVelocity(getVelocity().add(ACCELERATION_JETS.scale(delta)));
+    jumpJetsCD = 100;
+    jumpJetsEffect.turnOnSound();
   }
 
-  public void update(int delta){ }
-
-  public void updateTurn() {
-    System.out.println(turnsOnFire);
-    if ( turnsOnFire > 0 ) {
-      turnsOnFire --;
-      ResourceManager.getSound(Tanx.FIRE_DEBUFF_SND).play(groundFire.FIRE_SOUND_PITCH, groundFire.FIRE_SOUND_VOLUME);
-      takeDamage(groundFire.FIRE_DAMAGE_PER_TURN);
+  public void update(int delta){
+    jumpJetsCD -= delta;
+    if (jumpJetsCD > 0) {
+      jumpJetsEffect.update(delta);
+    } else {
+      jumpJetsEffect.turnOffSound();
     }
   }
   
   @Override
   public void render(Graphics g) {
     super.render(g);
-    cannon.setX(this.getX());
-    cannon.setY(this.getY());
+    g.drawImage(activeTankSprite, getX() - activeTankSprite.getWidth()/2, getY() - activeTankSprite.getHeight()/2, myPlayer.getColor());
+    Vector cannonMount = TANK_MOUNT_OFFSET.rotate(getRotation()).add(getPosition());
+    cannon.setMountPoint(cannonMount);
     cannon.render(g);
+    if (jumpJetsCD > 0){
+      jumpJetsEffect.render(g, getX(), getY() + JET_OFFSET_Y);
+    }
     float bottomSpacing = 20;
     healthbar.render(g, this.getCoarseGrainedMaxY() + bottomSpacing, this.getX());
-    if (turnsOnFire > 0 && fireDebuff != null) {
-      fireDebuff.setPosition(getPosition());
-      fireDebuff.render(g);
-    }
   }
   public void changeWeapon(int type){
     cannon.changeType(type);
   }
 
-  public void applyFire(int turns, groundFire fire) {
-    turnsOnFire = turns;
-    System.out.println("TurnsSet: " + turns + " turnsOnFire: " + turnsOnFire);
-    fireDebuff = fire;
-  }
-
-  //health functions
+  
   public void giveHealth(int amount) {
     healthbar.receiveHealth(amount);
   }
@@ -103,7 +119,7 @@ public class Tank extends PhysicsEntity {
   public boolean getIsDead() {
     return healthbar.getIsDead();
   }
-
+  
   //set/get functions
   public void setOnGround(boolean onGround) { this.onGround = onGround; }
   public boolean isOnGround() { return onGround; }
@@ -121,6 +137,4 @@ public class Tank extends PhysicsEntity {
   public void killTank() {
     healthbar.receiveDamage(healthbar.health);
   }
-
-
 }
