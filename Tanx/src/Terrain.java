@@ -1,6 +1,10 @@
+
+import java.util.ArrayList;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.ImageBuffer;
+import org.newdawn.slick.geom.Circle;
 
 import jig.ResourceManager;
 import jig.Vector;
@@ -218,6 +222,52 @@ public class Terrain extends PhysicsEntity {
 		setTerrainInLineAuxillary(p, p2, t);
 		
 		
+	}
+	
+	public void changeTerrainInCircle(Vector p, float radius, TerrainType targetType, TerrainType newType, boolean update) {
+		int cx = (int)p.getX();
+		int cy = (int)p.getY();
+		
+		int r = (int)radius;
+		
+		for(int x = cx - r; x <= cx + r; x++) {
+			for(int y = cy - r; y <= cy + r; y++) {
+				
+				if(x < 0 || x >= width || y < 0 || y >= height) continue;	//dont set out of world
+				
+				if(Math.sqrt( Math.pow(Math.abs(x-cx), 2) + Math.pow(Math.abs(y-cy), 2) ) <= r) {	//pythagorean theorem
+					if(mask[x][y] == targetType) {
+						mask[x][y] = newType;
+					}
+				}
+			}
+		}
+		if(update) {
+			applyMask();
+		}
+	}
+	
+	public void changeTerrainInCircleList(ArrayList<Circle> list, TerrainType targetType, TerrainType newType) {
+		for(int i = 0; i < list.size(); i++) {
+			
+			int cx = (int)list.get(i).getCenterX();
+			int cy = (int)list.get(i).getCenterY();
+			int r = (int)list.get(i).getRadius();
+			
+			for(int x = cx - r; x <= cx + r; x++) {
+				for(int y = cy - r; y <= cy + r; y++) {
+					
+					if(x < 0 || x >= width || y < 0 || y >= height) continue;	//dont set out of world
+					
+					if(Math.sqrt( Math.pow(Math.abs(x-cx), 2) + Math.pow(Math.abs(y-cy), 2) ) <= r) {	//pythagorean theorem
+						if(mask[x][y] == targetType) {
+							mask[x][y] = newType;
+						}
+					}
+				}
+			}
+		}
+		applyMask();
 	}
 	
 	/*private void printMask() {	//this function is used for debugging, NEVER call it in practice, it prints info about each individual pixel

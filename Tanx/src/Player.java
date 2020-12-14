@@ -24,10 +24,13 @@ public class Player {
     tankIndex = 0;
     playerColor = c;
     playerId = id;
+    
     ammo = new ArrayList<Ammo>();
     giveAmmo(Cannon.BASE_CANNON, Ammo.INF_AMMO);
     giveAmmo(Cannon.BIG_CANNON, 10);
     giveAmmo(Cannon.CLUSTER_CANNON, 10);
+	giveAmmo(Cannon.MOUNTAIN_MAKER, 10);
+	
     ammoIndex = 0;
     infFuel = false;
     maxChargedPower = TIME_TO_CHARGE;
@@ -194,6 +197,7 @@ public class Player {
   public void giveAllWeapons() {
     giveAmmo(Cannon.BASE_CANNON, Ammo.INF_AMMO);
     giveAmmo(Cannon.BIG_CANNON, Ammo.INF_AMMO);
+    giveAmmo(Cannon.MOUNTAIN_MAKER, Ammo.INF_AMMO);
   }
 
 

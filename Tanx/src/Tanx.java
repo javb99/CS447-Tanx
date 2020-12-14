@@ -52,10 +52,15 @@ public class Tanx extends StateBasedGame {
 	public static final String TIMER_GAUGE = "resources/timerGauge.png";
 	public static final String BANG_EXPLOSIONIMG_RSC = "resources/explosion.png";
 	public static final String BANG_EXPLOSIONSND_RSC = "resources/explosion.wav";
+
+	public static final String BANG_MOUNTAINIMG_RSC = "resources/mountain_maker_anim.png";
+	public static final String BANG_MOUNTAINSND_RSC = "resources/mountain_maker_snd.wav";
+
 	public static final String PLAYER_WIN_BLUE = "resources/blue_win.png";
   public static final String PLAYER_WIN_RED = "resources/red_win.png";
   public static final String PLAYER_WIN_YELLOW = "resources/yellow_win.png";
   public static final String PLAYER_WIN_GREEN = "resources/green_win.png";
+
   public static final String NO_WINNER_MSG = "resources/no_winner.png";
   public static final String RESET_MSG = "resources/pushSpaceResetMsg.png";
 	public static final String TANK_SPRITE = "resources/tankBase.png";
@@ -126,12 +131,17 @@ public class Tanx extends StateBasedGame {
     ResourceManager.loadImage(TERRAIN_IMG);
 		ResourceManager.loadImage(Tanx.BANG_EXPLOSIONIMG_RSC);
 		ResourceManager.loadSound(Tanx.BANG_EXPLOSIONSND_RSC);
+
+		ResourceManager.loadImage(Tanx.BANG_MOUNTAINIMG_RSC);
+		ResourceManager.loadSound(Tanx.BANG_MOUNTAINSND_RSC);
+
 		ResourceManager.loadImage(TANK_SPRITE);
 		ResourceManager.loadImage(BASE_CANNON_SPRITE);
 		ResourceManager.loadImage(AMMO_POWERUP_SPRITE);
 		ResourceManager.loadImage(HEALTH_POWERUP_SPRITE);
 		ResourceManager.loadImage(FIRE_ANIMATION);
 		ResourceManager.loadSound(JET_SOUND);
+
 	}
 
 	public static void main(String[] args) {

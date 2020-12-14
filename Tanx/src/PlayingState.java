@@ -7,6 +7,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.geom.Circle;
 
 import jig.Entity;
 import jig.Vector;
@@ -113,12 +114,13 @@ public class PlayingState extends BasicGameState {
 
     PE.registerCollisionHandler(Projectile.class, PhysicsEntity.class, (projectile, obstacle, c) -> {
       if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
+      if (projectile.getTerrainInteraction() != Projectile.TerrainInteraction.BASIC) {return;}
       if (projectile == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
         projectile.explode();
       int blastRadius = projectile.getExplosionRadius();
       int damage = projectile.getDamage();
       Vector location = projectile.getPosition();
-      explosionSystem.addExplosion(location, (float)blastRadius);
+      explosionSystem.addExplosion(location, (float)blastRadius, Tanx.BANG_EXPLOSIONIMG_RSC, Tanx.BANG_EXPLOSIONSND_RSC);
       world.terrain.setTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN);
       
       PE.forEachEntityInCircle(location, (float)blastRadius, (e) -> {
@@ -129,7 +131,37 @@ public class PlayingState extends BasicGameState {
       });
     });
     
+
+    PE.registerCollisionHandler(MountainMaker.class, PhysicsEntity.class, (mm, obstacle, c) -> {
+        if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
+        if (mm == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
+        mm.explode();
+        int blastRadius = mm.getExplosionRadius();
+        int damage = mm.getDamage();
+        Vector location = mm.getPosition();
+        
+        
+        explosionSystem.addExplosion(location, (float)(blastRadius*1.5), Tanx.BANG_MOUNTAINIMG_RSC, Tanx.BANG_MOUNTAINSND_RSC);
+        world.terrain.changeTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN, Terrain.TerrainType.NORMAL, false);
+        
+        ArrayList<Circle> holes = new ArrayList<Circle>();
+        
+        PE.forEachEntityInCircle(location, (float)blastRadius, (e) -> {
+          if (e instanceof Tank) {
+            Tank tank = (Tank)e;
+            tank.takeDamage(damage);
+          }
+          if (!(e instanceof Projectile || e instanceof Terrain)) {
+        	  holes.add(new Circle(e.getX(), e.getY(), e.getCoarseGrainedRadius() + 30));
+          }
+        });
+        
+        world.terrain.changeTerrainInCircleList(holes, Terrain.TerrainType.NORMAL, Terrain.TerrainType.OPEN);
+      });
+    
+
     //camera.toggleDebug();
+
   }
 
 	@Override
