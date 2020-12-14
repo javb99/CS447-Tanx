@@ -18,6 +18,7 @@ public class Tank extends PhysicsEntity {
   public static final float TANK_MOVE_SPEED = .2f;
   public static final float TANK_TERMINAL_VELOCITY = 2f;
   public static final float ACCELERATION = .75f;
+  public static final float FRICTION = 0.12f;
   public static final Vector ACCELERATION_JETS = new Vector(0, -.0015f);
   public static final float TANK_SPRITE_SCALE = 3f;
   private static final Vector TANK_MOUNT_OFFSET = new Vector(15, 0);
@@ -295,11 +296,10 @@ public class Tank extends PhysicsEntity {
   }
   
   private void applyFriction(int delta, Vector terrainNormal) {
-    float mue = 0.04f;
     Vector vNormal = this.getVelocity().project(terrainNormal);
     Vector vParallel = this.getVelocity().project(terrainNormal.getPerpendicular());
     float normalVelocityFactor = vNormal.length();
-    Vector friction = vParallel.negate().setLength(mue*normalVelocityFactor*delta).clampLength(0, vParallel.length());
+    Vector friction = vParallel.negate().setLength(FRICTION*normalVelocityFactor*delta).clampLength(0, vParallel.length());
     this.setVelocity(this.getVelocity().add(friction));
     debugFriction = friction;
   }
