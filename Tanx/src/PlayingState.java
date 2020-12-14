@@ -61,7 +61,7 @@ public class PlayingState extends BasicGameState {
   public void enter(GameContainer container, StateBasedGame game)
     throws SlickException {
 	
-	ResourceManager.getSound(Tanx.BATTLE_MUSIC).loop();
+	ResourceManager.getSound(Tanx.BATTLE_MUSIC).loop(1, .25f);
 		
     Rectangle screenBounds = new Rectangle(0, 0, container.getWidth(), container.getHeight() - BOTTOM_UI_HEIGHT/2);//new Rectangle(0, 0, container.getScreenWidth(), container.getScreenHeight());
     Rectangle bottomUiBounds = new Rectangle(0, 0, screenBounds.getWidth(), BOTTOM_UI_HEIGHT);
@@ -176,8 +176,13 @@ public class PlayingState extends BasicGameState {
             Tank tank = (Tank)e;
             tank.takeDamage(damage);
           }
-          if (!(e instanceof Projectile || e instanceof Terrain)) {
+          if (!(e instanceof Projectile || e instanceof Terrain || e instanceof GroundFire)) {
         	  holes.add(new Circle(e.getX(), e.getY(), e.getCoarseGrainedRadius() + 30));
+          }
+          
+          if (e instanceof GroundFire) {
+        	  ((GroundFire) e).setIsDead(true);
+        	  
           }
         });
         
