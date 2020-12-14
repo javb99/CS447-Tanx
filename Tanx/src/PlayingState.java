@@ -231,7 +231,16 @@ public class PlayingState extends BasicGameState {
     }
     if (state == phase.GAMEOVER) {
       renderGameOver(g, bg);
+    } else if (state == phase.TURNCHANGE) {
+      renderTurnChange(g, bg);
     }
+  }
+
+  private void renderTurnChange(Graphics g, Tanx bg) {
+    final float INSTRUCT_X = bg.ScreenWidth/2 - 200;
+    final float INSTRUCT_Y = 0;
+    final float IMG_SCALE = 2f;
+    g.drawImage(ResourceManager.getImage(Tanx.TURN_START_IMG).getScaledCopy(IMG_SCALE), INSTRUCT_X, INSTRUCT_Y);
   }
 
   private void renderGameOver(Graphics g, Tanx bg) {
@@ -317,7 +326,6 @@ public class PlayingState extends BasicGameState {
     }
     if (state == phase.MOVEFIRE){
       cheatCodeHandler(input, player);
-      camera.moveTo(player.getTank().getPosition());
       Tank currentTank = players.get(pIndex).getTank();
       tankPointer.pointTo(currentTank.getPosition());
       if (turnTimer <= 0){
@@ -348,7 +356,12 @@ public class PlayingState extends BasicGameState {
       if (turnTimer <= 0) { camera.stopTracking(); changePlayer(); }
     } else if (state == phase.TURNCHANGE) {
         turnTimer = TURNLENGTH;
-        state = phase.MOVEFIRE;
+        camera.moveTo(player.getTank().getPosition());
+        if (input.isKeyPressed(Input.KEY_ENTER)) {
+          state = phase.MOVEFIRE;
+          camera.trackObject(player.getTank());
+        }
+
     } else if (state == phase.GAMEOVER) {
       if (input.isKeyDown(Input.KEY_SPACE)) {
     	if(ResourceManager.getSound(Tanx.BATTLE_MUSIC).playing()) {
