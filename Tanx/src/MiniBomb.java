@@ -13,4 +13,12 @@ public class MiniBomb extends Projectile {
 	public ClusterProjectile getParent() {
 		return parent;
 	}
+	
+	@Override
+	public void update(int delta) {
+		super.update(delta);
+		if(this.getIsDead()) {
+			this.parent.getBombList().remove(this);
+		}
+	}
 }
