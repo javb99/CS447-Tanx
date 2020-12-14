@@ -155,7 +155,7 @@ public class PhysicsEngine {
   }
 	
 	private void handlePotentialTerrainCollision(int delta, PhysicsEntity entity) {
-	  if (entity.checkTerrainCollision(world.terrain)) {
+	  if (entity.shouldResolveTerrainCollision(world.terrain, delta)) {
 	    collisionHandlers.forEach(handler -> handler.handleCollision(entity, world.terrain, null));
 	    resolveCollision(delta, entity, world.terrain, null);
 	  }
