@@ -29,6 +29,9 @@ class TypeMatchingHandler<A extends PhysicsEntity, B extends PhysicsEntity> impl
     }
   }
 }
+interface CollisionPredicate {
+  boolean shouldCheckCollision(PhysicsEntity a, PhysicsEntity b);
+}
 
 public class PhysicsEngine {
 	
@@ -38,6 +41,7 @@ public class PhysicsEngine {
 	
 	private ArrayList<PhysicsEntity> objects;
 	private ArrayList<CollisionHandler<PhysicsEntity, PhysicsEntity>> collisionHandlers;
+	private CollisionPredicate collisionPredicate;
 	private World world;
 	
 	
@@ -45,6 +49,7 @@ public class PhysicsEngine {
 		objects = o;
 		world = w;
 		collisionHandlers = new ArrayList<>();
+		collisionPredicate = (a, b) -> false;
 	}
 	
 	public void addPhysicsEntity(PhysicsEntity e) {
@@ -66,6 +71,13 @@ public class PhysicsEngine {
 	public <A extends PhysicsEntity, B extends PhysicsEntity> 
 	void registerCollisionHandler(Class<A> aClass, Class<B> bClass, CollisionHandler<A,B> handler) {
     collisionHandlers.add(new TypeMatchingHandler<A,B>(aClass, bClass, handler));
+  }
+	
+	void setCollisionPredicate(CollisionPredicate p) {
+	  collisionPredicate = p;
+	}
+	CollisionPredicate getCollisionPredicate() {
+    return collisionPredicate;
   }
 	
   public void update(int delta) {
@@ -130,7 +142,9 @@ public class PhysicsEngine {
 	    for (int y = x+1; y < count; y++) {
 	      PhysicsEntity b = objects.get(y);
 	      if (a == b) { continue; }
-	      checkCollision(delta, a, b);
+	      if (collisionPredicate.shouldCheckCollision(a, b)) {
+	        checkCollision(delta, a, b);
+	      }
 	    }
 	    handlePotentialTerrainCollision(delta, a);
 	  }

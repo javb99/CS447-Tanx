@@ -191,6 +191,8 @@ public class Player {
 
   public float getChargedPower() { return chargedPower; }
 
+  public Color getPlayerColor() { return playerColor; }
+
   //cheats
   public void giveAllWeapons() {
     giveAmmo(Cannon.BASE_CANNON, Ammo.INF_AMMO);
@@ -211,5 +213,9 @@ public class Player {
 
   public boolean isInfHealth() {
     return getTank().isInfHealth();
+  }
+
+  public Color getColor() {
+    return playerColor;
   }
 }

@@ -3,6 +3,9 @@ import jig.Entity;
 import jig.ResourceManager;
 import jig.Vector;
 import org.newdawn.slick.Color;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
+
 
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.util.function.Consumer;
@@ -10,9 +13,15 @@ import java.util.function.Consumer;
 public class Cannon extends Entity {
   //constants
 
+  private static final float PROJECTILE_FIRE_OFFSET = 50;
+  private static final float CANNON_SPRITE_SCALE = 3f;
+  public static final float SPRITE_ROTATION_OFFSET = -90;
   public static final float ROTATION_SPEED = 100;
   public static final float MAX_ROTATION_FACTOR = 90;
   public static final float ANGLE_CORRECTION = -90;
+  public static final Vector BASE_CANNON_MOUNT = new Vector(-5, 12);
+
+
 
   public static final int BASE_CANNON = 0;
   public static final String BASE_CANNON_STR = "Basic Cannon";
@@ -49,11 +58,15 @@ public class Cannon extends Entity {
   private int radius;
   private float fireOffset;
   private float rotationFactor;
+  private Image cannonSprite;
+  private Vector cannonMountOffset;
 
   public Cannon(final float x, final float y, int type){
     super(x,y);
+    rotationFactor = MAX_ROTATION_FACTOR;
+    rotate(MAX_ROTATION_FACTOR);
     changeType(type);
-    this.addShape(new ConvexPolygon(10f, 45f), Color.red, Color.blue);
+    //this.addShape(new ConvexPolygon(10f, 45f), Color.red, Color.blue);
   }
 
   public static String getTypeStr(int type) {
@@ -75,62 +88,73 @@ public class Cannon extends Entity {
 
   public void changeType(int newType){
     type = newType;
+
     switch(newType) {
     case BASE_CANNON:
     	power = BASE_CANNON_POWER;
         fireOffset = BASE_CANNON_OFFSET;
         damage = BASE_CANNON_DAMAGE;
         radius = BASE_CANNON_RADIUS;
-        //changeSprite(Tanx.BASIC_CANNON_SPRITE);
+        cannonMountOffset = BASE_CANNON_MOUNT;
+        changeSprite(Tanx.BASE_CANNON_SPRITE);
     	break;
     case BIG_CANNON:
     	power = BIG_CANNON_POWER;
         fireOffset = BIG_CANNON_OFFSET;
         damage = BIG_CANNON_DAMAGE;
         radius = BIG_CANNON_RADIUS;
-        //changeSprite(tanx.BIG_CANNON_SPRITE);
+        cannonMountOffset = BASE_CANNON_MOUNT;
+        changeSprite(Tanx.BASE_CANNON_SPRITE);
     	break;
     case CLUSTER_CANNON:
     	power = CLUSTER_CANNON_POWER;
         fireOffset = CLUSTER_CANNON_OFFSET;
         damage = CLUSTER_CANNON_DAMAGE;
         radius = CLUSTER_CANNON_RADIUS;
-        //changeSprite(tanx.CLUSTER_CANNON_SPRITE);
+        cannonMountOffset = BASE_CANNON_MOUNT;
+        changeSprite(Tanx.BASE_CANNON_SPRITE);
+        break;
     case MOUNTAIN_MAKER:
     	power = MOUNTAIN_MAKER_POWER;
     	fireOffset = MOUNTAIN_MAKER_OFFSET;
     	damage = MOUNTAIN_MAKER_DAMAGE;
         radius = MOUNTAIN_MAKER_RADIUS;
+        cannonMountOffset = BASE_CANNON_MOUNT;
+        changeSprite(Tanx.BASE_CANNON_SPRITE);
     	break;
     }
-   
   }
 
   public void changeSprite(String sprite){
-    //removeImage(ResourceManager.getImage(Tanx.BASIC_CANNON_SPRITE));
-    //removeImage(ResourceManager.getImage(Tanx.BIG_CANNON_SPRITE));
-    //removeImage(ResourceManager.getImage(Tanx.CLUSTER_CANNON_SPRITE));
-    addImage(ResourceManager.getImage(sprite));
+    removeImage(cannonSprite);
+    cannonSprite = ResourceManager.getImage(sprite);
+    cannonSprite = cannonSprite.getScaledCopy(CANNON_SPRITE_SCALE);
+    cannonSprite.rotate(SPRITE_ROTATION_OFFSET);
+    addImage(cannonSprite);
   }
 
   /* This Method rotates the cannon with a set speed defined above
-  The angle calculations are done in degrees
-  ROTATIONSPEED should be in degrees per second
-  */
+    The angle calculations are done in degrees
+    ROTATIONSPEED should be in degrees per second
+    */
   public void rotate(Direction direction, int delta){
     float rotationAmount = ROTATION_SPEED *delta/1000;
     if (direction == Direction.RIGHT) {
-      rotationFactor += rotationAmount;
-      if (Math.abs(rotationFactor) > MAX_ROTATION_FACTOR){
-        rotationFactor = MAX_ROTATION_FACTOR;
+      if (rotationFactor <= MAX_ROTATION_FACTOR){
+        rotationFactor += rotationAmount;
+        rotate(rotationAmount);
       }
     } else {
-      rotationFactor -= rotationAmount;
-      if (Math.abs(rotationFactor) > MAX_ROTATION_FACTOR){
-        rotationFactor = -MAX_ROTATION_FACTOR;
+      if (rotationFactor >= -MAX_ROTATION_FACTOR){
+        rotationFactor -= rotationAmount;
+        rotate(-rotationAmount);
       }
     }
-    setRotation(rotationFactor);
+  }
+
+  public void render(Graphics g, final float x, final float y) {
+    setPosition(x, y);
+    super.render(g);
   }
 
   //input:float from 0 to 1 determing power strength
@@ -140,9 +164,10 @@ public class Cannon extends Entity {
     System.out.println("Fired with: " + Float.toString(p) + " power!");
     if (power < 0) power = 0;
     float launchPower = p*power;
-    double angle = Math.toRadians(rotationFactor + ANGLE_CORRECTION);
+    double angle = Math.toRadians(getRotation() + ANGLE_CORRECTION);
     Vector projVelocity = new Vector((float)Math.cos(angle), (float)Math.sin(angle));
     projVelocity = projVelocity.setLength(launchPower);
+
     float x = getX() + fireOffset*(float)Math.cos(angle);
     float y = getY() + fireOffset*(float)Math.sin(angle);
     
@@ -157,8 +182,12 @@ public class Cannon extends Entity {
     	spawnP.accept(new Projectile(x, y, projVelocity, radius, damage));
     	break;
     }
-
   }
 
   public int getType() { return type; }
+
+  public void setMountPoint(Vector cannonMount) {
+    //mount point is from center of cannon sprite
+    setPosition(cannonMount.add(cannonMountOffset.negate().rotate(rotationFactor)));
+  }
 }
