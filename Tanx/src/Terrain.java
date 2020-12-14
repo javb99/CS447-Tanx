@@ -171,6 +171,8 @@ public class Terrain extends PhysicsEntity {
 		
 		int r = (int)radius;
 		
+		if(r == 0) return;
+		
 		for(int x = cx - r; x <= cx + r; x++) {
 			for(int y = cy - r; y <= cy + r; y++) {
 				

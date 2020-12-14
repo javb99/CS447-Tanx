@@ -43,8 +43,10 @@ public class ClusterProjectile extends Projectile{
     for (int i = 0; i < NUM_MINI_BOMBS; i++) {
       Vector velocity = NORM;
       velocity = velocity.rotate(rand.nextInt(upperBound));
-      MiniBomb newBomb = new MiniBomb(getX(), getY(), velocity, MINI_BOMB_RADIUS, MINI_BOMB_DAMAGE, this);
+
+      MiniBomb newBomb = new MiniBomb(getX(), getY(), velocity.add(getVelocity()), MINI_BOMB_RADIUS, MINI_BOMB_DAMAGE, this);
       miniBombs.add(newBomb);
+
       float offset = getCoarseGrainedRadius();
       newBomb.translate(velocity.setLength(offset));
       projectileSpawner.accept(newBomb);

@@ -34,6 +34,8 @@ public class Tank extends PhysicsEntity {
   private Image rightTankSprite;
   private Effect jumpJetsEffect;
   private int jumpJetsCD;
+  private int onFireTurns;
+  private GroundFire fireDebuffEntity;
 
 
   public Tank(final float x, final float y, Color c, Player player){
@@ -44,18 +46,31 @@ public class Tank extends PhysicsEntity {
     healthbar = new Healthbar(INIT_TANK_HEALTH);
     cannon = new Cannon(x, y, Cannon.BASE_CANNON);
     myPlayer = player;
-    this.addShape(new ConvexPolygon(64f, 32f));
+    
+   
     rightTankSprite = ResourceManager.getImage(Tanx.TANK_SPRITE);
     rightTankSprite.setImageColor(c.r, c.g, c.b);
     rightTankSprite = rightTankSprite.getScaledCopy(TANK_SPRITE_SCALE);
     leftTankSprite = rightTankSprite.getFlippedCopy(true, false);
     activeTankSprite = rightTankSprite;
+    
+    Vector[] points = new Vector[6];
+    points[0] = new Vector(-35, 5);
+    points[1] = new Vector(-35, 30);
+    points[2] = new Vector(35, 30);
+    points[3] = new Vector(35, 5);
+    points[4] = new Vector(15, -15);
+    points[5] = new Vector(-15, -15);
+    this.addShape(new ConvexPolygon(points));
+    
     invuln = false;
     jumpJetsEffect = new Effect(x, y, new Animation(
         ResourceManager.getSpriteSheet(Tanx.FIRE_ANIMATION, 32, 32),
         0, 0, 3, 3, true, 50, true));
     jumpJetsEffect.setRotation(180);
     jumpJetsEffect.setSound(Tanx.JET_SOUND, 150, .2f, .5f);
+
+    onFireTurns = 0;
   }
 
 
@@ -82,6 +97,19 @@ public class Tank extends PhysicsEntity {
     jumpJetsEffect.turnOnSound();
   }
 
+  public void applyFire(int turnsOnFire, GroundFire groundFire) {
+    onFireTurns = turnsOnFire;
+    fireDebuffEntity = groundFire;
+    takeDamage(groundFire.FIRE_DAMAGE_PER_TURN);
+  }
+
+  public void updateTurn() {
+    if (onFireTurns > 0 ) {
+      onFireTurns--;
+      takeDamage(GroundFire.FIRE_DAMAGE_PER_TURN);
+    }
+  }
+
   public void update(int delta){
     jumpJetsCD -= delta;
     if (jumpJetsCD > 0) {
@@ -100,6 +128,9 @@ public class Tank extends PhysicsEntity {
     cannon.render(g);
     if (jumpJetsCD > 0){
       jumpJetsEffect.render(g, getX(), getY() + JET_OFFSET_Y);
+    }
+    if (onFireTurns > 0) {
+      fireDebuffEntity.render(g, getPosition());
     }
     float bottomSpacing = 20;
     healthbar.render(g, this.getCoarseGrainedMaxY() + bottomSpacing, this.getX());
