@@ -106,6 +106,7 @@ public class PlayingState extends BasicGameState {
       if (isAProjectile || isBProjectile) return true;
       boolean isATank = a instanceof Tank;
       boolean isBTank = b instanceof Tank;
+      if (isATank && isBTank) return false;
       if (isATank || isBTank) return true;
       return false;
     });
