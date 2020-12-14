@@ -61,7 +61,7 @@ public class Tank extends PhysicsEntity {
     points[3] = new Vector(35, 5);
     points[4] = new Vector(15, -15);
     points[5] = new Vector(-15, -15);
-    this.addShape(new ConvexPolygon(points), Color.green, Color.green);
+    this.addShape(new ConvexPolygon(points));
     
     invuln = false;
     jumpJetsEffect = new Effect(x, y, new Animation(
