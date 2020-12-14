@@ -317,7 +317,7 @@ public class PlayingState extends BasicGameState {
     }
     if (state == phase.MOVEFIRE){
       cheatCodeHandler(input, player);
-      if (player.getTank().getVelocity().lengthSquared() > 0) { camera.moveTo(player.getTank().getPosition()); }
+      camera.moveTo(player.getTank().getPosition());
       Tank currentTank = players.get(pIndex).getTank();
       tankPointer.pointTo(currentTank.getPosition());
       if (turnTimer <= 0){
