@@ -1,12 +1,12 @@
 import jig.Vector;
 
-
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.function.Consumer;
 
 public class ClusterProjectile extends Projectile{
   public static int MINI_BOMB_DAMAGE = 20;
-  public static int MINI_BOMB_RADIUS = 10;
+  public static int MINI_BOMB_RADIUS = 30;
   public static float MINI_BOMB_SPEED = .2f;
   public static int CLUSTER_SPLIT_TIME = 1000;
   public static int NUM_MINI_BOMBS = 4;
@@ -14,6 +14,7 @@ public class ClusterProjectile extends Projectile{
 
 
   private int splitTime;
+  private ArrayList<MiniBomb> miniBombs;
   Consumer<Projectile> projectileSpawner;
 
 
@@ -22,6 +23,7 @@ public class ClusterProjectile extends Projectile{
     projectileSpawner = spawnP;
     splitTime = CLUSTER_SPLIT_TIME;
     TI = Projectile.TerrainInteraction.BASIC;
+    miniBombs = new ArrayList<MiniBomb>();
   }
 
   @Override
@@ -41,10 +43,17 @@ public class ClusterProjectile extends Projectile{
     for (int i = 0; i < NUM_MINI_BOMBS; i++) {
       Vector velocity = NORM;
       velocity = velocity.rotate(rand.nextInt(upperBound));
-      Projectile newProjectile = new Projectile(getX(), getY(), velocity.add(getVelocity()), MINI_BOMB_RADIUS, MINI_BOMB_DAMAGE);
+
+      MiniBomb newBomb = new MiniBomb(getX(), getY(), velocity.add(getVelocity()), MINI_BOMB_RADIUS, MINI_BOMB_DAMAGE, this);
+      miniBombs.add(newBomb);
+
       float offset = getCoarseGrainedRadius();
-      newProjectile.translate(velocity.setLength(offset));
-      projectileSpawner.accept(newProjectile);
+      newBomb.translate(velocity.setLength(offset));
+      projectileSpawner.accept(newBomb);
     }
+  }
+  
+  public ArrayList<MiniBomb> getBombList(){
+	  return miniBombs;
   }
 }

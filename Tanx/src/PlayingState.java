@@ -146,7 +146,7 @@ public class PlayingState extends BasicGameState {
       int damage = projectile.getDamage();
       Vector location = projectile.getPosition();
       explosionSystem.addExplosion(location, (float)blastRadius, Tanx.BANG_EXPLOSIONIMG_RSC, Tanx.BANG_EXPLOSIONSND_RSC);
-      world.terrain.setTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN);
+      world.terrain.setTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN, true);
       
       PE.forEachEntityInCircle(location, (float)blastRadius, (e) -> {
         if (e instanceof Tank) {
@@ -155,6 +155,35 @@ public class PlayingState extends BasicGameState {
         }
       });
     });
+    
+    PE.registerCollisionHandler(MiniBomb.class, PhysicsEntity.class, (projectile, obstacle, c) -> {
+        if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
+        if (projectile == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
+          projectile.explode();
+        int blastRadius = projectile.getExplosionRadius();
+        int damage = projectile.getDamage();
+        Vector location = projectile.getPosition();
+        explosionSystem.addExplosion(location, (float)blastRadius, Tanx.BANG_EXPLOSIONIMG_RSC, Tanx.BANG_EXPLOSIONSND_RSC);
+        
+        //set the terrain bitmap but dont apply the change to the terrain image yet
+        world.terrain.setTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN, false);
+        
+        
+        PE.forEachEntityInCircle(location, (float)blastRadius, (e) -> {
+          if (e instanceof Tank) {
+            Tank tank = (Tank)e;
+            tank.takeDamage(damage);
+          }
+        });
+        
+        //remove this projectile from the projectile group
+        projectile.getParent().getBombList().remove(projectile);
+        
+        //if there are no more projectiles in the group, we can now apply the mask
+        if(projectile.getParent().getBombList().size() == 0) {
+        	world.terrain.applyMask();
+        }
+      });
     
 
     PE.registerCollisionHandler(MountainMaker.class, PhysicsEntity.class, (mm, obstacle, c) -> {
