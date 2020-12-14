@@ -2,6 +2,7 @@ import jig.ConvexPolygon;
 import jig.ResourceManager;
 import jig.Vector;
 import org.newdawn.slick.Animation;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 
 public class GroundFire extends PhysicsEntity {
@@ -20,7 +21,7 @@ public class GroundFire extends PhysicsEntity {
 
   public GroundFire(final float x, final float y) {
     super (x, y, 0, FIRE_TERMINAL_VELOCITY);
-    this.addShape(new ConvexPolygon(32f, 32f));
+    this.addShape(new ConvexPolygon(32f, 32f), Color.transparent, Color.blue);
     fireAnim = new Animation(ResourceManager.getSpriteSheet(Tanx.FIRE_DEBUFF, 32, 32),
         0, 0, 3, 3, true, 100, true);
     addAnimation(fireAnim);

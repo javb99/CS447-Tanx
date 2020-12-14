@@ -40,6 +40,7 @@ public class PhysicsEngine {
 	static public int PHYSICS_TICK_LENGTH = 5;
 	
 	private ArrayList<PhysicsEntity> objects;
+	private ArrayList<PhysicsEntity> toAdd;
 	private ArrayList<CollisionHandler<PhysicsEntity, PhysicsEntity>> collisionHandlers;
 	private CollisionPredicate collisionPredicate;
 	private World world;
@@ -47,13 +48,14 @@ public class PhysicsEngine {
 	
 	public PhysicsEngine(ArrayList<PhysicsEntity> o, World w) {
 		objects = o;
+		toAdd = new ArrayList<PhysicsEntity>();
 		world = w;
 		collisionHandlers = new ArrayList<>();
 		collisionPredicate = (a, b) -> false;
 	}
 	
 	public void addPhysicsEntity(PhysicsEntity e) {
-		objects.add(e);
+		toAdd.add(e);
 	}
 	public void removePhysicsEntity(PhysicsEntity e) {
     objects.remove(e);
@@ -94,6 +96,8 @@ public class PhysicsEngine {
     applyCollisionDetection(delta);
     
     checkObjectBounds();
+    objects.addAll(toAdd);
+    toAdd.clear();
     objects.removeIf(e -> e.getIsDead() );
   }
 

@@ -24,6 +24,8 @@ public class World {
 		this.geometry = new TileGeometry(worldBounds, xTilesCount, yTilesCount);
 		availPowerups = new ArrayList<Powerup>();
 		availPowerups.add(new AmmoPowerup(0, 0, Cannon.BIG_CANNON, 1));
+		availPowerups.add(new AmmoPowerup(0, 0, Cannon.CLUSTER_CANNON, 1));
+		availPowerups.add(new AmmoPowerup(0, 0, Cannon.FIRE_CLUSTER_CANNON, 1));
 		availPowerups.add(new HealthPowerup(0, 0, 20));
 	}
 	

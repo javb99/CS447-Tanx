@@ -48,8 +48,8 @@ public class Player {
   }
 
   public void giveAmmo(int type, int amount) {
-    for (Ammo a: ammo ){
-      if (a.type == type){
+    for (Ammo a: ammo ) {
+      if (a.type == type) {
         if(a.amount == Ammo.INF_AMMO) { return; }
         if (amount == Ammo.INF_AMMO) { a.amount = amount; return;}
         a.amount += amount;

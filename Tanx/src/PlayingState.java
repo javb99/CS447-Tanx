@@ -93,6 +93,13 @@ public class PlayingState extends BasicGameState {
       boolean isAProjectile = a instanceof Projectile;
       boolean isBProjectile = b instanceof Projectile;
       if (isAProjectile && isBProjectile) return false;
+      boolean isAFire = a instanceof GroundFire;
+      boolean isBFire = b instanceof GroundFire;
+      if (isAFire && isBFire) return false;
+      if ((isAFire && isBProjectile) || (isAProjectile && isBFire)) {
+        return false;
+      }
+      if (isAFire || isBFire) return true;
       if (isAProjectile || isBProjectile) return true;
       boolean isATank = a instanceof Tank;
       boolean isBTank = b instanceof Tank;
@@ -111,7 +118,7 @@ public class PlayingState extends BasicGameState {
       powerup.usePowerup(tank);
     });
 
-    PE.registerCollisionHandler(GroundFire.class, Tank.class, (fire, tank, c) -> {
+    PE.registerCollisionHandler(Tank.class, GroundFire.class, (tank, fire, c) -> {
       fire.applyFire(tank);
     });
 
@@ -123,14 +130,14 @@ public class PlayingState extends BasicGameState {
 
     PE.registerCollisionHandler(Projectile.class, PhysicsEntity.class, (projectile, obstacle, c) -> {
       if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
-      if (obstacle instanceof GroundFire) { return; } //Don't explode on fire Entites
-      if (projectile instanceof FireMiniBomb && !projectile.getIsDead()) {
+      if (obstacle instanceof GroundFire) { return; } // Don't explode on GroundFire Entities
+      if (projectile instanceof FireMiniBomb) {
         GroundFire newFire = new GroundFire(projectile.getX(), projectile.getY() + FireMiniBomb.Y_SPAWN_OFFSET);
         fireSystem.addFire(newFire);
         PE.addPhysicsEntity(newFire);
       }
       if (projectile == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
-        projectile.explode();
+      projectile.explode();
       int blastRadius = projectile.getExplosionRadius();
       int damage = projectile.getDamage();
       Vector location = projectile.getPosition();

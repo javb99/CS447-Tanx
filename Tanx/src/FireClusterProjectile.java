@@ -36,7 +36,7 @@ public class FireClusterProjectile extends Projectile {
         for (int i = 0; i < NUM_MINI_BOMBS; i++) {
             Vector velocity = NORM;
             velocity = velocity.rotate(rand.nextInt(upperBound));
-            Projectile newProjectile = new FireMiniBomb(getX(), getY(), velocity, MINI_BOMB_RADIUS, MINI_BOMB_DAMAGE);
+            Projectile newProjectile = new FireMiniBomb(getX(), getY(), velocity.add(getVelocity()), MINI_BOMB_RADIUS, MINI_BOMB_DAMAGE);
             float offset = getCoarseGrainedRadius();
             newProjectile.translate(velocity.setLength(offset));
             projectileSpawner.accept(newProjectile);

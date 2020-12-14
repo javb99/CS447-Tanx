@@ -12,7 +12,6 @@ public class Powerup extends PhysicsEntity{
   public static Vector POWERUP_TERMINAL_VELOCITY = new Vector(2f, 2f);
 
   public Powerup(final float x, final float y){
-
     super(x, y, 0, POWERUP_TERMINAL_VELOCITY);
     this.addShape(new ConvexPolygon(32f, 32f));
   }
