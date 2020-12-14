@@ -13,6 +13,7 @@ public class Powerup extends PhysicsEntity{
 
   public Powerup(final float x, final float y){
     super(x, y, 0, POWERUP_TERMINAL_VELOCITY);
+    this.addShape(new ConvexPolygon(32f, 32f));
   }
 
   protected void setSprite(Image sprite) {
@@ -26,4 +27,6 @@ public class Powerup extends PhysicsEntity{
   public Powerup copy(){
     return new Powerup(getX(), getY());
   }
+
+  public void setIsDead(Boolean val) { isDead = val; }
 }

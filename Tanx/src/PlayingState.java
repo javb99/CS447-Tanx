@@ -34,6 +34,7 @@ public class PlayingState extends BasicGameState {
   ArrayList<Player> players;
   ProjectileSystem projectileSystem;
   ExplosionSystem explosionSystem;
+  FireSystem fireSystem;
   phase state;
   Projectile activeProjectile;
   int pIndex;
@@ -72,6 +73,7 @@ public class PlayingState extends BasicGameState {
     world.loadLevel("YAY");
     explosionSystem = new ExplosionSystem();
     projectileSystem = new ProjectileSystem();
+    fireSystem = new FireSystem();
 
     PE_list = new ArrayList<PhysicsEntity>();
 
@@ -94,6 +96,13 @@ public class PlayingState extends BasicGameState {
       boolean isAProjectile = a instanceof Projectile;
       boolean isBProjectile = b instanceof Projectile;
       if (isAProjectile && isBProjectile) return false;
+      boolean isAFire = a instanceof GroundFire;
+      boolean isBFire = b instanceof GroundFire;
+      if (isAFire && isBFire) return false;
+      if ((isAFire && isBProjectile) || (isAProjectile && isBFire)) {
+        return false;
+      }
+      if (isAFire || isBFire) return true;
       if (isAProjectile || isBProjectile) return true;
       boolean isATank = a instanceof Tank;
       boolean isBTank = b instanceof Tank;
@@ -112,11 +121,27 @@ public class PlayingState extends BasicGameState {
       powerup.usePowerup(tank);
     });
 
+    PE.registerCollisionHandler(Tank.class, GroundFire.class, (tank, fire, c) -> {
+      fire.applyFire(tank);
+    });
+
+    PE.registerCollisionHandler(Powerup.class, GroundFire.class, (powerup, fire, c) -> {
+      fire.setIsDead(true);
+      powerup.setIsDead(true);
+      ResourceManager.getSound(Tanx.FIRE_DEBUFF_SND).play();
+    });
+
     PE.registerCollisionHandler(Projectile.class, PhysicsEntity.class, (projectile, obstacle, c) -> {
       if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
+      if (obstacle instanceof GroundFire) { return; } // Don't explode on GroundFire Entities
+      if (projectile instanceof FireMiniBomb) {
+        GroundFire newFire = new GroundFire(projectile.getX(), projectile.getY() + FireMiniBomb.Y_SPAWN_OFFSET);
+        fireSystem.addFire(newFire);
+        PE.addPhysicsEntity(newFire);
+      }
       if (projectile.getTerrainInteraction() != Projectile.TerrainInteraction.BASIC) {return;}
       if (projectile == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
-        projectile.explode();
+      projectile.explode();
       int blastRadius = projectile.getExplosionRadius();
       int damage = projectile.getDamage();
       Vector location = projectile.getPosition();
@@ -179,6 +204,7 @@ public class PlayingState extends BasicGameState {
     players.forEach((p) -> p.render(g));
     explosionSystem.render(g);
     projectileSystem.render(g);
+    fireSystem.render(g);
 
     //placeholder, should put an arrow sprite pointing to currently active tank
     if (state == phase.MOVEFIRE) {
@@ -380,6 +406,7 @@ public class PlayingState extends BasicGameState {
     currentPlayer.startTurn();
     camera.moveTo(currentPlayer.getTank().getPosition());
     tankPointer.pointTo(currentPlayer.getTank().getPosition());
+    fireSystem.updateTurn();
   }
   private boolean isGameOver() {
     int livingPlayersCount = 0;
