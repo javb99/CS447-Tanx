@@ -139,7 +139,10 @@ public class PlayingState extends BasicGameState {
         int damage = projectile.getDamage();
         Vector location = projectile.getPosition();
         explosionSystem.addExplosion(location, (float)blastRadius, Tanx.BANG_EXPLOSIONIMG_RSC, Tanx.BANG_EXPLOSIONSND_RSC);
+        
+        //set the terrain bitmap but dont apply the change to the terrain image yet
         world.terrain.setTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN, false);
+        
         
         PE.forEachEntityInCircle(location, (float)blastRadius, (e) -> {
           if (e instanceof Tank) {
@@ -148,8 +151,10 @@ public class PlayingState extends BasicGameState {
           }
         });
         
+        //remove this projectile from the projectile group
         projectile.getParent().getBombList().remove(projectile);
         
+        //if there are no more projectiles in the group, we can now apply the mask
         if(projectile.getParent().getBombList().size() == 0) {
         	world.terrain.applyMask();
         }
