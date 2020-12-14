@@ -46,12 +46,23 @@ public class Tank extends PhysicsEntity {
     healthbar = new Healthbar(INIT_TANK_HEALTH);
     cannon = new Cannon(x, y, Cannon.BASE_CANNON);
     myPlayer = player;
-    this.addShape(new ConvexPolygon(64f, 32f));
+    
+   
     rightTankSprite = ResourceManager.getImage(Tanx.TANK_SPRITE);
     rightTankSprite.setImageColor(c.r, c.g, c.b);
     rightTankSprite = rightTankSprite.getScaledCopy(TANK_SPRITE_SCALE);
     leftTankSprite = rightTankSprite.getFlippedCopy(true, false);
     activeTankSprite = rightTankSprite;
+    
+    Vector[] points = new Vector[6];
+    points[0] = new Vector(-35, 5);
+    points[1] = new Vector(-35, 30);
+    points[2] = new Vector(35, 30);
+    points[3] = new Vector(35, 5);
+    points[4] = new Vector(15, -15);
+    points[5] = new Vector(-15, -15);
+    this.addShape(new ConvexPolygon(points), Color.green, Color.green);
+    
     invuln = false;
     jumpJetsEffect = new Effect(x, y, new Animation(
         ResourceManager.getSpriteSheet(Tanx.FIRE_ANIMATION, 32, 32),
