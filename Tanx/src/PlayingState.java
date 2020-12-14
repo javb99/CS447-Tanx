@@ -59,6 +59,8 @@ public class PlayingState extends BasicGameState {
   public void enter(GameContainer container, StateBasedGame game)
     throws SlickException {
 	
+	ResourceManager.getSound(Tanx.BATTLE_MUSIC).loop();
+		
     Rectangle screenBounds = new Rectangle(0, 0, container.getWidth(), container.getHeight() - BOTTOM_UI_HEIGHT/2);//new Rectangle(0, 0, container.getScreenWidth(), container.getScreenHeight());
     Rectangle bottomUiBounds = new Rectangle(0, 0, screenBounds.getWidth(), BOTTOM_UI_HEIGHT);
     Vector bottomUiPosition = new Vector(screenBounds.getWidth()/4, BOTTOM_UI_HEIGHT);
@@ -139,6 +141,7 @@ public class PlayingState extends BasicGameState {
     camera.transformContext(g);
     // Render anything that should be affected by the camera location.
 
+    g.drawImage(ResourceManager.getImage(Tanx.BATTLE_BACKGROUND).getScaledCopy((int)worldBounds.getWidth(), (int)worldBounds.getHeight()*2), 0, -worldBounds.getHeight() - 20);
     world.terrain.render(g);
     PE_list.forEach((e) -> e.render(g));
     players.forEach((p) -> p.render(g));
@@ -290,6 +293,9 @@ public class PlayingState extends BasicGameState {
         state = phase.MOVEFIRE;
     } else if (state == phase.GAMEOVER) {
       if (input.isKeyDown(Input.KEY_SPACE)) {
+    	if(ResourceManager.getSound(Tanx.BATTLE_MUSIC).playing()) {
+    		ResourceManager.getSound(Tanx.BATTLE_MUSIC).stop();
+    	}
         tg.enterState(Tanx.STARTUPSTATE);
         input.clearKeyPressedRecord();
       }

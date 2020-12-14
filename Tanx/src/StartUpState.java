@@ -108,7 +108,7 @@ public class StartUpState extends BasicGameState {
     
     ArrayList<MenuOption> options;
     
-    g.drawImage(ResourceManager.getImage(Tanx.BACKGROUND_DESERT), 0, 0);
+    g.drawImage(ResourceManager.getImage(Tanx.MENU_BACKGROUND), 0, 0);
     
     
     if(loading) {

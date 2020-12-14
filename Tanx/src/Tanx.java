@@ -38,8 +38,10 @@ public class Tanx extends StateBasedGame {
 	public static final int GAMEOVERSTATE = 2;
 
 	public static final String SPLASH_LOGO = "resources/tanxlogo.png";
-	public static final String BACKGROUND_DESERT = "resources/desertBG.png";
+	public static final String MENU_BACKGROUND = "resources/desertBG.png";
 	public static final String MENU_MUSIC = "resources/tanxMenuTheme.wav";
+	public static final String BATTLE_BACKGROUND = "resources/desertBGAlt.png";
+	public static final String BATTLE_MUSIC = "resources/tanxBattleTheme.wav";
 	public static final String POWER_GAUGE_OVERLAY = "resources/PowerGauge.png";
 	public static final String FUEL_GAUGE_OVERLAY = "resources/FuelGauge.png";
 	public static final String FUEL_GAUGE_ARROW = "resources/FuelGaugeArrow.png";
@@ -104,8 +106,10 @@ public class Tanx extends StateBasedGame {
 		// preload all the resources to avoid warnings & minimize latency...
 		//ex: ResourceManager.loadImage(BALL_BALLIMG_RSC);
 		ResourceManager.loadImage(SPLASH_LOGO);
-		ResourceManager.loadImage(BACKGROUND_DESERT);
+		ResourceManager.loadImage(MENU_BACKGROUND);
 		ResourceManager.loadSound(MENU_MUSIC);
+		ResourceManager.loadImage(BATTLE_BACKGROUND);
+		ResourceManager.loadSound(BATTLE_MUSIC);
     ResourceManager.loadImage(FUEL_GAUGE_ARROW);
     ResourceManager.loadImage(FUEL_GAUGE_OVERLAY);
     ResourceManager.loadImage(POWER_GAUGE_OVERLAY);
