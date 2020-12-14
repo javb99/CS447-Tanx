@@ -13,15 +13,16 @@ import org.newdawn.slick.Animation;
 class Bang extends Entity {
 	private Animation explosion;
 
-	public Bang(final float x, final float y, final float radius) {
+	public Bang(final float x, final float y, final float radius, String animation, String sound) {
 		super(x, y);
+		int frames = ResourceManager.getImage(animation).getWidth()/64;
 		explosion = new Animation(ResourceManager.getSpriteSheet(
-				Tanx.BANG_EXPLOSIONIMG_RSC, 64, 64), 0, 0, 22, 0, true, 50,
+				animation, 64, 64), 0, 0, frames - 1, 0, true, 50,
 				true);
 		this.setScale(radius / 32);
 		addAnimation(explosion);
 		explosion.setLooping(false);
-		ResourceManager.getSound(Tanx.BANG_EXPLOSIONSND_RSC).play();
+		ResourceManager.getSound(sound).play();
 	}
 
 	public boolean isActive() {

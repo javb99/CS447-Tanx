@@ -9,7 +9,7 @@ import jig.Vector;
 
 public class PlayerConfigurator {
 
-	private final float EDGE_SPACING = 25;
+	private final float EDGE_SPACING = 50;
 	private final float TANK_SPACING = 50;
 	
 	private final float spawnWidth;
@@ -30,6 +30,7 @@ public class PlayerConfigurator {
 		if(this.numPlayers < 2) this.numPlayers = 2;
 		
 		spawnWidth = width / (this.numPlayers*this.numTanks);
+		System.out.println("spawnwidth: " + spawnWidth);
 		spawns = new ArrayList<Integer>();
 		for(int i = 0; i < this.numPlayers*this.numTanks; i++) {
 			spawns.add(new Integer(i));
@@ -56,23 +57,28 @@ public class PlayerConfigurator {
 		
 		for(int i = 1; i <= numPlayers; i++) {
 			Player p = new Player(colors[i-1], i);
-			
+			System.out.println(p);
 			while(p.getTanks().size() < numTanks) {
 				Collections.shuffle(spawns);
 				nextSpawn = spawns.get(0);
 				
+				System.out.println("Spawning a tank in zone " + spawns.get(0));
 				Tank t = p.addTank(rand.nextFloat()*spawnWidth + nextSpawn*spawnWidth, 50);
 				if(t.getCoarseGrainedMinX() < EDGE_SPACING) {
-					t.translate(new Vector(t.getCoarseGrainedMinX() + EDGE_SPACING, 0));
+					t.setPosition(new Vector(t.getCoarseGrainedMinX() + EDGE_SPACING, 50));
 				}
 				if(t.getCoarseGrainedMaxX() > width - EDGE_SPACING) {
-					t.translate(new Vector(t.getCoarseGrainedMaxX() - EDGE_SPACING, 0));
+					t.setPosition(new Vector(t.getCoarseGrainedMaxX() - EDGE_SPACING, 50));
 				}
+				System.out.println(t.getX());
 				if(!checkIfOpen(t, tankList)) {
 					p.removeTank(t);
+					System.out.println("Problem spawning tank, removing and trying again");
 				} else {
 					tankList.add(t);
+					System.out.println("Tank spawn successful, removing zone " + spawns.get(0) + " from the list");
 					spawns.remove(0);
+					
 				}
 			}
 			

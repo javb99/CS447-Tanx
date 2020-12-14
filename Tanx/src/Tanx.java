@@ -38,8 +38,10 @@ public class Tanx extends StateBasedGame {
 	public static final int GAMEOVERSTATE = 2;
 
 	public static final String SPLASH_LOGO = "resources/tanxlogo.png";
-	public static final String BACKGROUND_DESERT = "resources/desertBG.png";
+	public static final String MENU_BACKGROUND = "resources/desertBG.png";
 	public static final String MENU_MUSIC = "resources/tanxMenuTheme.wav";
+	public static final String BATTLE_BACKGROUND = "resources/desertBGAlt.png";
+	public static final String BATTLE_MUSIC = "resources/tanxBattleTheme.wav";
 	public static final String POWER_GAUGE_OVERLAY = "resources/PowerGauge.png";
 	public static final String FUEL_GAUGE_OVERLAY = "resources/FuelGauge.png";
 	public static final String FUEL_GAUGE_ARROW = "resources/FuelGaugeArrow.png";
@@ -50,6 +52,10 @@ public class Tanx extends StateBasedGame {
 	public static final String TIMER_GAUGE = "resources/timerGauge.png";
 	public static final String BANG_EXPLOSIONIMG_RSC = "resources/explosion.png";
 	public static final String BANG_EXPLOSIONSND_RSC = "resources/explosion.wav";
+
+	public static final String BANG_MOUNTAINIMG_RSC = "resources/mountain_maker_anim.png";
+	public static final String BANG_MOUNTAINSND_RSC = "resources/mountain_maker_snd.wav";
+
 	public static final String PLAYER_WIN_BLUE = "resources/blue_win.png";
 	public static final String PLAYER_WIN_RED = "resources/red_win.png";
 	public static final String PLAYER_WIN_YELLOW = "resources/yellow_win.png";
@@ -106,12 +112,14 @@ public class Tanx extends StateBasedGame {
 		// preload all the resources to avoid warnings & minimize latency...
 		//ex: ResourceManager.loadImage(BALL_BALLIMG_RSC);
 		ResourceManager.loadImage(SPLASH_LOGO);
-		ResourceManager.loadImage(BACKGROUND_DESERT);
+		ResourceManager.loadImage(MENU_BACKGROUND);
 		ResourceManager.loadSound(MENU_MUSIC);
-		ResourceManager.loadImage(FUEL_GAUGE_ARROW);
-		ResourceManager.loadImage(FUEL_GAUGE_OVERLAY);
-		ResourceManager.loadImage(POWER_GAUGE_OVERLAY);
-		ResourceManager.loadImage(WEAPON_POINTER);
+		ResourceManager.loadImage(BATTLE_BACKGROUND);
+		ResourceManager.loadSound(BATTLE_MUSIC);
+    ResourceManager.loadImage(FUEL_GAUGE_ARROW);
+    ResourceManager.loadImage(FUEL_GAUGE_OVERLAY);
+    ResourceManager.loadImage(POWER_GAUGE_OVERLAY);
+    ResourceManager.loadImage(WEAPON_POINTER);
 		ResourceManager.loadImage(HEALTH_BAR);
 		ResourceManager.loadImage(FOCUS_ARROW);
 		ResourceManager.loadImage(TIMER_GAUGE);
@@ -124,12 +132,17 @@ public class Tanx extends StateBasedGame {
 		ResourceManager.loadImage(TERRAIN_IMG);
 		ResourceManager.loadImage(Tanx.BANG_EXPLOSIONIMG_RSC);
 		ResourceManager.loadSound(Tanx.BANG_EXPLOSIONSND_RSC);
+
+		ResourceManager.loadImage(Tanx.BANG_MOUNTAINIMG_RSC);
+		ResourceManager.loadSound(Tanx.BANG_MOUNTAINSND_RSC);
+
 		ResourceManager.loadImage(TANK_SPRITE);
 		ResourceManager.loadImage(BASE_CANNON_SPRITE);
 		ResourceManager.loadImage(AMMO_POWERUP_SPRITE);
 		ResourceManager.loadImage(HEALTH_POWERUP_SPRITE);
 		ResourceManager.loadImage(FIRE_ANIMATION);
 		ResourceManager.loadSound(JET_SOUND);
+
 	}
 
 	public static void main(String[] args) {

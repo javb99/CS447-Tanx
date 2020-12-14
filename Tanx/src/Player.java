@@ -24,6 +24,7 @@ public class Player {
     tankIndex = 0;
     playerColor = c;
     playerId = id;
+    
     ammo = new ArrayList<Ammo>();
     giveAmmo(Cannon.BASE_CANNON, Ammo.INF_AMMO);
     ammoIndex = 0;
@@ -193,6 +194,7 @@ public class Player {
     giveAmmo(Cannon.BIG_CANNON, Ammo.INF_AMMO);
     giveAmmo(Cannon.CLUSTER_CANNON, Ammo.INF_AMMO);
     giveAmmo(Cannon.FIRE_CLUSTER_CANNON, Ammo.INF_AMMO);
+    giveAmmo(Cannon.MOUNTAIN_MAKER, Ammo.INF_AMMO);
   }
 
 

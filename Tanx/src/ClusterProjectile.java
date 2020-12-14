@@ -1,5 +1,6 @@
 import jig.Vector;
 
+
 import java.util.Random;
 import java.util.function.Consumer;
 
@@ -20,6 +21,7 @@ public class ClusterProjectile extends Projectile{
     super(x,y, v, r, d);
     projectileSpawner = spawnP;
     splitTime = CLUSTER_SPLIT_TIME;
+    TI = Projectile.TerrainInteraction.BASIC;
   }
 
   @Override

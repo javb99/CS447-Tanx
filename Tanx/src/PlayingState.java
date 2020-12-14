@@ -7,6 +7,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.geom.Circle;
 
 import jig.Entity;
 import jig.Vector;
@@ -60,6 +61,8 @@ public class PlayingState extends BasicGameState {
   public void enter(GameContainer container, StateBasedGame game)
     throws SlickException {
 	
+	ResourceManager.getSound(Tanx.BATTLE_MUSIC).loop();
+		
     Rectangle screenBounds = new Rectangle(0, 0, container.getWidth(), container.getHeight() - BOTTOM_UI_HEIGHT/2);//new Rectangle(0, 0, container.getScreenWidth(), container.getScreenHeight());
     Rectangle bottomUiBounds = new Rectangle(0, 0, screenBounds.getWidth(), BOTTOM_UI_HEIGHT);
     Vector bottomUiPosition = new Vector(screenBounds.getWidth()/4, BOTTOM_UI_HEIGHT);
@@ -136,12 +139,13 @@ public class PlayingState extends BasicGameState {
         fireSystem.addFire(newFire);
         PE.addPhysicsEntity(newFire);
       }
+      if (projectile.getTerrainInteraction() != Projectile.TerrainInteraction.BASIC) {return;}
       if (projectile == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
       projectile.explode();
       int blastRadius = projectile.getExplosionRadius();
       int damage = projectile.getDamage();
       Vector location = projectile.getPosition();
-      explosionSystem.addExplosion(location, (float)blastRadius);
+      explosionSystem.addExplosion(location, (float)blastRadius, Tanx.BANG_EXPLOSIONIMG_RSC, Tanx.BANG_EXPLOSIONSND_RSC);
       world.terrain.setTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN);
       
       PE.forEachEntityInCircle(location, (float)blastRadius, (e) -> {
@@ -152,7 +156,37 @@ public class PlayingState extends BasicGameState {
       });
     });
     
+
+    PE.registerCollisionHandler(MountainMaker.class, PhysicsEntity.class, (mm, obstacle, c) -> {
+        if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
+        if (mm == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
+        mm.explode();
+        int blastRadius = mm.getExplosionRadius();
+        int damage = mm.getDamage();
+        Vector location = mm.getPosition();
+        
+        
+        explosionSystem.addExplosion(location, (float)(blastRadius*1.5), Tanx.BANG_MOUNTAINIMG_RSC, Tanx.BANG_MOUNTAINSND_RSC);
+        world.terrain.changeTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN, Terrain.TerrainType.NORMAL, false);
+        
+        ArrayList<Circle> holes = new ArrayList<Circle>();
+        
+        PE.forEachEntityInCircle(location, (float)blastRadius, (e) -> {
+          if (e instanceof Tank) {
+            Tank tank = (Tank)e;
+            tank.takeDamage(damage);
+          }
+          if (!(e instanceof Projectile || e instanceof Terrain)) {
+        	  holes.add(new Circle(e.getX(), e.getY(), e.getCoarseGrainedRadius() + 30));
+          }
+        });
+        
+        world.terrain.changeTerrainInCircleList(holes, Terrain.TerrainType.NORMAL, Terrain.TerrainType.OPEN);
+      });
+    
+
     //camera.toggleDebug();
+
   }
 
 	@Override
@@ -164,6 +198,7 @@ public class PlayingState extends BasicGameState {
     camera.transformContext(g);
     // Render anything that should be affected by the camera location.
 
+    g.drawImage(ResourceManager.getImage(Tanx.BATTLE_BACKGROUND).getScaledCopy((int)worldBounds.getWidth(), (int)worldBounds.getHeight()*2), 0, -3*worldBounds.getHeight()/4);
     world.terrain.render(g);
     PE_list.forEach((e) -> e.render(g));
     players.forEach((p) -> p.render(g));
@@ -316,6 +351,9 @@ public class PlayingState extends BasicGameState {
         state = phase.MOVEFIRE;
     } else if (state == phase.GAMEOVER) {
       if (input.isKeyDown(Input.KEY_SPACE)) {
+    	if(ResourceManager.getSound(Tanx.BATTLE_MUSIC).playing()) {
+    		ResourceManager.getSound(Tanx.BATTLE_MUSIC).stop();
+    	}
         tg.enterState(Tanx.STARTUPSTATE);
         input.clearKeyPressedRecord();
       }

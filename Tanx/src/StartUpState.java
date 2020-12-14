@@ -98,6 +98,7 @@ public class StartUpState extends BasicGameState {
     container.setSoundOn(true);
     container.setSoundVolume(.5f);
     ResourceManager.getSound(Tanx.MENU_MUSIC).loop();
+
   }
 
 
@@ -108,7 +109,7 @@ public class StartUpState extends BasicGameState {
     
     ArrayList<MenuOption> options;
     
-    g.drawImage(ResourceManager.getImage(Tanx.BACKGROUND_DESERT), 0, 0);
+    g.drawImage(ResourceManager.getImage(Tanx.MENU_BACKGROUND), 0, 0);
     
     
     if(loading) {
@@ -265,12 +266,12 @@ public class StartUpState extends BasicGameState {
 	  switch(worldSize.getSelection()) {
 	  case "LARGE":
 		  width = 4*container.getWidth();
-		  height = 7*container.getHeight()/4;
+		  height = 2*container.getHeight();
 		  break;
 	  case "SMALL":
 	  default:
 		  width = 2*container.getWidth();
-		  height = 3*container.getHeight()/4;
+		  height = 2*container.getHeight();
 		  break;
 	  }
 	  Rectangle bounds = new Rectangle(0, 0, width, height);
