@@ -142,6 +142,10 @@ public class Tanx extends StateBasedGame {
 		ResourceManager.loadImage(HEALTH_POWERUP_SPRITE);
 		ResourceManager.loadImage(FIRE_ANIMATION);
 		ResourceManager.loadSound(JET_SOUND);
+		
+		ResourceManager.loadImage(DASH_BACKGROUND);
+		ResourceManager.loadImage(FIRE_DEBUFF);
+		ResourceManager.loadSound(FIRE_DEBUFF_SND);
 
 	}
 
