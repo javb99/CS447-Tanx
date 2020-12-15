@@ -88,9 +88,14 @@ public class PhysicsEngine {
       updatePhysics(PHYSICS_TICK_LENGTH);
     }
     updatePhysics(delta % PHYSICS_TICK_LENGTH);
+    resetAcceleration();
   }
-	
-  private void updatePhysics(int delta) {
+
+	private void resetAcceleration() {
+		objects.forEach(e -> e.setAcceleration(new Vector(0, 0)));
+	}
+
+	private void updatePhysics(int delta) {
     objects.forEach((n) -> applyPhysics(n, delta));
     
     applyCollisionDetection(delta);
