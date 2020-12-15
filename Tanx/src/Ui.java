@@ -76,7 +76,7 @@ class BottomUi extends UiContainer{
 
   public void update(int delta, Player player, int turnTimer, phase state) {
     weaponSelect.update(delta, player);
-    if (state == phase.MOVEFIRE || state == phase.CHARGING){
+    if (state == phase.MOVEFIRE || state == phase.CHARGING || state == phase.TURNCHANGE){
       timerElement.setValue(turnTimer);
       jetFuelElement.setValue(player.getFuel());
       powerElement.setValue(player.getChargedPower());

@@ -135,6 +135,12 @@ public class PlayingState extends BasicGameState {
     PE.registerCollisionHandler(Projectile.class, PhysicsEntity.class, (projectile, obstacle, c) -> {
       if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
       if (obstacle instanceof GroundFire) { return; } // Don't explode on GroundFire Entities
+      if (projectile instanceof ClusterProjectile || projectile instanceof FireClusterProjectile ||
+              projectile instanceof FireMiniBomb) {
+        Vector location = projectile.getPosition();
+        float blastRadius = 15;
+        explosionSystem.addExplosion(location, blastRadius, Tanx.BANG_EXPLOSIONIMG_RSC, Tanx.BANG_EXPLOSIONSND_RSC);
+      }
       if (projectile instanceof FireMiniBomb) {
         GroundFire newFire = new GroundFire(projectile.getX(), projectile.getY() + FireMiniBomb.Y_SPAWN_OFFSET);
         fireSystem.addFire(newFire);
@@ -464,7 +470,6 @@ public class PlayingState extends BasicGameState {
     }
     activeProjectile = null;
     state = phase.TURNCHANGE;
-    turnTimer = FIRING_TIMEOUT;
     Player currentPlayer;
     do {
       pIndex ++;

@@ -6,10 +6,9 @@ import java.util.function.Consumer;
 public class FireClusterProjectile extends Projectile {
     public static int MINI_BOMB_DAMAGE = 0;
     public static int MINI_BOMB_RADIUS = 0;
-    public static float MINI_BOMB_SPEED = .2f;
+    public static float MINI_BOMB_SPEED = .5f;
     public static int CLUSTER_SPLIT_TIME = 1000;
-    public static int NUM_MINI_BOMBS = 4;
-    public static Vector NORM = new Vector(0, 1).setLength(MINI_BOMB_SPEED);
+    public static Vector NORM = new Vector(0, -1).setLength(MINI_BOMB_SPEED);
     private int splitTime;
     private Consumer<Projectile> projectileSpawner;
 
@@ -24,11 +23,11 @@ public class FireClusterProjectile extends Projectile {
         super.update(delta);
         splitTime -= delta;
         if (splitTime <= 0) {
-            explode();
+            explode(getVelocity());
         }
     }
 
-    @Override
+/*    @Override
     public void explode() {
         Random rand = new Random();
         int upperBound = 360;
@@ -40,6 +39,27 @@ public class FireClusterProjectile extends Projectile {
             float offset = getCoarseGrainedRadius();
             newProjectile.translate(velocity.setLength(offset));
             projectileSpawner.accept(newProjectile);
+        }
+    }*/
+
+    @Override
+    public void explode() {
+        super.explode();
+        explode(NORM);
+    }
+
+    public void explode(Vector angleVector) {
+        double angles[] = new double[]{-30, 30, 0};
+        super.explode();
+        for (double angle : angles) {
+            Vector velocity = angleVector;
+            velocity = velocity.rotate(angle);
+
+            Projectile newBomb = new FireMiniBomb(getX(), getY(), velocity, MINI_BOMB_RADIUS, MINI_BOMB_DAMAGE);
+
+            float offset = getCoarseGrainedRadius();
+            newBomb.translate(velocity.setLength(offset));
+            projectileSpawner.accept(newBomb);
         }
     }
 }
