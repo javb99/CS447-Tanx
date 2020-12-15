@@ -1,5 +1,5 @@
-
 import java.util.ArrayList;
+import java.util.function.Predicate;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Image;
@@ -94,30 +94,31 @@ public class Terrain extends PhysicsEntity {
 		int cy = (int)p.getY();
 		
 		int r = (int)radius;
+		int rSq = r*r;
 		
 		for(int x = cx - r; x <= cx + r; x++) {
 			for(int y = cy - r; y <= cy + r; y++) {
-				
-				if(x < 0 || x >= width || y < 0 || y >= height) continue;	//dont check out of world
-				if(Math.sqrt( Math.pow(Math.abs(x-cx), 2) + Math.pow(Math.abs(y-cy), 2) ) <= r) {	//pythagorean theorem
-					
+				if(!isInBounds(x, y)) continue;	//dont check out of world
+				if ((x-cx)*(x-cx) + (y-cy)*(y-cy) <= rSq) {  //pythagorean theorem					
 					if(mask[x][y] != TerrainType.OPEN) return true;
-					
 				}
 			}
 		}
 		return false;
 	}
 	
-	public boolean checkPointCollision(Vector p) {	//check a single pixel
-		int x = (int)p.getX();
-		int y = (int)p.getY();
-		
-		if(x < 0 || x >= width || y < 0 || y >= height) return false;	//dont check out of world
-		
-		if(mask[x][y] != TerrainType.OPEN) return true;
-		return false;
-	}
+	public boolean checkPointCollision(Vector p) { //check a single pixel
+    return doesSatisfy(p, (terrainType) -> terrainType != TerrainType.OPEN);
+  }
+  public boolean doesSatisfy(Vector p, Predicate<TerrainType> predicate) { //check a single pixel
+    if (!isInBounds(p)) return false;
+    
+    int x = (int)p.getX();
+    int y = (int)p.getY();
+    
+    if(predicate.test(mask[x][y])) return true;
+    return false;
+  }
 	
 	public boolean checkLineCollision(Vector p1, Vector p2) {	//recursive function for lines
 		int x1 = (int)p1.getX();
@@ -156,12 +157,9 @@ public class Terrain extends PhysicsEntity {
 	}
 	
 	public void setTerrainAtPoint(Vector p, TerrainType t) {	//set a single bit
-		int x = (int)p.getX();
-		int y = (int)p.getY();
+	  if (!isInBounds(p)) return; //dont set out of world
 		
-		if(x < 0 || x >= width || y < 0 || y >= height) return;	//dont set out of world
-		
-		mask[x][y] = t;
+		mask[(int)p.getX()][(int)p.getY()] = t;
 		applyMask();
 	}
 	
@@ -170,6 +168,7 @@ public class Terrain extends PhysicsEntity {
 		int cy = (int)p.getY();
 		
 		int r = (int)radius;
+		int rSq = r*r;
 		
 		if(r == 0) return;
 		
@@ -178,7 +177,7 @@ public class Terrain extends PhysicsEntity {
 				
 				if(x < 0 || x >= width || y < 0 || y >= height) continue;	//dont set out of world
 				
-				if(Math.sqrt( Math.pow(Math.abs(x-cx), 2) + Math.pow(Math.abs(y-cy), 2) ) <= r) {	//pythagorean theorem
+				if((x-cx)*(x-cx) + (y-cy)*(y-cy) <= rSq) {	//pythagorean theorem
 					mask[x][y] = t;
 				}
 			}
@@ -273,6 +272,56 @@ public class Terrain extends PhysicsEntity {
 		}
 		applyMask();
 	}
+
+	public RayPair surfaceDistanceRays(Vector start, Vector unitDirection) {
+    Vector tinyStep = unitDirection.getPerpendicular().scale(5);
+    
+    Vector firstStart = start.add(tinyStep);
+    Vector firstCollisionPoint = this.surfacePointForRay(firstStart, unitDirection);
+    if (firstCollisionPoint == null) { return null; }
+    
+    Vector secondStart = start.subtract(tinyStep);
+    Vector secondCollisionPoint = this.surfacePointForRay(secondStart, unitDirection);
+    if (secondCollisionPoint == null) { return null; }
+    
+    return new RayPair(
+        new LineSegment(firstStart, firstCollisionPoint), 
+        new LineSegment(secondStart, secondCollisionPoint));
+  }
+	
+	public Vector surfacePointForRay(Vector start, Vector unitDirection) {
+    Predicate<TerrainType> isEmpty = (t) -> t == TerrainType.OPEN;
+    Predicate<TerrainType> isNotEmpty = (t) -> t != TerrainType.OPEN;
+    
+    Vector current = start;
+    while (doesSatisfy(current, isEmpty)) {
+      current = current.add(unitDirection);
+      if (!this.isInBounds(current)) {
+        System.out.println("No terrain below");
+        // no terrain below, so check above
+        current = start;
+        while (doesSatisfy(current, isNotEmpty)) {
+          current = current.subtract(unitDirection);
+          if (!this.isInBounds(current)) { 
+            System.out.println("No terrain below");
+            // no terrain above
+            return null;
+          }
+          break;
+        }
+        break;
+      }
+    }
+
+    return current;
+  }
+	
+	private boolean isInBounds(Vector point) {
+    return point.getX() >= 0 && point.getX() < width && point.getY() >= 0 && point.getY() < height;
+  }
+	private boolean isInBounds(int x, int y) {
+    return x >= 0 && x < width && y >= 0 && y < height;
+  }
 	
 	/*private void printMask() {	//this function is used for debugging, NEVER call it in practice, it prints info about each individual pixel
 		for(int x = 0; x < width; x++) {
