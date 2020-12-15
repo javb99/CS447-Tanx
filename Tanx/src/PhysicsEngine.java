@@ -109,10 +109,11 @@ public class PhysicsEngine {
       if (Tank.class.isInstance(e)){
         float minX = e.getCoarseGrainedMinX();
         float maxX = e.getCoarseGrainedMaxX();
+        float half = e.getCoarseGrainedMaxX() - e.getX();
         if (minX <= world.worldBounds.getMinX()){
-          e.setX(world.worldBounds.getMinX() + Math.abs(minX));
+          e.setX(world.worldBounds.getMinX() + Math.abs(half));
         } else if (maxX >= world.worldBounds.getMaxX()){
-          e.setX(world.worldBounds.getMaxX() - Math.abs(maxX));
+          e.setX(world.worldBounds.getMaxX() - Math.abs(half));
         }
       }
 
