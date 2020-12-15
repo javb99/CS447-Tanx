@@ -148,7 +148,7 @@ public class Tank extends PhysicsEntity {
       jumpJetsEffect.render(g, getX(), getY() + JET_OFFSET_Y);
     }
     if (onFireTurns > 0) {
-      fireDebuffEntity.render(g, getPosition());
+      fireDebuffEntity.render(g, getPosition().add(new Vector(0, 15).rotate(getRotation())));
     }
     float bottomSpacing = 20;
     healthbar.render(g, this.getCoarseGrainedMaxY() + bottomSpacing, this.getX());
