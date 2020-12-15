@@ -73,7 +73,7 @@ public class PlayingState extends BasicGameState {
     world.loadLevel("YAY");
     explosionSystem = new ExplosionSystem();
     projectileSystem = new ProjectileSystem();
-    fireSystem = new FireSystem();
+    fireSystem = new FireSystem(world.terrain);
 
     PE_list = new ArrayList<PhysicsEntity>();
 
@@ -217,13 +217,13 @@ public class PlayingState extends BasicGameState {
         world.terrain.setTerrainInCircleList(holes, Terrain.TerrainType.OPEN);
       });
     
-    PE.registerCollisionHandler(IceBomb.class, PhysicsEntity.class, (mm, obstacle, c) -> {
+    PE.registerCollisionHandler(IceBomb.class, PhysicsEntity.class, (ib, obstacle, c) -> {
         if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
-        if (mm == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
-        mm.explode();
-        int blastRadius = mm.getExplosionRadius();
-        int damage = mm.getDamage();
-        Vector location = mm.getPosition();
+        if (ib == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
+        ib.explode();
+        int blastRadius = ib.getExplosionRadius();
+        int damage = ib.getDamage();
+        Vector location = ib.getPosition();
         
         explosionSystem.addExplosion(location, (float)(blastRadius), Tanx.BANG_ICEIMG_RSC, Tanx.BANG_ICESND_RSC);
         world.terrain.changeTerrainInCircle(location, blastRadius, Terrain.TerrainType.NORMAL, Terrain.TerrainType.ICE, true);
@@ -235,7 +235,7 @@ public class PlayingState extends BasicGameState {
           }
         });
       });
-
+    
 
     //camera.toggleDebug();
 
@@ -344,6 +344,7 @@ public class PlayingState extends BasicGameState {
     updateState(input, player, delta, tg);
     explosionSystem.update(delta);
     projectileSystem.update(delta);
+    fireSystem.update();
 		for(Player p: players){p.update(delta);}
     PE.update(delta);
 		controlCamera(delta, input);
@@ -468,10 +469,10 @@ public class PlayingState extends BasicGameState {
       if (pIndex >= players.size()){pIndex = 0;}
       currentPlayer = players.get(pIndex);
     } while (currentPlayer.isDead());
-    currentPlayer.startTurn();
     camera.moveTo(currentPlayer.getTank().getPosition());
     tankPointer.pointTo(currentPlayer.getTank().getPosition());
     fireSystem.updateTurn();
+    currentPlayer.startTurn();
   }
   private boolean isGameOver() {
     int livingPlayersCount = 0;
