@@ -23,8 +23,6 @@ public class Tank extends PhysicsEntity {
   public static final float TANK_SPRITE_SCALE = 3f;
   private static final Vector TANK_MOUNT_OFFSET = new Vector(15, 0);
   public static final float JET_OFFSET_Y = 40f;
-//  public static final float TANK_WIDTH = 64f;
-//  public static final float TANK_HEIGHT = 32f;
 
   //Class Variables
   private Cannon cannon;
@@ -111,7 +109,7 @@ public class Tank extends PhysicsEntity {
   public void applyFire(int turnsOnFire, GroundFire groundFire) {
     onFireTurns = turnsOnFire;
     fireDebuffEntity = groundFire;
-    takeDamage(groundFire.FIRE_DAMAGE_PER_TURN);
+    takeDamage(GroundFire.FIRE_DAMAGE_PER_TURN);
   }
 
   public void updateTurn() {
@@ -240,11 +238,6 @@ public class Tank extends PhysicsEntity {
     this.debugShortestRaysIndexes = shortestRaysIndexes;
 
     Vector terrainNormal = new LineSegment(terrainPoints[1], terrainPoints[0]).unitNormalSpecial();
-//    if(new Vector(0, -1).dot(terrainNormal.getPerpendicular()) < 0) {
-//      terrainNormal = terrainNormal.negate();
-//    }
-
-//    Vector terrainNormal = avgVectors(shortestNormals);
     this.debugTerrainNormal = terrainNormal;
     
     if (shortestRaysIndexes[0] == -1) {
@@ -294,14 +287,6 @@ public class Tank extends PhysicsEntity {
     }
     
     this.targetRotation = terrainAngle;
-  }
-  private Vector avgVectors(Vector vs[]) {
-    if (vs.length <= 0) { return null; }
-    Vector sum = new Vector(0, 0);
-    for (Vector v : vs) {
-      sum = sum.add(v);
-    }
-    return sum.scale(1.0f/(float)vs.length);
   }
   
   private void applyFriction(int delta, Vector terrainNormal) {

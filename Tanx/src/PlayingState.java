@@ -366,11 +366,6 @@ public class PlayingState extends BasicGameState {
       if (turnTimer <= 0){
         changePlayer();
       }
-      if (input.isKeyDown(Input.KEY_T)) {
-        Vector mouse = new Vector(input.getAbsoluteMouseX(), input.getAbsoluteMouseY());
-        currentTank.setPosition(camera.worldLocationForScreenLocation(mouse));
-        currentTank.setVelocity(new Vector(0, 0));
-      }
       if (input.isKeyDown(Input.KEY_D)){
         currentTank.move(Direction.RIGHT);
       } else if (input.isKeyDown(Input.KEY_A)){
@@ -442,12 +437,18 @@ public class PlayingState extends BasicGameState {
         player.getTank().killTank();
         changePlayer();
       }
-      if (input.isKeyPressed(Input.KEY_F6)) {
+      if (input.isKeyPressed(Input.KEY_6)) {
         Tank.showDebugRays = !Tank.showDebugRays;
       }
       if (input.isKeyPressed(Input.KEY_X)) {
         Vector mouse = new Vector(input.getAbsoluteMouseX(), input.getAbsoluteMouseY());
         world.terrain.changeTerrainInCircle(camera.worldLocationForScreenLocation(mouse), 100, Terrain.TerrainType.NORMAL, Terrain.TerrainType.OPEN, true);
+      }
+      if (input.isKeyDown(Input.KEY_T)) {
+        Tank currentTank = players.get(pIndex).getTank();
+        Vector mouse = new Vector(input.getAbsoluteMouseX(), input.getAbsoluteMouseY());
+        currentTank.setPosition(camera.worldLocationForScreenLocation(mouse));
+        currentTank.setVelocity(new Vector(0, 0));
       }
     }
 
