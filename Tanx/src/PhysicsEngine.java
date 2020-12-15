@@ -171,7 +171,6 @@ public class PhysicsEngine {
 	  Collision c = a.collides(b);
 	  if (c != null) {
 	    collisionHandlers.forEach(handler -> handler.handleCollision(a, b, c));
-	    resolveCollision(delta, a, b, c);
 	  }
 	}
 	
