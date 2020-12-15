@@ -19,7 +19,7 @@ public class Tank extends PhysicsEntity {
   public static final float TANK_TERMINAL_VELOCITY = 2f;
   public static final float ACCELERATION = .75f;
   public static final float FRICTION = 0.12f;
-  public static final Vector ACCELERATION_JETS = new Vector(0, -.0015f);
+  public static final Vector ACCELERATION_JETS = new Vector(0, -.0012f);
   public static final float TANK_SPRITE_SCALE = 3f;
   private static final Vector TANK_MOUNT_OFFSET = new Vector(15, 0);
   public static final float JET_OFFSET_Y = 40f;
@@ -206,10 +206,15 @@ public class Tank extends PhysicsEntity {
     return invuln;
   }
 
-  public void killTank() {
-    healthbar.receiveDamage(healthbar.health);
+  public void killTank() { healthbar.receiveDamage(healthbar.health); }
+
+  @Override
+  public void setDead(boolean dead) {
+    if (dead) {
+      killTank();
+    }
   }
-  
+
   @Override
   public boolean shouldResolveTerrainCollision(Terrain terrain, int delta) {
     calculateTranslation(delta, terrain);

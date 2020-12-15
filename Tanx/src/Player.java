@@ -32,7 +32,7 @@ public class Player {
     maxChargedPower = TIME_TO_CHARGE;
 
     //REMOVE FROM RELEASE OF GAME BELOW
-    giveAllWeapons();
+    //giveAllWeapons();
   }
 
   public void render(Graphics g){

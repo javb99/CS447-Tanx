@@ -8,7 +8,7 @@ public class PhysicsEntity extends Entity {
   //constants
 
   //class variables
-  protected boolean isDead;
+  private boolean isDead;
   private Vector acceleration;
   private Vector velocity;
   private float drag;
@@ -44,4 +44,6 @@ public class PhysicsEntity extends Entity {
   public float getDrag(){return drag;}
   public Vector getTerminal() {return terminal;}
   public boolean getIsDead() { return isDead; };
+
+  public void setDead(boolean dead) { isDead = dead; }
 }

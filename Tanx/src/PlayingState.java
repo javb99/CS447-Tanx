@@ -127,8 +127,8 @@ public class PlayingState extends BasicGameState {
     });
 
     PE.registerCollisionHandler(Powerup.class, GroundFire.class, (powerup, fire, c) -> {
-      fire.setIsDead(true);
-      powerup.setIsDead(true);
+      fire.setDead(true);
+      powerup.setDead(true);
       ResourceManager.getSound(Tanx.FIRE_DEBUFF_SND).play();
     });
 
@@ -217,7 +217,7 @@ public class PlayingState extends BasicGameState {
           }
           
           if (e instanceof GroundFire) {
-        	  ((GroundFire) e).setIsDead(true);
+        	  ((GroundFire) e).setDead(true);
         	  
           }
         });
@@ -351,6 +351,7 @@ public class PlayingState extends BasicGameState {
   }
 
   private void updateState(Input input, Player player, int delta, Tanx tg) {
+  	  if (state != phase.GAMEOVER && player.getTank() == null) { changePlayer(); return; }
     if (state == phase.CHARGING) {
       if (input.isKeyDown(Input.KEY_SPACE) && turnTimer > 0){
         player.charging(delta);
@@ -366,8 +367,8 @@ public class PlayingState extends BasicGameState {
       }
     }
     if (state == phase.MOVEFIRE){
-      cheatCodeHandler(input, player);
       Tank currentTank = players.get(pIndex).getTank();
+      cheatCodeHandler(input, player);
       tankPointer.pointTo(currentTank.getPosition());
       if (turnTimer <= 0){
         changePlayer();

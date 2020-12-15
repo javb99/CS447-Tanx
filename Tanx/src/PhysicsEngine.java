@@ -125,8 +125,8 @@ public class PhysicsEngine {
       //check that object hasn't left our world completely
       if ((e.getX() <= (world.worldBounds.getMinX() - OUT_BOUNDS_LENGTH))
           || (e.getX() >= (world.worldBounds.getMaxX() + OUT_BOUNDS_LENGTH))
-          || (e.getY() >= (world.worldBounds.getMaxY() + OUT_BOUNDS_LENGTH))) {
-        e.isDead = true;
+          || (e.getY() >= (world.worldBounds.getMaxY() - OUT_BOUNDS_LENGTH))) {
+        e.setDead(true);
       }
     }
   }

@@ -34,7 +34,7 @@ public class GroundFire extends PhysicsEntity {
 
   public void applyFire(Tank t) {
     ResourceManager.getSound(Tanx.FIRE_DEBUFF_SND).play(FIRE_SOUND_PITCH, FIRE_SOUND_VOLUME);
-    isDead = true;
+    setDead(true);
     t.applyFire(TURNS_ON_FIRE, this);
   }
 
@@ -49,10 +49,7 @@ public class GroundFire extends PhysicsEntity {
       currentScale -= FIRE_TURN_SCALAR;
       setScale(currentScale);
     } else {
-      isDead = true;
+      setDead(true);
     }
   }
-
-  public void setIsDead(Boolean val) {
-	  isDead = val; }
 }

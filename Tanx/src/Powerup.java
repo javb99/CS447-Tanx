@@ -21,12 +21,10 @@ public class Powerup extends PhysicsEntity{
   }
 
   public void usePowerup(Tank t){
-    isDead = true;
+    setDead(true);
   }
 
   public Powerup copy(){
     return new Powerup(getX(), getY());
   }
-
-  public void setIsDead(Boolean val) { isDead = val; }
 }
