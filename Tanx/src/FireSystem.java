@@ -13,10 +13,14 @@ public class FireSystem {
     }
 
     public void addFire(GroundFire fire) { toAdd.add(fire); }
+
     public void updateTurn() {
         for (GroundFire f: fires) {
             f.updateTurn();
         }
+    }
+
+    public void update() {
         fires.removeIf(f -> f.getIsDead() );
         fires.addAll(toAdd);
         toAdd.clear();

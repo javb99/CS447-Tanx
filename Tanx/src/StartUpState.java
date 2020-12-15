@@ -16,21 +16,17 @@ import java.util.Collections;
 public class StartUpState extends BasicGameState {
 	
 	private ArrayList<MenuOption> main;
-	private ArrayList<MenuOption> credits;
 	private ArrayList<MenuOption> setup;
 	private int selectedOption;
 	
 	enum Menu{
 		MAIN,
-		CREDITS,
 		SETUP
 	}
 	
 	private Menu currentMenu;
 	
 	private final static String MAIN_PLAY = "Play";
-	private final static String MAIN_CREDITS = "Credits";
-	private final static String CREDITS_RETURN = "Return to Main Menu";
 	private final static String SETUP_START = "Begin Game";
 	private final static String SETUP_PLAYERS = "Players:";
 	private final static String SETUP_TANKS = "Tanks per player:";
@@ -62,10 +58,6 @@ public class StartUpState extends BasicGameState {
     
     main = new ArrayList<MenuOption>();
     main.add(new MenuOption(container.getWidth()/2 - 10, container.getHeight()/2 - 80, MAIN_PLAY));
-    main.add(new MenuOption(container.getWidth()/2 - 10, container.getHeight()/2 - 60, MAIN_CREDITS));
-    
-    credits = new ArrayList<MenuOption>();
-    credits.add(new MenuOption(container.getWidth()/2, container.getHeight() - 100, CREDITS_RETURN));
     
     setup = new ArrayList<MenuOption>();
     
@@ -128,9 +120,6 @@ public class StartUpState extends BasicGameState {
     	
     	g.drawImage(logo, container.getWidth()/2 - logo.getWidth()/2, container.getHeight()/2 - 100);
     	break;
-    case CREDITS:
-    	options = credits;
-    	break;
     case SETUP:
     	if(!validSettings) {
     		g.setColor(Color.red);
@@ -169,9 +158,6 @@ public class StartUpState extends BasicGameState {
     switch(currentMenu) {
     case MAIN:
     	options = main;
-    	break;
-    case CREDITS:
-    	options = credits;
     	break;
     case SETUP:
     	options = setup;
@@ -221,18 +207,6 @@ public class StartUpState extends BasicGameState {
 		  switch(main.get(option).getLabel()) {
 		  case MAIN_PLAY:
 			  currentMenu = Menu.SETUP;
-			  selectedOption = 0;
-			  break;
-		  case MAIN_CREDITS:
-			  currentMenu = Menu.CREDITS;
-			  selectedOption = 0;
-			  break;
-		  }
-		  break;
-	  case CREDITS:
-		  switch(credits.get(option).getLabel()) {
-		  case CREDITS_RETURN:
-			  currentMenu = Menu.MAIN;
 			  selectedOption = 0;
 			  break;
 		  }

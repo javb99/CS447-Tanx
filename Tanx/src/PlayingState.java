@@ -61,7 +61,7 @@ public class PlayingState extends BasicGameState {
   public void enter(GameContainer container, StateBasedGame game)
     throws SlickException {
 	
-	ResourceManager.getSound(Tanx.BATTLE_MUSIC).loop();
+	ResourceManager.getSound(Tanx.BATTLE_MUSIC).loop(1, .25f);
 		
     Rectangle screenBounds = new Rectangle(0, 0, container.getWidth(), container.getHeight() - BOTTOM_UI_HEIGHT/2);//new Rectangle(0, 0, container.getScreenWidth(), container.getScreenHeight());
     Rectangle bottomUiBounds = new Rectangle(0, 0, screenBounds.getWidth(), BOTTOM_UI_HEIGHT);
@@ -147,7 +147,7 @@ public class PlayingState extends BasicGameState {
       int damage = projectile.getDamage();
       Vector location = projectile.getPosition();
       explosionSystem.addExplosion(location, (float)blastRadius, Tanx.BANG_EXPLOSIONIMG_RSC, Tanx.BANG_EXPLOSIONSND_RSC);
-      world.terrain.setTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN);
+      world.terrain.setTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN, true);
       
       PE.forEachEntityInCircle(location, (float)blastRadius, (e) -> {
         if (e instanceof Tank) {
@@ -156,6 +156,35 @@ public class PlayingState extends BasicGameState {
         }
       });
     });
+    
+    PE.registerCollisionHandler(MiniBomb.class, PhysicsEntity.class, (projectile, obstacle, c) -> {
+        if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
+        if (projectile == activeProjectile && state == phase.FIRING) { turnTimer = SHOTRESOLVE_TIMEOUT; }
+          projectile.explode();
+        int blastRadius = projectile.getExplosionRadius();
+        int damage = projectile.getDamage();
+        Vector location = projectile.getPosition();
+        explosionSystem.addExplosion(location, (float)blastRadius, Tanx.BANG_EXPLOSIONIMG_RSC, Tanx.BANG_EXPLOSIONSND_RSC);
+        
+        //set the terrain bitmap but dont apply the change to the terrain image yet
+        world.terrain.setTerrainInCircle(location, blastRadius, Terrain.TerrainType.OPEN, false);
+        
+        
+        PE.forEachEntityInCircle(location, (float)blastRadius, (e) -> {
+          if (e instanceof Tank) {
+            Tank tank = (Tank)e;
+            tank.takeDamage(damage);
+          }
+        });
+        
+        //remove this projectile from the projectile group
+        projectile.getParent().getBombList().remove(projectile);
+        
+        //if there are no more projectiles in the group, we can now apply the mask
+        if(projectile.getParent().getBombList().size() == 0) {
+        	world.terrain.applyMask();
+        }
+      });
     
 
     PE.registerCollisionHandler(MountainMaker.class, PhysicsEntity.class, (mm, obstacle, c) -> {
@@ -177,8 +206,13 @@ public class PlayingState extends BasicGameState {
             Tank tank = (Tank)e;
             tank.takeDamage(damage);
           }
-          if (!(e instanceof Projectile || e instanceof Terrain)) {
+          if (!(e instanceof Projectile || e instanceof Terrain || e instanceof GroundFire)) {
         	  holes.add(new Circle(e.getX(), e.getY(), e.getCoarseGrainedRadius() + 30));
+          }
+          
+          if (e instanceof GroundFire) {
+        	  ((GroundFire) e).setIsDead(true);
+        	  
           }
         });
         
@@ -232,7 +266,16 @@ public class PlayingState extends BasicGameState {
     }
     if (state == phase.GAMEOVER) {
       renderGameOver(g, bg);
+    } else if (state == phase.TURNCHANGE) {
+      renderTurnChange(g, bg);
     }
+  }
+
+  private void renderTurnChange(Graphics g, Tanx bg) {
+    final float INSTRUCT_X = bg.ScreenWidth/2 - 200;
+    final float INSTRUCT_Y = 0;
+    final float IMG_SCALE = 2f;
+    g.drawImage(ResourceManager.getImage(Tanx.TURN_START_IMG).getScaledCopy(IMG_SCALE), INSTRUCT_X, INSTRUCT_Y);
   }
 
   private void renderGameOver(Graphics g, Tanx bg) {
@@ -318,7 +361,6 @@ public class PlayingState extends BasicGameState {
     }
     if (state == phase.MOVEFIRE){
       cheatCodeHandler(input, player);
-      if (player.getTank().getVelocity().lengthSquared() > 0) { camera.moveTo(player.getTank().getPosition()); }
       Tank currentTank = players.get(pIndex).getTank();
       tankPointer.pointTo(currentTank.getPosition());
       if (turnTimer <= 0){
@@ -342,10 +384,10 @@ public class PlayingState extends BasicGameState {
         player.rotate(Direction.LEFT, delta);
       }
       
-      if (input.isKeyPressed(Input.KEY_C)) {
+      if (input.isKeyPressed(Input.KEY_F)) {
         player.nextWeapon();
       }
-      if (input.isKeyPressed(Input.KEY_Z)) {
+      if (input.isKeyPressed(Input.KEY_R)) {
         player.prevWeapon();
       }
 
@@ -361,7 +403,12 @@ public class PlayingState extends BasicGameState {
       if (turnTimer <= 0) { camera.stopTracking(); changePlayer(); }
     } else if (state == phase.TURNCHANGE) {
         turnTimer = TURNLENGTH;
-        state = phase.MOVEFIRE;
+        camera.moveTo(player.getTank().getPosition());
+        if (input.isKeyPressed(Input.KEY_ENTER)) {
+          state = phase.MOVEFIRE;
+          camera.trackObject(player.getTank());
+        }
+
     } else if (state == phase.GAMEOVER) {
       if (input.isKeyDown(Input.KEY_SPACE)) {
     	if(ResourceManager.getSound(Tanx.BATTLE_MUSIC).playing()) {
@@ -374,23 +421,23 @@ public class PlayingState extends BasicGameState {
   }
 
   private void cheatCodeHandler(Input input, Player player) {
-    if (input.isKeyPressed(Input.KEY_F1)){
+    if (input.isKeyPressed(Input.KEY_1)){
       toggleCheats = !toggleCheats;
     }
     if (toggleCheats){
-      if (input.isKeyPressed(Input.KEY_F2)) {
+      if (input.isKeyPressed(Input.KEY_2)) {
         //give player all weapons
         player.giveAllWeapons();
       }
-      if (input.isKeyPressed(Input.KEY_F3)) {
+      if (input.isKeyPressed(Input.KEY_3)) {
         //infinate jet fuel
         player.toggleInfFuel();
       }
-      if (input.isKeyPressed(Input.KEY_F4)) {
+      if (input.isKeyPressed(Input.KEY_4)) {
         //infinate health
         player.toggleInfHealth();
       }
-      if (input.isKeyPressed(Input.KEY_F5)) {
+      if (input.isKeyPressed(Input.KEY_5)) {
         //kill tank
         player.getTank().killTank();
         changePlayer();
@@ -437,29 +484,15 @@ public class PlayingState extends BasicGameState {
   }
 
   private void controlCamera(int delta, Input input) {
-	  if (camera.getState() == camState.IDLE){
-      if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+      if (input.isKeyPressed(Input.KEY_EQUALS)) {
         camera.setZoom(camera.getZoom() + 0.25f);
       }
-      if (input.isMousePressed(Input.MOUSE_RIGHT_BUTTON)) {
+      if (input.isKeyPressed(Input.KEY_MINUS)) {
         camera.setZoom(camera.getZoom() - 0.25f);
       }
-      if (input.isKeyPressed(Input.KEY_O)) {
+      if (input.isKeyPressed(Input.KEY_7) && toggleCheats) {
         camera.toggleDebug();
       }
-      if (input.isKeyDown(Input.KEY_LEFT)) {
-        camera.move(new Vector(-delta/3, 0));
-      }
-      if (input.isKeyDown(Input.KEY_RIGHT)) {
-        camera.move(new Vector(delta/3, 0));
-      }
-      if (input.isKeyDown(Input.KEY_UP)) {
-        camera.move(new Vector(0, -delta/3));
-      }
-      if (input.isKeyDown(Input.KEY_DOWN)) {
-        camera.move(new Vector(0, delta/3));
-      }
-    }
     camera.update(delta);
 	}
 

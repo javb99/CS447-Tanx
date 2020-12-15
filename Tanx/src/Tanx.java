@@ -71,6 +71,7 @@ public class Tanx extends StateBasedGame {
 	public static final String JET_SOUND = "resources/sfx_exp_shortest_hard5.wav";
 	public static final String FIRE_DEBUFF = "resources/Flame_Debuff.png";
 	public static final String FIRE_DEBUFF_SND = "resources/sfx_exp_short_hard4.wav";
+	public static final String TURN_START_IMG = "resources/turn_start.png";
 
 	public final int ScreenWidth;
 	public final int ScreenHeight;
@@ -128,6 +129,7 @@ public class Tanx extends StateBasedGame {
 		ResourceManager.loadImage(PLAYER_WIN_RED);
 		ResourceManager.loadImage(PLAYER_WIN_YELLOW);
 		ResourceManager.loadImage(NO_WINNER_MSG);
+		ResourceManager.loadImage(TURN_START_IMG);
 		ResourceManager.loadImage(RESET_MSG);
 		ResourceManager.loadImage(TERRAIN_IMG);
 		ResourceManager.loadImage(Tanx.BANG_EXPLOSIONIMG_RSC);
