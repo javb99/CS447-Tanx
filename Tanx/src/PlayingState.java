@@ -106,6 +106,7 @@ public class PlayingState extends BasicGameState {
       if (isAProjectile || isBProjectile) return true;
       boolean isATank = a instanceof Tank;
       boolean isBTank = b instanceof Tank;
+      if (isATank && isBTank) return false;
       if (isATank || isBTank) return true;
       return false;
     });
@@ -371,7 +372,7 @@ public class PlayingState extends BasicGameState {
           activeProjectile = p;
           projectileSystem.addProjectile(p);
           PE.addPhysicsEntity(activeProjectile);
-          camera.trackObject(activeProjectile);
+          camera.trackObject(activeProjectile, true);
         });
         state = phase.FIRING;
         turnTimer = FIRING_TIMEOUT;
@@ -383,6 +384,13 @@ public class PlayingState extends BasicGameState {
       tankPointer.pointTo(currentTank.getPosition());
       if (turnTimer <= 0){
         changePlayer();
+      }
+      if (input.isKeyDown(Input.KEY_D)){
+        currentTank.move(Direction.RIGHT);
+      } else if (input.isKeyDown(Input.KEY_A)){
+        currentTank.move(Direction.LEFT);
+      } else {
+        currentTank.move(Direction.NONE);
       }
       if (input.isKeyDown(Input.KEY_E)){
         currentTank.rotate(Direction.RIGHT, delta);
@@ -412,7 +420,7 @@ public class PlayingState extends BasicGameState {
         camera.moveTo(player.getTank().getPosition());
         if (input.isKeyPressed(Input.KEY_ENTER)) {
           state = phase.MOVEFIRE;
-          camera.trackObject(player.getTank());
+          camera.trackObject(player.getTank(), false);
         }
 
     } else if (state == phase.GAMEOVER) {
@@ -447,6 +455,19 @@ public class PlayingState extends BasicGameState {
         //kill tank
         player.getTank().killTank();
         changePlayer();
+      }
+      if (input.isKeyPressed(Input.KEY_6)) {
+        Tank.showDebugRays = !Tank.showDebugRays;
+      }
+      if (input.isKeyPressed(Input.KEY_X)) {
+        Vector mouse = new Vector(input.getAbsoluteMouseX(), input.getAbsoluteMouseY());
+        world.terrain.changeTerrainInCircle(camera.worldLocationForScreenLocation(mouse), 100, Terrain.TerrainType.NORMAL, Terrain.TerrainType.OPEN, true);
+      }
+      if (input.isKeyDown(Input.KEY_T)) {
+        Tank currentTank = players.get(pIndex).getTank();
+        Vector mouse = new Vector(input.getAbsoluteMouseX(), input.getAbsoluteMouseY());
+        currentTank.setPosition(camera.worldLocationForScreenLocation(mouse));
+        currentTank.setVelocity(new Vector(0, 0));
       }
     }
 

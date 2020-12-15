@@ -29,6 +29,9 @@ public class Projectile extends PhysicsEntity {
 		damage = d;
 
 	}
+	public void update(int delta) {
+	  
+	}
 	
 	public void explode() {
 	  this.isDead = true;
