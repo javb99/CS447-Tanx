@@ -363,10 +363,10 @@ public class PlayingState extends BasicGameState {
         player.rotate(Direction.LEFT, delta);
       }
       
-      if (input.isKeyPressed(Input.KEY_C)) {
+      if (input.isKeyPressed(Input.KEY_F)) {
         player.nextWeapon();
       }
-      if (input.isKeyPressed(Input.KEY_Z)) {
+      if (input.isKeyPressed(Input.KEY_R)) {
         player.prevWeapon();
       }
 
@@ -395,23 +395,23 @@ public class PlayingState extends BasicGameState {
   }
 
   private void cheatCodeHandler(Input input, Player player) {
-    if (input.isKeyPressed(Input.KEY_F1)){
+    if (input.isKeyPressed(Input.KEY_1)){
       toggleCheats = !toggleCheats;
     }
     if (toggleCheats){
-      if (input.isKeyPressed(Input.KEY_F2)) {
+      if (input.isKeyPressed(Input.KEY_2)) {
         //give player all weapons
         player.giveAllWeapons();
       }
-      if (input.isKeyPressed(Input.KEY_F3)) {
+      if (input.isKeyPressed(Input.KEY_3)) {
         //infinate jet fuel
         player.toggleInfFuel();
       }
-      if (input.isKeyPressed(Input.KEY_F4)) {
+      if (input.isKeyPressed(Input.KEY_4)) {
         //infinate health
         player.toggleInfHealth();
       }
-      if (input.isKeyPressed(Input.KEY_F5)) {
+      if (input.isKeyPressed(Input.KEY_5)) {
         //kill tank
         player.getTank().killTank();
         changePlayer();
@@ -451,29 +451,15 @@ public class PlayingState extends BasicGameState {
   }
 
   private void controlCamera(int delta, Input input) {
-	  if (camera.getState() == camState.IDLE){
-      if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+      if (input.isKeyPressed(Input.KEY_EQUALS)) {
         camera.setZoom(camera.getZoom() + 0.25f);
       }
-      if (input.isMousePressed(Input.MOUSE_RIGHT_BUTTON)) {
+      if (input.isKeyPressed(Input.KEY_MINUS)) {
         camera.setZoom(camera.getZoom() - 0.25f);
       }
-      if (input.isKeyPressed(Input.KEY_O)) {
+      if (input.isKeyPressed(Input.KEY_7) && toggleCheats) {
         camera.toggleDebug();
       }
-      if (input.isKeyDown(Input.KEY_LEFT)) {
-        camera.move(new Vector(-delta/3, 0));
-      }
-      if (input.isKeyDown(Input.KEY_RIGHT)) {
-        camera.move(new Vector(delta/3, 0));
-      }
-      if (input.isKeyDown(Input.KEY_UP)) {
-        camera.move(new Vector(0, -delta/3));
-      }
-      if (input.isKeyDown(Input.KEY_DOWN)) {
-        camera.move(new Vector(0, delta/3));
-      }
-    }
     camera.update(delta);
 	}
 
