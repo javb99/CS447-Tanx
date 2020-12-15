@@ -27,14 +27,13 @@ public class Player {
     
     ammo = new ArrayList<Ammo>();
     giveAmmo(Cannon.BASE_CANNON, Ammo.INF_AMMO);
-    giveAmmo(Cannon.BIG_CANNON, 10);
-    giveAmmo(Cannon.CLUSTER_CANNON, 10);
-	giveAmmo(Cannon.MOUNTAIN_MAKER, 10);
-	giveAmmo(Cannon.ICE_BOMB, 10);
-	
+
     ammoIndex = 0;
     infFuel = false;
     maxChargedPower = TIME_TO_CHARGE;
+
+    //REMOVE FROM RELEASE OF GAME BELOW
+    giveAllWeapons();
   }
 
   public void render(Graphics g){
@@ -51,8 +50,8 @@ public class Player {
   }
 
   public void giveAmmo(int type, int amount) {
-    for (Ammo a: ammo ){
-      if (a.type == type){
+    for (Ammo a: ammo ) {
+      if (a.type == type) {
         if(a.amount == Ammo.INF_AMMO) { return; }
         if (amount == Ammo.INF_AMMO) { a.amount = amount; return;}
         a.amount += amount;
@@ -88,6 +87,9 @@ public class Player {
     chargeRising = true;
     checkWeapon();
     setFuel(MAX_FUEL_BURNTIME);
+    for (Tank t: tanks) {
+      t.updateTurn();
+    }
   }
   
   private void checkWeapon(){
@@ -152,13 +154,6 @@ public class Player {
     getTank().fire(chargedPower/TIME_TO_CHARGE, spawnP);
   }
 
-  public void getPrevTank() {
-    tankIndex--;
-    if (tankIndex < 0){
-      tankIndex = tanks.size() - 1;
-    }
-  }
-
   public Tank getTank() {
     return getTank(tankIndex);
   }
@@ -192,11 +187,16 @@ public class Player {
 
   public float getChargedPower() { return chargedPower; }
 
+  public Color getPlayerColor() { return playerColor; }
+
   //cheats
   public void giveAllWeapons() {
     giveAmmo(Cannon.BASE_CANNON, Ammo.INF_AMMO);
     giveAmmo(Cannon.BIG_CANNON, Ammo.INF_AMMO);
+    giveAmmo(Cannon.CLUSTER_CANNON, Ammo.INF_AMMO);
+    giveAmmo(Cannon.FIRE_CLUSTER_CANNON, Ammo.INF_AMMO);
     giveAmmo(Cannon.MOUNTAIN_MAKER, Ammo.INF_AMMO);
+    giveAmmo(Cannon.ICE_BOMB, Ammo.INF_AMMO);
   }
 
 
@@ -212,5 +212,9 @@ public class Player {
 
   public boolean isInfHealth() {
     return getTank().isInfHealth();
+  }
+
+  public Color getColor() {
+    return playerColor;
   }
 }

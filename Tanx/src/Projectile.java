@@ -11,7 +11,8 @@ public class Projectile extends PhysicsEntity {
 	enum TerrainInteraction{
 		BASIC,
 		MOUNTAIN_MAKER,
-		ICE_BOMB
+		ICE_BOMB,
+		CLUSTER
 	}
 	
 	protected TerrainInteraction TI;

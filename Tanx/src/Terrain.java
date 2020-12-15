@@ -1,5 +1,8 @@
+
 import java.util.ArrayList;
+
 import org.newdawn.slick.Color;
+
 import org.newdawn.slick.Image;
 import org.newdawn.slick.ImageBuffer;
 import org.newdawn.slick.geom.Circle;
@@ -48,7 +51,7 @@ public class Terrain extends PhysicsEntity {
 		applyMask();
 	}
 	
-	private void applyMask(){
+	public void applyMask(){
 		for(int x = 0; x < width; x++) {
 			for(int y = 0; y < height; y++) {
 				Color pixel;
@@ -171,11 +174,13 @@ public class Terrain extends PhysicsEntity {
 		applyMask();
 	}
 	
-	public void setTerrainInCircle(Vector p, float radius, TerrainType t) {	//set all bits within radius at given point
+	public void setTerrainInCircle(Vector p, float radius, TerrainType t, boolean update) {	//set all bits within radius at given point
 		int cx = (int)p.getX();
 		int cy = (int)p.getY();
 		
 		int r = (int)radius;
+		
+		if(r == 0) return;
 		
 		for(int x = cx - r; x <= cx + r; x++) {
 			for(int y = cy - r; y <= cy + r; y++) {
@@ -187,7 +192,9 @@ public class Terrain extends PhysicsEntity {
 				}
 			}
 		}
-		applyMask();
+		if(update) {
+			applyMask();
+		}
 	}
 	
 	public void setTerrainInLine(Vector p1, Vector p2, TerrainType t) {	//first call for setting bits in a line

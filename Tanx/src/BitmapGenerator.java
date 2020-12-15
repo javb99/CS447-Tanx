@@ -23,10 +23,10 @@ public class BitmapGenerator {
 		
 		Random rand = new Random(date.getTime());
 		
-		double a = rand.nextDouble()*120;
-		double b = rand.nextDouble()*120;
-		double c = rand.nextDouble()*120;
-		double d = rand.nextDouble()*120;
+		double a = rand.nextDouble()*100;
+		double b = rand.nextDouble()*100;
+		double c = rand.nextDouble()*100;
+		double d = rand.nextDouble()*100;
 		
 		double e = rand.nextDouble()*900+100;
 		double f = rand.nextDouble()*900+100;
@@ -44,7 +44,7 @@ public class BitmapGenerator {
 		*/
 		for(int i = 0; i < width; i++) {
 			for(int j = 0; j < height; j++) {
-				if(j < (a*Math.sin(i/e) + b*Math.cos(i/f) - c*Math.sin(i/g) - d*Math.cos(i/h) + height/2)) {
+				if(j < (a*Math.sin(i/e) + b*Math.cos(i/f) - c*Math.sin(i/g) - d*Math.cos(i/h) + (height - 450))) {
 					bitmap[i][j] = Terrain.TerrainType.OPEN;
 				} else {
 					bitmap[i][j] = Terrain.TerrainType.NORMAL;

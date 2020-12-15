@@ -16,21 +16,17 @@ import java.util.Collections;
 public class StartUpState extends BasicGameState {
 	
 	private ArrayList<MenuOption> main;
-	private ArrayList<MenuOption> credits;
 	private ArrayList<MenuOption> setup;
 	private int selectedOption;
 	
 	enum Menu{
 		MAIN,
-		CREDITS,
 		SETUP
 	}
 	
 	private Menu currentMenu;
 	
 	private final static String MAIN_PLAY = "Play";
-	private final static String MAIN_CREDITS = "Credits";
-	private final static String CREDITS_RETURN = "Return to Main Menu";
 	private final static String SETUP_START = "Begin Game";
 	private final static String SETUP_PLAYERS = "Players:";
 	private final static String SETUP_TANKS = "Tanks per player:";
@@ -62,10 +58,6 @@ public class StartUpState extends BasicGameState {
     
     main = new ArrayList<MenuOption>();
     main.add(new MenuOption(container.getWidth()/2 - 10, container.getHeight()/2 - 80, MAIN_PLAY));
-    main.add(new MenuOption(container.getWidth()/2 - 10, container.getHeight()/2 - 60, MAIN_CREDITS));
-    
-    credits = new ArrayList<MenuOption>();
-    credits.add(new MenuOption(container.getWidth()/2, container.getHeight() - 100, CREDITS_RETURN));
     
     setup = new ArrayList<MenuOption>();
     
@@ -98,6 +90,7 @@ public class StartUpState extends BasicGameState {
     container.setSoundOn(true);
     container.setSoundVolume(.5f);
     ResourceManager.getSound(Tanx.MENU_MUSIC).loop();
+
   }
 
 
@@ -108,7 +101,7 @@ public class StartUpState extends BasicGameState {
     
     ArrayList<MenuOption> options;
     
-    g.drawImage(ResourceManager.getImage(Tanx.BACKGROUND_DESERT), 0, 0);
+    g.drawImage(ResourceManager.getImage(Tanx.MENU_BACKGROUND), 0, 0);
     
     
     if(loading) {
@@ -125,9 +118,6 @@ public class StartUpState extends BasicGameState {
     	Image logo = ResourceManager.getImage(Tanx.SPLASH_LOGO).getScaledCopy(.5f);
     	
     	g.drawImage(logo, container.getWidth()/2 - logo.getWidth()/2, container.getHeight()/2 - 100);
-    	break;
-    case CREDITS:
-    	options = credits;
     	break;
     case SETUP:
     	if(!validSettings) {
@@ -167,9 +157,6 @@ public class StartUpState extends BasicGameState {
     switch(currentMenu) {
     case MAIN:
     	options = main;
-    	break;
-    case CREDITS:
-    	options = credits;
     	break;
     case SETUP:
     	options = setup;
@@ -221,18 +208,6 @@ public class StartUpState extends BasicGameState {
 			  currentMenu = Menu.SETUP;
 			  selectedOption = 0;
 			  break;
-		  case MAIN_CREDITS:
-			  currentMenu = Menu.CREDITS;
-			  selectedOption = 0;
-			  break;
-		  }
-		  break;
-	  case CREDITS:
-		  switch(credits.get(option).getLabel()) {
-		  case CREDITS_RETURN:
-			  currentMenu = Menu.MAIN;
-			  selectedOption = 0;
-			  break;
 		  }
 		  break;
 	  case SETUP:
@@ -265,12 +240,12 @@ public class StartUpState extends BasicGameState {
 	  switch(worldSize.getSelection()) {
 	  case "LARGE":
 		  width = 4*container.getWidth();
-		  height = 7*container.getHeight()/4;
+		  height = 2*container.getHeight();
 		  break;
 	  case "SMALL":
 	  default:
 		  width = 2*container.getWidth();
-		  height = 3*container.getHeight()/4;
+		  height = 2*container.getHeight();
 		  break;
 	  }
 	  Rectangle bounds = new Rectangle(0, 0, width, height);

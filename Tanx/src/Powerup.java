@@ -1,6 +1,8 @@
 import jig.ConvexPolygon;
+import jig.ResourceManager;
 import jig.Vector;
 import org.newdawn.slick.Color;
+import org.newdawn.slick.Image;
 
 
 /*
@@ -11,11 +13,11 @@ public class Powerup extends PhysicsEntity{
 
   public Powerup(final float x, final float y){
     super(x, y, 0, POWERUP_TERMINAL_VELOCITY);
-    setSprite();
+    this.addShape(new ConvexPolygon(32f, 32f));
   }
 
-  protected void setSprite() {
-    this.addShape(new ConvexPolygon(20f, 20f), Color.yellow, Color.red);
+  protected void setSprite(Image sprite) {
+    addImageWithBoundingBox(sprite);
   }
 
   public void usePowerup(Tank t){
@@ -25,4 +27,6 @@ public class Powerup extends PhysicsEntity{
   public Powerup copy(){
     return new Powerup(getX(), getY());
   }
+
+  public void setIsDead(Boolean val) { isDead = val; }
 }

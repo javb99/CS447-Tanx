@@ -38,32 +38,45 @@ public class Tanx extends StateBasedGame {
 	public static final int GAMEOVERSTATE = 2;
 
 	public static final String SPLASH_LOGO = "resources/tanxlogo.png";
-	public static final String BACKGROUND_DESERT = "resources/desertBG.png";
+	public static final String MENU_BACKGROUND = "resources/desertBG.png";
 	public static final String MENU_MUSIC = "resources/tanxMenuTheme.wav";
+	public static final String BATTLE_BACKGROUND = "resources/desertBGAlt.png";
+	public static final String BATTLE_MUSIC = "resources/tanxBattleTheme.wav";
 	public static final String POWER_GAUGE_OVERLAY = "resources/PowerGauge.png";
 	public static final String FUEL_GAUGE_OVERLAY = "resources/FuelGauge.png";
 	public static final String FUEL_GAUGE_ARROW = "resources/FuelGaugeArrow.png";
 	public static final String WEAPON_POINTER = "resources/weaponPointer.png";
+	public static final String DASH_BACKGROUND = "resources/Dashboard_resize.png";
 	public static final String HEALTH_BAR = "resources/healthBar.png";
 	public static final String FOCUS_ARROW = "resources/tankPointer.png";
 	public static final String TIMER_GAUGE = "resources/timerGauge.png";
 	public static final String BANG_EXPLOSIONIMG_RSC = "resources/explosion.png";
 	public static final String BANG_EXPLOSIONSND_RSC = "resources/explosion.wav";
+
 	public static final String BANG_MOUNTAINIMG_RSC = "resources/mountain_maker_anim.png";
 	public static final String BANG_MOUNTAINSND_RSC = "resources/mountain_maker_snd.wav";
 	public static final String BANG_ICEIMG_RSC = "resources/ice_bomb_anim.png";
 	public static final String BANG_ICESND_RSC = "resources/ice_bomb_snd.wav";
-	public static final String PLAYER_WIN_1 = "resources/Player1_win.png";
-  public static final String PLAYER_WIN_2 = "resources/Player2_win.png";
-  public static final String PLAYER_WIN_3 = "resources/Player3_win.png";
-  public static final String PLAYER_WIN_4 = "resources/Player4_win.png";
-  public static final String NO_WINNER_MSG = "resources/no_winner.png";
-  public static final String RESET_MSG = "resources/pushSpaceResetMsg.png";
-  public static final String TERRAIN_IMG = "resources/dirtTile.png";
-  public static final String FIRE_ANIMATION = "resources/Flame.png";
-  public static final String JET_SOUND = "resources/sfx_exp_shortest_hard5.wav";
   
-  public final int ScreenWidth;
+
+	public static final String PLAYER_WIN_BLUE = "resources/blue_win.png";
+	public static final String PLAYER_WIN_RED = "resources/red_win.png";
+	public static final String PLAYER_WIN_YELLOW = "resources/yellow_win.png";
+	public static final String PLAYER_WIN_GREEN = "resources/green_win.png";
+	public static final String NO_WINNER_MSG = "resources/no_winner.png";
+	public static final String RESET_MSG = "resources/pushSpaceResetMsg.png";
+	public static final String TANK_SPRITE = "resources/tankBase.png";
+	public static final String BASE_CANNON_SPRITE = "resources/tankBaseCannon.png";
+	public static final String AMMO_POWERUP_SPRITE = "resources/weaponPowerupSprite.png";
+	public static final String HEALTH_POWERUP_SPRITE = "resources/hpPowerupSprite.png";
+	public static final String TERRAIN_IMG = "resources/dirtTile.png";
+	public static final String FIRE_ANIMATION = "resources/Flame.png";
+	public static final String JET_SOUND = "resources/sfx_exp_shortest_hard5.wav";
+	public static final String FIRE_DEBUFF = "resources/Flame_Debuff.png";
+	public static final String FIRE_DEBUFF_SND = "resources/sfx_exp_short_hard4.wav";
+	public static final String TURN_START_IMG = "resources/turn_start.png";
+
+	public final int ScreenWidth;
 	public final int ScreenHeight;
 
 	/**
@@ -75,16 +88,16 @@ public class Tanx extends StateBasedGame {
 	 *            the window's width
 	 * @param height
 	 *            the window's height
-   *
-   *    Flame Effect
-   *    Artist: Division Plus
-   *    links: https://opengameart.org/content/fantasy-character-npc-sprites
-   *
-   *    Sound Effects
-   *    Artist: Juhani Junkala
-   *    link: https://opengameart.org/content/512-sound-effects-8-bit-style
-   *
-   *
+	 *
+	 *    Flame Effect
+	 *    Artist: Division Plus
+	 *    links: https://opengameart.org/content/fantasy-character-npc-sprites
+	 *
+	 *    Sound Effects
+	 *    Artist: Juhani Junkala
+	 *    link: https://opengameart.org/content/512-sound-effects-8-bit-style
+	 *
+	 *
 	 */
 	public Tanx(String title, int width, int height) {
 		super(title);
@@ -96,15 +109,17 @@ public class Tanx extends StateBasedGame {
 
 	@Override
 	public void initStatesList(GameContainer container) throws SlickException {
-	  addState(new StartUpState());
+		addState(new StartUpState());
 		//      addState(new GameOverState());
 		addState(new PlayingState());
 
 		// preload all the resources to avoid warnings & minimize latency...
 		//ex: ResourceManager.loadImage(BALL_BALLIMG_RSC);
 		ResourceManager.loadImage(SPLASH_LOGO);
-		ResourceManager.loadImage(BACKGROUND_DESERT);
+		ResourceManager.loadImage(MENU_BACKGROUND);
 		ResourceManager.loadSound(MENU_MUSIC);
+		ResourceManager.loadImage(BATTLE_BACKGROUND);
+		ResourceManager.loadSound(BATTLE_MUSIC);
     ResourceManager.loadImage(FUEL_GAUGE_ARROW);
     ResourceManager.loadImage(FUEL_GAUGE_OVERLAY);
     ResourceManager.loadImage(POWER_GAUGE_OVERLAY);
@@ -112,21 +127,34 @@ public class Tanx extends StateBasedGame {
 		ResourceManager.loadImage(HEALTH_BAR);
 		ResourceManager.loadImage(FOCUS_ARROW);
 		ResourceManager.loadImage(TIMER_GAUGE);
-		ResourceManager.loadImage(PLAYER_WIN_1);
-    ResourceManager.loadImage(PLAYER_WIN_2);
-    ResourceManager.loadImage(PLAYER_WIN_3);
-    ResourceManager.loadImage(PLAYER_WIN_4);
-    ResourceManager.loadImage(NO_WINNER_MSG);
-    ResourceManager.loadImage(RESET_MSG);
-    ResourceManager.loadImage(TERRAIN_IMG);
+		ResourceManager.loadImage(PLAYER_WIN_BLUE);
+		ResourceManager.loadImage(PLAYER_WIN_GREEN);
+		ResourceManager.loadImage(PLAYER_WIN_RED);
+		ResourceManager.loadImage(PLAYER_WIN_YELLOW);
+		ResourceManager.loadImage(NO_WINNER_MSG);
+		ResourceManager.loadImage(TURN_START_IMG);
+		ResourceManager.loadImage(RESET_MSG);
+		ResourceManager.loadImage(TERRAIN_IMG);
 		ResourceManager.loadImage(Tanx.BANG_EXPLOSIONIMG_RSC);
 		ResourceManager.loadSound(Tanx.BANG_EXPLOSIONSND_RSC);
+
 		ResourceManager.loadImage(Tanx.BANG_MOUNTAINIMG_RSC);
 		ResourceManager.loadSound(Tanx.BANG_MOUNTAINSND_RSC);
+
 		ResourceManager.loadImage(Tanx.BANG_ICEIMG_RSC);
 		ResourceManager.loadSound(Tanx.BANG_ICESND_RSC);
+		
+		ResourceManager.loadImage(TANK_SPRITE);
+		ResourceManager.loadImage(BASE_CANNON_SPRITE);
+		ResourceManager.loadImage(AMMO_POWERUP_SPRITE);
+		ResourceManager.loadImage(HEALTH_POWERUP_SPRITE);
 		ResourceManager.loadImage(FIRE_ANIMATION);
 		ResourceManager.loadSound(JET_SOUND);
+		
+		ResourceManager.loadImage(DASH_BACKGROUND);
+		ResourceManager.loadImage(FIRE_DEBUFF);
+		ResourceManager.loadSound(FIRE_DEBUFF_SND);
+
 
 	}
 

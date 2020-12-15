@@ -29,6 +29,9 @@ class TypeMatchingHandler<A extends PhysicsEntity, B extends PhysicsEntity> impl
     }
   }
 }
+interface CollisionPredicate {
+  boolean shouldCheckCollision(PhysicsEntity a, PhysicsEntity b);
+}
 
 public class PhysicsEngine {
 	
@@ -37,18 +40,22 @@ public class PhysicsEngine {
 	static public int PHYSICS_TICK_LENGTH = 5;
 	
 	private ArrayList<PhysicsEntity> objects;
+	private ArrayList<PhysicsEntity> toAdd;
 	private ArrayList<CollisionHandler<PhysicsEntity, PhysicsEntity>> collisionHandlers;
+	private CollisionPredicate collisionPredicate;
 	private World world;
 	
 	
 	public PhysicsEngine(ArrayList<PhysicsEntity> o, World w) {
 		objects = o;
+		toAdd = new ArrayList<PhysicsEntity>();
 		world = w;
 		collisionHandlers = new ArrayList<>();
+		collisionPredicate = (a, b) -> false;
 	}
 	
 	public void addPhysicsEntity(PhysicsEntity e) {
-		objects.add(e);
+		toAdd.add(e);
 	}
 	public void removePhysicsEntity(PhysicsEntity e) {
     objects.remove(e);
@@ -68,6 +75,13 @@ public class PhysicsEngine {
     collisionHandlers.add(new TypeMatchingHandler<A,B>(aClass, bClass, handler));
   }
 	
+	void setCollisionPredicate(CollisionPredicate p) {
+	  collisionPredicate = p;
+	}
+	CollisionPredicate getCollisionPredicate() {
+    return collisionPredicate;
+  }
+	
   public void update(int delta) {
     int steps = delta / PHYSICS_TICK_LENGTH;
     for (int i = 0; i < steps; i++) {
@@ -82,6 +96,8 @@ public class PhysicsEngine {
     applyCollisionDetection(delta);
     
     checkObjectBounds();
+    objects.addAll(toAdd);
+    toAdd.clear();
     objects.removeIf(e -> e.getIsDead() );
   }
 
@@ -93,10 +109,11 @@ public class PhysicsEngine {
       if (Tank.class.isInstance(e)){
         float minX = e.getCoarseGrainedMinX();
         float maxX = e.getCoarseGrainedMaxX();
+        float half = e.getCoarseGrainedMaxX() - e.getX();
         if (minX <= world.worldBounds.getMinX()){
-          e.setX(world.worldBounds.getMinX() + Math.abs(minX));
+          e.setX(world.worldBounds.getMinX() + Math.abs(half));
         } else if (maxX >= world.worldBounds.getMaxX()){
-          e.setX(world.worldBounds.getMaxX() - Math.abs(maxX));
+          e.setX(world.worldBounds.getMaxX() - Math.abs(half));
         }
       }
 
@@ -130,7 +147,9 @@ public class PhysicsEngine {
 	    for (int y = x+1; y < count; y++) {
 	      PhysicsEntity b = objects.get(y);
 	      if (a == b) { continue; }
-	      checkCollision(delta, a, b);
+	      if (collisionPredicate.shouldCheckCollision(a, b)) {
+	        checkCollision(delta, a, b);
+	      }
 	    }
 	    handlePotentialTerrainCollision(delta, a);
 	  }
