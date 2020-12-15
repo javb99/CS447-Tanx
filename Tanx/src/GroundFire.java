@@ -54,6 +54,5 @@ public class GroundFire extends PhysicsEntity {
   }
 
   public void setIsDead(Boolean val) {
-	  this.removeAnimation(fireAnim);
 	  isDead = val; }
 }
