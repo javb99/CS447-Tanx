@@ -248,7 +248,7 @@ public class PlayingState extends BasicGameState {
     fireSystem.render(g);
 
     //placeholder, should put an arrow sprite pointing to currently active tank
-    if (state == phase.MOVEFIRE) {
+    if (state == phase.MOVEFIRE || state == phase.TURNCHANGE || state == phase.CHARGING) {
       tankPointer.render(g);
     }
 
