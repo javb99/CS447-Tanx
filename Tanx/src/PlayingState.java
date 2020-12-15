@@ -352,7 +352,7 @@ public class PlayingState extends BasicGameState {
           activeProjectile = p;
           projectileSystem.addProjectile(p);
           PE.addPhysicsEntity(activeProjectile);
-          camera.trackObject(activeProjectile);
+          camera.trackObject(activeProjectile, true);
         });
         state = phase.FIRING;
         turnTimer = FIRING_TIMEOUT;
@@ -393,7 +393,7 @@ public class PlayingState extends BasicGameState {
         camera.moveTo(player.getTank().getPosition());
         if (input.isKeyPressed(Input.KEY_ENTER)) {
           state = phase.MOVEFIRE;
-          camera.trackObject(player.getTank());
+          camera.trackObject(player.getTank(), false);
         }
 
     } else if (state == phase.GAMEOVER) {

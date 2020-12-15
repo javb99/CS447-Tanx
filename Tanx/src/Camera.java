@@ -35,6 +35,7 @@ public class Camera {
   private Entity trackedObject;
   private float startTrackHeight;
   private float startTrackZoom;
+  private Boolean shouldTrackZoom;
   
   private float zoom;
   
@@ -125,7 +126,9 @@ public class Camera {
   //Object Tracking
   private void cameraTrackingHandler(int delta){
     setCenter(trackedObject.getPosition());
-    setTrackedZoom();
+    if (shouldTrackZoom) {
+      setTrackedZoom();
+    }
   }
 
   public void setTrackedZoom(){
@@ -133,12 +136,13 @@ public class Camera {
     setZoom(-CAM_ZOOM_RATE*heightDiff + startTrackZoom);
   }
 
-  public void trackObject(Entity e){
+  public void trackObject(Entity e, Boolean zoomTrack){
     cleanCameraState();
     trackedObject = e;
     startTrackHeight = e.getY();
     startTrackZoom = getZoom();
     state = camState.TRACKING;
+    shouldTrackZoom = zoomTrack;
   }
 
   private void cleanCameraState() {
