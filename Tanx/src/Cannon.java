@@ -31,7 +31,7 @@ public class Cannon extends Entity {
 
   public static final int BIG_CANNON = 1;
   public static final String BIG_CANNON_STR = "Long Range Cannon";
-  public static final float BIG_CANNON_POWER = 1f;
+  public static final float BIG_CANNON_POWER = 1.5f;
   public static final int BIG_CANNON_DAMAGE = 40;
   public static final int BIG_CANNON_RADIUS = 60;
 
