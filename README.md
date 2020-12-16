@@ -1,5 +1,5 @@
 # CS447 Project 2: Tanx!
-Tanx - Release version 1.0.
+Tanx - Release version 1.1.
 
 A game created and produced by Matthew Schofield, Joseph Van Boxtel, Benjamin Eavenson, and Henry Unruh for WSU's CS447 Game Design course.
 
@@ -89,3 +89,7 @@ with unique effects.
   - Terrain is represented as a 2D array of pixels which allows for simple terrain checking at various positions.
  - Tank rotation & slope interations
   - The tanks will rotate and mirror based on the state of the tank. Tanks will interact with mountains and valleys.
+
+## License
+We give Scott Wallace permission to use this project in any non-commercial manner, provided we are credited as
+the creator of all graphical artwork and code (not including the code provided by the jig and slick libraries).
