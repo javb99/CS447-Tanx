@@ -399,10 +399,10 @@ public class PlayingState extends BasicGameState {
       } else {
         currentTank.move(Direction.NONE);
       }
-      if (input.isKeyDown(Input.KEY_E)){
-        currentTank.rotate(Direction.RIGHT, delta);
-      } else if (input.isKeyDown(Input.KEY_Q)){
-        player.rotate(Direction.LEFT, delta);
+      if (input.isKeyDown(Input.KEY_W)){
+        player.rotate(CannonDirection.UP, delta);
+      } else if (input.isKeyDown(Input.KEY_S)){
+        player.rotate(CannonDirection.DOWN, delta);
       }
       
       if (input.isKeyPressed(Input.KEY_F)) {
