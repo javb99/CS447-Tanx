@@ -61,7 +61,7 @@ public class PlayingState extends BasicGameState {
   public void enter(GameContainer container, StateBasedGame game)
     throws SlickException {
 	
-	ResourceManager.getSound(Tanx.BATTLE_MUSIC).loop(1, .25f);
+	ResourceManager.getSound(Tanx.BATTLE_MUSIC).loop(1, .1f);
 		
     Rectangle screenBounds = new Rectangle(0, 0, container.getWidth(), container.getHeight() - BOTTOM_UI_HEIGHT/2);//new Rectangle(0, 0, container.getScreenWidth(), container.getScreenHeight());
     Rectangle bottomUiBounds = new Rectangle(0, 0, screenBounds.getWidth(), BOTTOM_UI_HEIGHT);
@@ -127,14 +127,20 @@ public class PlayingState extends BasicGameState {
     });
 
     PE.registerCollisionHandler(Powerup.class, GroundFire.class, (powerup, fire, c) -> {
-      fire.setIsDead(true);
-      powerup.setIsDead(true);
+      fire.setDead(true);
+      powerup.setDead(true);
       ResourceManager.getSound(Tanx.FIRE_DEBUFF_SND).play();
     });
 
     PE.registerCollisionHandler(Projectile.class, PhysicsEntity.class, (projectile, obstacle, c) -> {
       if (obstacle instanceof Projectile) { return; } // Don't explode on other projectiles.
       if (obstacle instanceof GroundFire) { return; } // Don't explode on GroundFire Entities
+      if (projectile instanceof ClusterProjectile || projectile instanceof FireClusterProjectile ||
+              projectile instanceof FireMiniBomb) {
+        Vector location = projectile.getPosition();
+        float blastRadius = 15;
+        explosionSystem.addExplosion(location, blastRadius, Tanx.BANG_EXPLOSIONIMG_RSC, Tanx.BANG_EXPLOSIONSND_RSC);
+      }
       if (projectile instanceof FireMiniBomb) {
         GroundFire newFire = new GroundFire(projectile.getX(), projectile.getY() + FireMiniBomb.Y_SPAWN_OFFSET);
         fireSystem.addFire(newFire);
@@ -210,7 +216,7 @@ public class PlayingState extends BasicGameState {
           }
           
           if (e instanceof GroundFire) {
-        	  ((GroundFire) e).setIsDead(true);
+        	  ((GroundFire) e).setDead(true);
         	  
           }
         });
@@ -260,7 +266,7 @@ public class PlayingState extends BasicGameState {
     fireSystem.render(g);
 
     //placeholder, should put an arrow sprite pointing to currently active tank
-    if (state == phase.MOVEFIRE) {
+    if (state == phase.MOVEFIRE || state == phase.TURNCHANGE || state == phase.CHARGING) {
       tankPointer.render(g);
     }
 
@@ -364,6 +370,7 @@ public class PlayingState extends BasicGameState {
   }
 
   private void updateState(Input input, Player player, int delta, Tanx tg) {
+  	  if (state != phase.GAMEOVER && player.getTank() == null) { changePlayer(); return; }
     if (state == phase.CHARGING) {
       if (input.isKeyDown(Input.KEY_SPACE) && turnTimer > 0){
         player.charging(delta);
@@ -379,8 +386,8 @@ public class PlayingState extends BasicGameState {
       }
     }
     if (state == phase.MOVEFIRE){
-      cheatCodeHandler(input, player);
       Tank currentTank = players.get(pIndex).getTank();
+      cheatCodeHandler(input, player);
       tankPointer.pointTo(currentTank.getPosition());
       if (turnTimer <= 0){
         changePlayer();
@@ -487,7 +494,6 @@ public class PlayingState extends BasicGameState {
     }
     activeProjectile = null;
     state = phase.TURNCHANGE;
-    turnTimer = FIRING_TIMEOUT;
     Player currentPlayer;
     do {
       pIndex ++;

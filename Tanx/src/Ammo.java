@@ -1,5 +1,5 @@
 public class Ammo {
-  public static int INF_AMMO = -1;
+  public static int INF_AMMO = -9999;
   public int type;
   public int amount;
 

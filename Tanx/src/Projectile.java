@@ -21,7 +21,7 @@ public class Projectile extends PhysicsEntity {
 		super(x, y, 0, new Vector(5f, 5f));
 		setVelocity(v);
 		setAcceleration(new Vector(0,0));
-		this.addShape(new ConvexPolygon(10), Color.blue, Color.blue);
+		this.addShape(new ConvexPolygon(5), Color.gray, Color.black);
 
 		TI = TerrainInteraction.BASIC;
 
@@ -34,7 +34,7 @@ public class Projectile extends PhysicsEntity {
 	}
 	
 	public void explode() {
-	  this.isDead = true;
+	  setDead(true);
 	}
 
 	public int getExplosionRadius() {return explosionRadius; }

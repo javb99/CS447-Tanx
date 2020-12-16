@@ -26,13 +26,13 @@ public class Cannon extends Entity {
   public static final int BASE_CANNON = 0;
   public static final String BASE_CANNON_STR = "Basic Cannon";
   public static final float BASE_CANNON_POWER = 1f;
-  public static final int BASE_CANNON_DAMAGE = 20;
-  public static final int BASE_CANNON_RADIUS = 30;
+  public static final int BASE_CANNON_DAMAGE = 25;
+  public static final int BASE_CANNON_RADIUS = 60;
 
   public static final int BIG_CANNON = 1;
   public static final String BIG_CANNON_STR = "Long Range Cannon";
-  public static final float BIG_CANNON_POWER = 1f;
-  public static final int BIG_CANNON_DAMAGE = 50;
+  public static final float BIG_CANNON_POWER = 1.5f;
+  public static final int BIG_CANNON_DAMAGE = 40;
   public static final int BIG_CANNON_RADIUS = 60;
 
   public static final int CLUSTER_CANNON = 2;

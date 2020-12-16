@@ -88,9 +88,14 @@ public class PhysicsEngine {
       updatePhysics(PHYSICS_TICK_LENGTH);
     }
     updatePhysics(delta % PHYSICS_TICK_LENGTH);
+    resetAcceleration();
   }
-	
-  private void updatePhysics(int delta) {
+
+	private void resetAcceleration() {
+		objects.forEach(e -> e.setAcceleration(new Vector(0, 0)));
+	}
+
+	private void updatePhysics(int delta) {
     objects.forEach((n) -> applyPhysics(n, delta));
     
     applyCollisionDetection(delta);
@@ -120,8 +125,8 @@ public class PhysicsEngine {
       //check that object hasn't left our world completely
       if ((e.getX() <= (world.worldBounds.getMinX() - OUT_BOUNDS_LENGTH))
           || (e.getX() >= (world.worldBounds.getMaxX() + OUT_BOUNDS_LENGTH))
-          || (e.getY() >= (world.worldBounds.getMaxY() + OUT_BOUNDS_LENGTH))) {
-        e.isDead = true;
+          || (e.getY() >= (world.worldBounds.getMaxY() - OUT_BOUNDS_LENGTH))) {
+        e.setDead(true);
       }
     }
   }
@@ -166,7 +171,6 @@ public class PhysicsEngine {
 	  Collision c = a.collides(b);
 	  if (c != null) {
 	    collisionHandlers.forEach(handler -> handler.handleCollision(a, b, c));
-	    resolveCollision(delta, a, b, c);
 	  }
 	}
 	

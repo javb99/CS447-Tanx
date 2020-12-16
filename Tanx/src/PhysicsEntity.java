@@ -8,7 +8,7 @@ public class PhysicsEntity extends Entity {
   //constants
 
   //class variables
-  protected boolean isDead;
+  private boolean isDead;
   private Vector acceleration;
   private Vector velocity;
   private float drag;
@@ -25,8 +25,7 @@ public class PhysicsEntity extends Entity {
   
   /**
     Check for collision with the terrain. This method is specific to each entity because of
-    differing entity shapes. The default implementation checks the coarse-grained bounding circle
-    before delegating to shouldResolveFineGrainedTerrainCollision.
+    differing entity shapes. The default implementation checks the coarse-grained bounding circle.
    */
   public boolean shouldResolveTerrainCollision(Terrain terrain, int delta) {
     
@@ -34,24 +33,8 @@ public class PhysicsEntity extends Entity {
     float radius = getCoarseGrainedRadius();
     
     boolean isCoarseCollision = terrain.checkCircularCollision(position, radius);
-    if (!isCoarseCollision) { return false; }
-    
-    return shouldResolveFineGrainedTerrainCollision(terrain, delta);
-  }
-  
-  /// Default implementation only supports rectangles, everything else uses the coarse-grained check.
-  public boolean shouldResolveFineGrainedTerrainCollision(Terrain terrain, int delta) {
-    boolean hasRectangle = false;
-    LinkedList<Shape> shapes = getShapes();
-    for(Shape s : shapes) {
-      if (s.getPointCount() == 4) {
-        hasRectangle = true;
-        if(terrain.checkRectangularCollision(new Vector(s.getMinX(), s.getMinY()), new Vector(s.getMaxX(), s.getMaxY()))) {
-          return true;
-        }
-      }
-    }
-    return !hasRectangle;
+
+    return isCoarseCollision;
   }
 
   protected void setVelocity(Vector v){velocity = v;}
@@ -61,4 +44,6 @@ public class PhysicsEntity extends Entity {
   public float getDrag(){return drag;}
   public Vector getTerminal() {return terminal;}
   public boolean getIsDead() { return isDead; };
+
+  public void setDead(boolean dead) { isDead = dead; }
 }
