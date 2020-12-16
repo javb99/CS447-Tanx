@@ -373,7 +373,7 @@ public class PlayingState extends BasicGameState {
   private void updateState(Input input, Player player, int delta, Tanx tg) {
   	  if (state != phase.GAMEOVER && player.getTank() == null) { changePlayer(); return; }
     if (state == phase.CHARGING) {
-      if (input.isKeyDown(Input.KEY_SPACE) && turnTimer > 0){
+      if ((input.isKeyDown(Input.KEY_LSHIFT)) && turnTimer > 0){
         player.charging(delta);
       } else {
         player.fire((Projectile p) -> {
@@ -413,11 +413,11 @@ public class PlayingState extends BasicGameState {
         player.prevWeapon();
       }
 
-      if (input.isKeyDown(Input.KEY_SPACE)) {
+      if (input.isKeyDown(Input.KEY_LSHIFT)) {
         state = phase.CHARGING;
       }
 
-      if (input.isKeyDown(Input.KEY_LCONTROL)) {
+      if (input.isKeyDown(Input.KEY_SPACE)) {
         players.get(pIndex).useJets(delta);
       }
                                   
