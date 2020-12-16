@@ -33,10 +33,12 @@ public class StartUpState extends BasicGameState {
 	private final static String SETUP_WORLD_SIZE = "World Size:";
 	private final static String SETUP_RETURN = "Return to Main Menu";
 	private final static String SETUP_INVALID = "SMALL MAPS CAN ONLY HANDLE SIX OR LESS TANKS TOTAL";
+	private final static String SETUP_TURN_TIME = "Turn Length (seconds):";
 	
 	private MultiValueOption players;
 	private MultiValueOption tanks;
 	private MultiValueOption worldSize;
+	private MultiValueOption turnLength;
 	
 	private boolean loading;
 	private boolean validSettings;
@@ -66,21 +68,31 @@ public class StartUpState extends BasicGameState {
     list.add("2");
     list.add("3");
     list.add("4");
-    tanks = new MultiValueOption(container.getWidth()/2, container.getHeight()/2-15, SETUP_TANKS, list);
+    tanks = new MultiValueOption(container.getWidth()/2, container.getHeight()/2-35, SETUP_TANKS, list);
     setup.add(tanks);
     
     list = new ArrayList<String>();
     list.add("2");
     list.add("3");
     list.add("4");
-    players = new MultiValueOption(container.getWidth()/2, container.getHeight()/2+5, SETUP_PLAYERS, list);
+    players = new MultiValueOption(container.getWidth()/2, container.getHeight()/2-15, SETUP_PLAYERS, list);
     setup.add(players);
     
     list = new ArrayList<String>();
     list.add("SMALL");
     list.add("LARGE");
-    worldSize = new MultiValueOption(container.getWidth()/2, container.getHeight()/2+25, SETUP_WORLD_SIZE, list);
+    worldSize = new MultiValueOption(container.getWidth()/2, container.getHeight()/2+5, SETUP_WORLD_SIZE, list);
     setup.add(worldSize);
+    
+    list = new ArrayList<String>();
+    list.add("10");
+    list.add("20");
+    list.add("30");
+    list.add("40");
+    list.add("50");
+    list.add("60");
+    turnLength = new MultiValueOption(container.getWidth()/2, container.getHeight()/2+25, SETUP_TURN_TIME, list);
+    setup.add(turnLength);
     setup.add(new MenuOption(container.getWidth()/2, container.getHeight()/2+45, SETUP_START));
     setup.add(new MenuOption(container.getWidth()/2, container.getHeight()/2+75, SETUP_RETURN));
     
@@ -252,6 +264,8 @@ public class StartUpState extends BasicGameState {
 	  PlayerConfigurator PC = new PlayerConfigurator(width, Integer.parseInt(players.getSelection()), Integer.parseInt(tanks.getSelection()));
 	  ((PlayingState)game.getState(Tanx.PLAYINGSTATE)).setPlayerConfig(PC);
 	  ((PlayingState)game.getState(Tanx.PLAYINGSTATE)).setWorldBounds(bounds);
+	  PlayingState.TURNLENGTH = Integer.parseInt(turnLength.getSelection())*1000;
+	  System.out.println(PlayingState.TURNLENGTH);
 	  if(ResourceManager.getSound(Tanx.MENU_MUSIC).playing()) {
 			ResourceManager.getSound(Tanx.MENU_MUSIC).stop();
 	  }
