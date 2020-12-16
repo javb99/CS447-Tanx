@@ -251,6 +251,11 @@ public class Tank extends PhysicsEntity {
     }
     this.debugShortestRaysIndexes = shortestRaysIndexes;
     
+    if (shortestRaysIndexes[1] == -1) {
+      this.rotateToNormal(new Vector(0, -1));
+      return; // Don't have two rays
+    }
+    
     float frictionCoefficient = avgFloats(frictionCoefficients);
 
     Vector terrainNormal = new LineSegment(terrainPoints[1], terrainPoints[0]).unitNormalSpecial();
@@ -275,6 +280,7 @@ public class Tank extends PhysicsEntity {
     float bestLengthSqs[] = new float[] { Float.MAX_VALUE, Float.MAX_VALUE };
     for (int i = 0; i < k; i++) { bestIndexes[i] = -1; }
     for (int i = 0; i < lines.length; i++) {
+      if (lines[i] == null) { continue; }
       float lengthSq = lines[i].avgLengthSquared();
       if (bestIndexes[0] == -1) {
         bestIndexes[0] = i;
