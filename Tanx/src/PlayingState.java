@@ -294,6 +294,7 @@ public class PlayingState extends BasicGameState {
       renderTurnChange(g, bg);
     }
   }
+	
 
   private void renderTurnChange(Graphics g, Tanx bg) {
     final float INSTRUCT_X = bg.ScreenWidth/2 - 200;
