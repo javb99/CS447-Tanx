@@ -27,21 +27,6 @@ public class FireClusterProjectile extends Projectile {
         }
     }
 
-/*    @Override
-    public void explode() {
-        Random rand = new Random();
-        int upperBound = 360;
-        super.explode();
-        for (int i = 0; i < NUM_MINI_BOMBS; i++) {
-            Vector velocity = NORM;
-            velocity = velocity.rotate(rand.nextInt(upperBound));
-            Projectile newProjectile = new FireMiniBomb(getX(), getY(), velocity.add(getVelocity()), MINI_BOMB_RADIUS, MINI_BOMB_DAMAGE);
-            float offset = getCoarseGrainedRadius();
-            newProjectile.translate(velocity.setLength(offset));
-            projectileSpawner.accept(newProjectile);
-        }
-    }*/
-
     @Override
     public void explode() {
         super.explode();
