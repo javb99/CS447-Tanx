@@ -6,10 +6,13 @@ import jig.Vector;
 class RayPair {
   final LineSegment first;
   final LineSegment second;
-  public RayPair(LineSegment first, LineSegment second) {
+  final float frictionMues[];
+  public RayPair(LineSegment first, LineSegment second, float frictionMues[]) {
     super();
     this.first = first;
     this.second = second;
+    this.frictionMues = frictionMues;
+    assert(frictionMues.length == 4);
   }
   float avgLengthSquared() {
     return (first.getDifference().lengthSquared() + second.getDifference().lengthSquared())/2;

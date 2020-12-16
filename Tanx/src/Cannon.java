@@ -46,8 +46,15 @@ public class Cannon extends Entity {
   public static final float MOUNTAIN_MAKER_POWER = 1f;
   public static final int MOUNTAIN_MAKER_DAMAGE = 10;
   public static final int MOUNTAIN_MAKER_RADIUS = 100;
+  
+  public static final int ICE_BOMB = 4;
+  public static final String ICE_BOMB_STR = "Ice Bomb";
+  public static final float ICE_BOMB_POWER = 1f;
+  public static final float ICE_BOMB_OFFSET = 50;
+  public static final int ICE_BOMB_DAMAGE = 10;
+  public static final int ICE_BOMB_RADIUS = 100;
 
-  public static final int  FIRE_CLUSTER_CANNON = 4;
+  public static final int  FIRE_CLUSTER_CANNON = 5;
   public static final String FIRE_CLUSTER_CANNON_STR = "Fire Cluster Bomb";
   public static final float FIRE_CLUSTER_CANNON_POWER = 1f;
   public static final int FIRE_CLUSTER_CANNON_DAMAGE = 20;
@@ -72,20 +79,23 @@ public class Cannon extends Entity {
   }
 
   public static String getTypeStr(int type) {
-    switch(type) {
-      case BIG_CANNON:
-        return BIG_CANNON_STR;
-      case BASE_CANNON:
-        return BASE_CANNON_STR;
-      case CLUSTER_CANNON:
-        return CLUSTER_CANNON_STR;
-      case MOUNTAIN_MAKER:
-        return MOUNTAIN_MAKER_STR;
-      case FIRE_CLUSTER_CANNON:
+
+	switch(type) {
+	case BIG_CANNON:
+		return BIG_CANNON_STR;
+	case BASE_CANNON:
+		return BASE_CANNON_STR;
+	case CLUSTER_CANNON:
+		return CLUSTER_CANNON_STR;
+	case MOUNTAIN_MAKER:
+		return MOUNTAIN_MAKER_STR;
+	case ICE_BOMB:
+		return ICE_BOMB_STR;
+	case FIRE_CLUSTER_CANNON:
         return FIRE_CLUSTER_CANNON_STR;
-      default:
-        return null;
-    }
+	default:
+		return null;
+	}
   }
 
   public void changeType(int newType){
@@ -120,6 +130,14 @@ public class Cannon extends Entity {
         fireOffset = PROJECTILE_FIRE_OFFSET;
         damage = MOUNTAIN_MAKER_DAMAGE;
         radius = MOUNTAIN_MAKER_RADIUS;
+        cannonMountOffset = BASE_CANNON_MOUNT;
+        changeSprite(Tanx.BASE_CANNON_SPRITE);
+    	break;
+    case ICE_BOMB:
+    	power = ICE_BOMB_POWER;
+    	fireOffset = ICE_BOMB_OFFSET;
+    	damage = ICE_BOMB_DAMAGE;
+        radius = ICE_BOMB_RADIUS;
         cannonMountOffset = BASE_CANNON_MOUNT;
         changeSprite(Tanx.BASE_CANNON_SPRITE);
         break;
@@ -179,6 +197,7 @@ public class Cannon extends Entity {
     float x = getX() + fireOffset*(float)Math.cos(angle);
     float y = getY() + fireOffset*(float)Math.sin(angle);
 
+
     switch(type) {
       case CLUSTER_CANNON:
         spawnP.accept(new ClusterProjectile(x, y, projVelocity, radius, damage, spawnP));
@@ -189,6 +208,9 @@ public class Cannon extends Entity {
       case FIRE_CLUSTER_CANNON:
         spawnP.accept(new FireClusterProjectile(x, y, projVelocity, radius, damage, spawnP));
         break;
+      case ICE_BOMB:
+      	spawnP.accept(new IceBomb(x, y, projVelocity, radius, damage));
+      	break;
       default:
         spawnP.accept(new Projectile(x, y, projVelocity, radius, damage));
         break;

@@ -27,6 +27,7 @@ public class Player {
     
     ammo = new ArrayList<Ammo>();
     giveAmmo(Cannon.BASE_CANNON, Ammo.INF_AMMO);
+
     ammoIndex = 0;
     infFuel = false;
     maxChargedPower = TIME_TO_CHARGE;
@@ -195,6 +196,7 @@ public class Player {
     giveAmmo(Cannon.CLUSTER_CANNON, Ammo.INF_AMMO);
     giveAmmo(Cannon.FIRE_CLUSTER_CANNON, Ammo.INF_AMMO);
     giveAmmo(Cannon.MOUNTAIN_MAKER, Ammo.INF_AMMO);
+    giveAmmo(Cannon.ICE_BOMB, Ammo.INF_AMMO);
   }
 
 
