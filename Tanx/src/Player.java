@@ -211,6 +211,7 @@ public class Player {
   public boolean isInfFuel() { return infFuel; }
 
   public boolean isInfHealth() {
+    if (getTank() == null) { return false; }
     return getTank().isInfHealth();
   }
 

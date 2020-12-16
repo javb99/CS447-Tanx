@@ -326,18 +326,7 @@ public class Terrain extends PhysicsEntity {
       current = current.add(unitDirection);
       if (!this.isInBounds(current)) {
         System.out.println("No terrain below");
-        // no terrain below, so check above
-        current = start;
-        while (doesSatisfy(current, isNotEmpty)) {
-          current = current.subtract(unitDirection);
-          if (!this.isInBounds(current)) { 
-            System.out.println("No terrain below");
-            // no terrain above
-            return null;
-          }
-          break;
-        }
-        break;
+        return null;
       }
     }
 
