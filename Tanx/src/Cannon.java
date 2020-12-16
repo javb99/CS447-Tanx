@@ -1,13 +1,8 @@
-import jig.ConvexPolygon;
 import jig.Entity;
 import jig.ResourceManager;
 import jig.Vector;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
-
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.util.function.Consumer;
 
 public class Cannon extends Entity {
@@ -16,9 +11,9 @@ public class Cannon extends Entity {
   private static final float PROJECTILE_FIRE_OFFSET = 50;
   private static final float CANNON_SPRITE_SCALE = 3f;
   public static final float SPRITE_ROTATION_OFFSET = -90;
-  public static final float ROTATION_SPEED = 100;
-  public static final float MAX_ROTATION_FACTOR = 90;
-  public static final float ANGLE_CORRECTION = -90;
+  public static final double ROTATION_SPEED = 100;
+  public static final double MAX_ROTATION_FACTOR = 90;
+  public static final double MIN_ROTATION_FACTOR = 0;
   public static final Vector BASE_CANNON_MOUNT = new Vector(-5, 12);
 
 
@@ -66,16 +61,21 @@ public class Cannon extends Entity {
   private int damage;
   private int radius;
   private float fireOffset;
-  private float rotationFactor;
   private Image cannonSprite;
+  private Image mirroredCannonSprite;
+  private Image nonMirroredCannonSprite;
   private Vector cannonMountOffset;
+  
+  /// Degrees up from the tank's horizontal. When the tank is mirrored, this value doesn't change.
+  private double rotationFactor;
+  private double tankRotation;
+  private boolean isMirrored;
 
   public Cannon(final float x, final float y, int type){
     super(x,y);
-    rotationFactor = MAX_ROTATION_FACTOR;
-    rotate(MAX_ROTATION_FACTOR);
+    rotationFactor = MIN_ROTATION_FACTOR;
     changeType(type);
-    //this.addShape(new ConvexPolygon(10f, 45f), Color.red, Color.blue);
+    setRotationBasedOnTankAndRotationFactor();
   }
 
   public static String getTypeStr(int type) {
@@ -153,10 +153,25 @@ public class Cannon extends Entity {
   }
 
   public void changeSprite(String sprite){
+    nonMirroredCannonSprite = ResourceManager.getImage(sprite);
+    nonMirroredCannonSprite = nonMirroredCannonSprite.getScaledCopy(CANNON_SPRITE_SCALE);
+    nonMirroredCannonSprite.rotate(SPRITE_ROTATION_OFFSET);
+
+    mirroredCannonSprite = nonMirroredCannonSprite.getFlippedCopy(false, true);
+    mirroredCannonSprite.rotate(SPRITE_ROTATION_OFFSET);
+
+    mirrorSpriteIfNeeded();
+  }
+  public void mirrorSpriteIfNeeded() {
+    if (isMirrored) {
+      changeSprite(mirroredCannonSprite);
+    } else {
+      changeSprite(nonMirroredCannonSprite);
+    }
+  }
+  public void changeSprite(Image sprite){
     removeImage(cannonSprite);
-    cannonSprite = ResourceManager.getImage(sprite);
-    cannonSprite = cannonSprite.getScaledCopy(CANNON_SPRITE_SCALE);
-    cannonSprite.rotate(SPRITE_ROTATION_OFFSET);
+    cannonSprite = sprite;
     addImage(cannonSprite);
   }
 
@@ -164,24 +179,32 @@ public class Cannon extends Entity {
     The angle calculations are done in degrees
     ROTATIONSPEED should be in degrees per second
     */
-  public void rotate(Direction direction, int delta){
-    float rotationAmount = ROTATION_SPEED *delta/1000;
-    if (direction == Direction.RIGHT) {
+  public void rotate(CannonDirection direction, int delta){
+    double rotationAmount = ROTATION_SPEED * delta/1000;
+    if (direction == CannonDirection.UP) {
       if (rotationFactor <= MAX_ROTATION_FACTOR){
         rotationFactor += rotationAmount;
-        rotate(rotationAmount);
       }
     } else {
-      if (rotationFactor >= -MAX_ROTATION_FACTOR){
+      if (rotationFactor >= MIN_ROTATION_FACTOR){
         rotationFactor -= rotationAmount;
-        rotate(-rotationAmount);
       }
     }
+    setRotationBasedOnTankAndRotationFactor();
   }
-
-  public void render(Graphics g, final float x, final float y) {
-    setPosition(x, y);
-    super.render(g);
+  public void updateTankRotation(double rotation, boolean isMirrored) {
+    this.tankRotation = rotation;
+    this.isMirrored = isMirrored;
+    setRotationBasedOnTankAndRotationFactor();
+  }
+  public void setRotationBasedOnTankAndRotationFactor() {
+    if (isMirrored) {
+      setRotation(-SPRITE_ROTATION_OFFSET + tankRotation - (180 - rotationFactor));
+    } else {
+      setRotation(-SPRITE_ROTATION_OFFSET + tankRotation - rotationFactor);
+    }
+    mirrorSpriteIfNeeded();
+//    System.out.println("tank: " + tankRotation + ", cannon: " + rotationFactor + ", mirrored: " + isMirrored + " -> " + getRotation());
   }
 
   //input:float from 0 to 1 determing power strength
@@ -191,7 +214,7 @@ public class Cannon extends Entity {
     System.out.println("Fired with: " + Float.toString(p) + " power!");
     if (power < 0) power = 0;
     float launchPower = p*power;
-    double angle = Math.toRadians(getRotation() + ANGLE_CORRECTION);
+    double angle = Math.toRadians(getRotation() + SPRITE_ROTATION_OFFSET);
     Vector projVelocity = new Vector((float)Math.cos(angle), (float)Math.sin(angle));
     projVelocity = projVelocity.setLength(launchPower);
     float x = getX() + fireOffset*(float)Math.cos(angle);
@@ -220,7 +243,26 @@ public class Cannon extends Entity {
   public int getType() { return type; }
 
   public void setMountPoint(Vector cannonMount) {
+    // TODO: I think this should use the resolved rotation instead of the factor.
+    
     //mount point is from center of cannon sprite
-    setPosition(cannonMount.add(cannonMountOffset.negate().rotate(rotationFactor)));
+//    setPosition(cannonMount.add(cannonMountOffset.negate().rotate(rotationFactor)));
+    setPosition(cannonMount.add(VectorMath.mirrorXIf(isMirrored, cannonMountOffset.negate()).rotate(getRotation())));
+  }
+}
+class VectorMath {
+  static Vector mirrorY(Vector input) {
+    return input.setY(-input.getY());
+  }
+  static Vector mirrorYIf(boolean shouldMirror, Vector input) {
+    if (!shouldMirror) { return input; }
+    return input.setY(-input.getY());
+  }
+  static Vector mirrorX(Vector input) {
+    return input.setX(-input.getX());
+  }
+  static Vector mirrorXIf(boolean shouldMirror, Vector input) {
+    if (!shouldMirror) { return input; }
+    return input.setX(-input.getX());
   }
 }

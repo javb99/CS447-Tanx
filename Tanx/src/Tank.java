@@ -9,6 +9,7 @@ import org.newdawn.slick.Image;
 import java.util.function.Consumer;
 
 enum Direction {LEFT, RIGHT, NONE};
+enum CannonDirection { UP, DOWN };
 
 public class Tank extends PhysicsEntity {
   //Constants
@@ -37,6 +38,7 @@ public class Tank extends PhysicsEntity {
   private int onFireTurns;
   private GroundFire fireDebuffEntity;
 
+  private boolean isMirrored;
   private double targetRotation = 0;
   
   static boolean showDebugRays = false;
@@ -85,13 +87,15 @@ public class Tank extends PhysicsEntity {
     cannon.fire(power, spawnP);
   }
 
-  public void rotate(Direction direction, int delta){cannon.rotate(direction, delta);}
+  public void rotate(CannonDirection direction, int delta){cannon.rotate(direction, delta);}
 
   public void move(Direction direction){
     if (direction == Direction.LEFT) {
+      isMirrored = true;
       activeTankSprite = leftTankSprite;
       setAcceleration(new Vector(-ACCELERATION, 0).rotate(getRotation()));
     } else if (direction == Direction.RIGHT) {
+      isMirrored = false;
       activeTankSprite = rightTankSprite;
       setAcceleration(new Vector(ACCELERATION, 0).rotate(getRotation()));
     } else {
@@ -127,6 +131,7 @@ public class Tank extends PhysicsEntity {
     }
     
     this.rotate(this.velocityToward(clampDouble(targetRotation, -90, 90), 0.3, delta));
+    this.cannon.updateTankRotation(getRotation(), isMirrored);
   }
   
   @Override
@@ -140,7 +145,8 @@ public class Tank extends PhysicsEntity {
     g.rotate(getX(), getY(), (float) getRotation()); 
     g.drawImage(activeTankSprite, getX() - activeTankSprite.getWidth()/2, getY() - activeTankSprite.getHeight()/2, myPlayer.getColor());
     g.popTransform();
-    Vector cannonMount = TANK_MOUNT_OFFSET.rotate(getRotation()).add(getPosition());
+    Vector mountOffset = VectorMath.mirrorXIf(isMirrored, TANK_MOUNT_OFFSET);
+    Vector cannonMount = mountOffset.rotate(getRotation()).add(getPosition());
     cannon.setMountPoint(cannonMount);
     cannon.render(g);
     if (jumpJetsCD > 0){

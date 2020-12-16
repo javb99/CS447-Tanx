@@ -146,7 +146,7 @@ public class Player {
     }
   }
 
-  public void rotate (Direction d, int delta){
+  public void rotate (CannonDirection d, int delta){
     getTank().rotate(d, delta);
   }
 
