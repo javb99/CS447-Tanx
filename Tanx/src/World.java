@@ -28,6 +28,7 @@ public class World {
 		availPowerups.add(new AmmoPowerup(0, 0, Cannon.FIRE_CLUSTER_CANNON, 1));
 		availPowerups.add(new HealthPowerup(0, 0, 20));
 		availPowerups.add(new AmmoPowerup(0, 0, Cannon.MOUNTAIN_MAKER, 1));
+		availPowerups.add(new AmmoPowerup(0, 0, Cannon.ICE_BOMB, 1));
 	}
 	
 	public void loadLevel(String name) {
