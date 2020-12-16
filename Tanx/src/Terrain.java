@@ -129,6 +129,23 @@ public class Terrain extends PhysicsEntity {
     if(predicate.test(mask[x][y])) return true;
     return false;
   }
+  
+  public float frictionCoefficientAtPoint(Vector p) {
+    if (!isInBounds(p)) return 0f;
+    
+    int x = (int)p.getX();
+    int y = (int)p.getY();
+    
+    switch (mask[x][y]) {
+    case OPEN:
+      return 0;
+    case NORMAL:
+      return 0.11f;
+    case ICE:
+      return 0.02f;
+    default: return 0f;
+    }
+  }
 	
 	public boolean checkLineCollision(Vector p1, Vector p2) {	//recursive function for lines
 		int x1 = (int)p1.getX();
@@ -287,14 +304,17 @@ public class Terrain extends PhysicsEntity {
     Vector firstStart = start.add(tinyStep);
     Vector firstCollisionPoint = this.surfacePointForRay(firstStart, unitDirection);
     if (firstCollisionPoint == null) { return null; }
+    float firstFriction = frictionCoefficientAtPoint(firstCollisionPoint);
     
     Vector secondStart = start.subtract(tinyStep);
     Vector secondCollisionPoint = this.surfacePointForRay(secondStart, unitDirection);
     if (secondCollisionPoint == null) { return null; }
-    
+    float secondFriction = frictionCoefficientAtPoint(secondCollisionPoint);
+
     return new RayPair(
         new LineSegment(firstStart, firstCollisionPoint), 
-        new LineSegment(secondStart, secondCollisionPoint));
+        new LineSegment(secondStart, secondCollisionPoint),        
+        new float[] { firstFriction, secondFriction });
   }
 	
 	public Vector surfacePointForRay(Vector start, Vector unitDirection) {
