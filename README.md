@@ -1,5 +1,6 @@
 # CS447 Project 2: Tanx!
 Tanx - Release version 1.0.
+
 A game created and produced by Matthew Schofield, Joseph Van Boxtel, Benjamin Eavenson, and Henry Unruh for WSU's CS447 Game Design course.
 
 ## Tanx - What is it?
