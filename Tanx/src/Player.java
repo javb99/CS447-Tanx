@@ -121,6 +121,7 @@ public class Player {
       System.out.println("getTankERROR: No more tanks to get!");
       return null;
     }
+    if (tanks.size() <= index) return null;
     return tanks.get(index);
   }
 
