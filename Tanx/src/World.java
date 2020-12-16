@@ -39,7 +39,7 @@ public class World {
 	}
 
   //World update methods to run things such as powerup generation
-  public static int POWERUP_SPAWNRATE = 10*1000;
+  public static int POWERUP_SPAWNRATE = 20*1000;
 	public static float POWERUP_SPAWN_HEIGHT = 100f;
 	public static float POWERUP_SPAWN_TANK_DIST = 50f;
 

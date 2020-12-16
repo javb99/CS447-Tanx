@@ -425,6 +425,7 @@ public class PlayingState extends BasicGameState {
     } else if (state == phase.TURNCHANGE) {
         turnTimer = TURNLENGTH;
         camera.moveTo(player.getTank().getPosition());
+      tankPointer.pointTo(player.getTank().getPosition());
         if (input.isKeyPressed(Input.KEY_ENTER)) {
           state = phase.MOVEFIRE;
           camera.trackObject(player.getTank(), false);
@@ -500,10 +501,10 @@ public class PlayingState extends BasicGameState {
       if (pIndex >= players.size()){pIndex = 0;}
       currentPlayer = players.get(pIndex);
     } while (currentPlayer.isDead());
-    camera.moveTo(currentPlayer.getTank().getPosition());
-    tankPointer.pointTo(currentPlayer.getTank().getPosition());
-    fireSystem.updateTurn();
     currentPlayer.startTurn();
+    tankPointer.pointTo(currentPlayer.getTank().getPosition());
+    camera.moveTo(currentPlayer.getTank().getPosition());
+    fireSystem.updateTurn();
   }
   private boolean isGameOver() {
     int livingPlayersCount = 0;

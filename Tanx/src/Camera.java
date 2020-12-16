@@ -11,7 +11,7 @@ public class Camera {
   public static float MAX_ZOOM = 4f;
   public static float DEFAULT_ZOOM = 1f;
   public static float MAX_CAMERA_SPEED = 2f;
-  public static float MIN_CAMERA_SPEED = .6f;
+  public static float MIN_CAMERA_SPEED = 1f;
   public static float CAM_ACCELERATION = 1.1f;
   public static float CAM_ZOOM_RATE = .0005f;
   
