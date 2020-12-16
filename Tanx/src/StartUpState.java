@@ -89,7 +89,7 @@ public class StartUpState extends BasicGameState {
 
     container.setSoundOn(true);
     container.setSoundVolume(.5f);
-    ResourceManager.getSound(Tanx.MENU_MUSIC).loop();
+    ResourceManager.getSound(Tanx.MENU_MUSIC).loop(1f, .3f);
 
   }
 
