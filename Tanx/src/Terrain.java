@@ -1,7 +1,9 @@
+
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
 import org.newdawn.slick.Color;
+
 import org.newdawn.slick.Image;
 import org.newdawn.slick.ImageBuffer;
 import org.newdawn.slick.geom.Circle;
@@ -21,7 +23,8 @@ public class Terrain extends PhysicsEntity {
 	
 	enum TerrainType{
 		OPEN,
-		NORMAL
+		NORMAL,
+		ICE
 	}
 	
 	public Terrain(int w, int h, TerrainType t) {	//create a new terrain object completely of the specified type
@@ -52,13 +55,20 @@ public class Terrain extends PhysicsEntity {
 	public void applyMask(){
 		for(int x = 0; x < width; x++) {
 			for(int y = 0; y < height; y++) {
+				Color pixel;
 				
 				switch(mask[x][y]) {	//individually set every pixel in the image buffer according to the mask
 				case OPEN:
 					IB.setRGBA(x, y, 0, 0, 0, 0);
 					break;
 				case NORMAL:
-					Color pixel = baseImage.getColor(x%baseImage.getWidth(), y%baseImage.getHeight());
+					pixel = baseImage.getColor(x%baseImage.getWidth(), y%baseImage.getHeight());
+					IB.setRGBA(x, y, pixel.getRed(), pixel.getGreen(), pixel.getBlue(), pixel.getAlpha());
+					break;
+				case ICE:
+					pixel = baseImage.getColor(x%baseImage.getWidth(), y%baseImage.getHeight());
+					pixel.add(Color.cyan);
+					pixel = pixel.brighter();
 					IB.setRGBA(x, y, pixel.getRed(), pixel.getGreen(), pixel.getBlue(), pixel.getAlpha());
 				}
 				
@@ -118,6 +128,23 @@ public class Terrain extends PhysicsEntity {
     
     if(predicate.test(mask[x][y])) return true;
     return false;
+  }
+  
+  public float frictionCoefficientAtPoint(Vector p) {
+    if (!isInBounds(p)) return 0f;
+    
+    int x = (int)p.getX();
+    int y = (int)p.getY();
+    
+    switch (mask[x][y]) {
+    case OPEN:
+      return 0;
+    case NORMAL:
+      return 0.11f;
+    case ICE:
+      return 0.02f;
+    default: return 0f;
+    }
   }
 	
 	public boolean checkLineCollision(Vector p1, Vector p2) {	//recursive function for lines
@@ -250,7 +277,7 @@ public class Terrain extends PhysicsEntity {
 		}
 	}
 	
-	public void changeTerrainInCircleList(ArrayList<Circle> list, TerrainType targetType, TerrainType newType) {
+	public void setTerrainInCircleList(ArrayList<Circle> list, TerrainType newType) {
 		for(int i = 0; i < list.size(); i++) {
 			
 			int cx = (int)list.get(i).getCenterX();
@@ -263,9 +290,7 @@ public class Terrain extends PhysicsEntity {
 					if(x < 0 || x >= width || y < 0 || y >= height) continue;	//dont set out of world
 					
 					if(Math.sqrt( Math.pow(Math.abs(x-cx), 2) + Math.pow(Math.abs(y-cy), 2) ) <= r) {	//pythagorean theorem
-						if(mask[x][y] == targetType) {
-							mask[x][y] = newType;
-						}
+						mask[x][y] = newType;
 					}
 				}
 			}
@@ -279,14 +304,17 @@ public class Terrain extends PhysicsEntity {
     Vector firstStart = start.add(tinyStep);
     Vector firstCollisionPoint = this.surfacePointForRay(firstStart, unitDirection);
     if (firstCollisionPoint == null) { return null; }
+    float firstFriction = frictionCoefficientAtPoint(firstCollisionPoint);
     
     Vector secondStart = start.subtract(tinyStep);
     Vector secondCollisionPoint = this.surfacePointForRay(secondStart, unitDirection);
     if (secondCollisionPoint == null) { return null; }
-    
+    float secondFriction = frictionCoefficientAtPoint(secondCollisionPoint);
+
     return new RayPair(
         new LineSegment(firstStart, firstCollisionPoint), 
-        new LineSegment(secondStart, secondCollisionPoint));
+        new LineSegment(secondStart, secondCollisionPoint),        
+        new float[] { firstFriction, secondFriction });
   }
 	
 	public Vector surfacePointForRay(Vector start, Vector unitDirection) {

@@ -18,7 +18,6 @@ public class Tank extends PhysicsEntity {
   public static final float TANK_MOVE_SPEED = .2f;
   public static final float TANK_TERMINAL_VELOCITY = 2f;
   public static final float ACCELERATION = .75f;
-  public static final float FRICTION = 0.12f;
   public static final Vector ACCELERATION_JETS = new Vector(0, -.0012f);
   public static final float TANK_SPRITE_SCALE = 3f;
   private static final Vector TANK_MOUNT_OFFSET = new Vector(15, 0);
@@ -230,17 +229,23 @@ public class Tank extends PhysicsEntity {
     int shortestRaysIndexes[] = indexesOfShortest(terrainBoundaryRays);
     Vector shortestNormals[] = new Vector[2];
     Vector terrainPoints[] = new Vector[2];
+    float frictionCoefficients[] = new float[4];
     
     for (int i = 0; i < shortestRaysIndexes.length; i++) {
       int rayIndex = shortestRaysIndexes[i];
       if (rayIndex == -1) {
         continue;
       }
-      Vector normal = terrainBoundaryRays[rayIndex].surfaceNormal();
-      terrainPoints[i] =  terrainBoundaryRays[rayIndex].surface().center();
+      RayPair ray = terrainBoundaryRays[rayIndex];
+      Vector normal = ray.surfaceNormal();
+      terrainPoints[i] =  ray.surface().center();
       shortestNormals[i] = normal;
+      frictionCoefficients[i*2] = ray.frictionMues[0];
+      frictionCoefficients[i*2+1] = ray.frictionMues[1];
     }
     this.debugShortestRaysIndexes = shortestRaysIndexes;
+    
+    float frictionCoefficient = avgFloats(frictionCoefficients);
 
     Vector terrainNormal = new LineSegment(terrainPoints[1], terrainPoints[0]).unitNormalSpecial();
     this.debugTerrainNormal = terrainNormal;
@@ -253,7 +258,7 @@ public class Tank extends PhysicsEntity {
     
     if (distanceToTerrain < 0) {
       this.translate(maxPenetrationRay.first.getDirection().scale(distanceToTerrain));
-      this.applyFriction(delta, terrainNormal);
+      this.applyFriction(delta, terrainNormal, frictionCoefficient);
       this.setVelocity(this.getVelocity().project(terrainNormal.getPerpendicular()));
       this.rotateToNormal(terrainNormal);
     }
@@ -294,11 +299,19 @@ public class Tank extends PhysicsEntity {
     this.targetRotation = terrainAngle;
   }
   
-  private void applyFriction(int delta, Vector terrainNormal) {
+  private float avgFloats(float vs[]) {
+    float sum = 0;
+    for (float v : vs) {
+      sum = sum + v;
+    }
+    return sum / (float)vs.length;
+  }
+  
+  private void applyFriction(int delta, Vector terrainNormal, float mue) {
     Vector vNormal = this.getVelocity().project(terrainNormal);
     Vector vParallel = this.getVelocity().project(terrainNormal.getPerpendicular());
     float normalVelocityFactor = vNormal.length();
-    Vector friction = vParallel.negate().setLength(FRICTION*normalVelocityFactor*delta).clampLength(0, vParallel.length());
+    Vector friction = vParallel.negate().setLength(mue*normalVelocityFactor*delta).clampLength(0, vParallel.length());
     this.setVelocity(this.getVelocity().add(friction));
     debugFriction = friction;
   }

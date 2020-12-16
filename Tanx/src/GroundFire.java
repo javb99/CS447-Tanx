@@ -14,6 +14,7 @@ public class GroundFire extends PhysicsEntity {
   public static float FIRE_TURN_SCALAR = .2f;
   public static Vector FIRE_TERMINAL_VELOCITY = new Vector(2f, 2f);
   public static int FIRE_DURATION = 5;
+  public static float MELT_RADIUS = 60;
 
   private Animation fireAnim;
   private float currentScale;
@@ -30,6 +31,7 @@ public class GroundFire extends PhysicsEntity {
     currentScale = FIRE_SCALE;
     setScale(currentScale);
     turnsAlive = FIRE_DURATION;
+    
   }
 
   public void applyFire(Tank t) {
@@ -43,13 +45,15 @@ public class GroundFire extends PhysicsEntity {
     render(g);
   }
 
-  public void updateTurn() {
+  public void updateTurn(Terrain t) {
     if (turnsAlive > 0) {
       turnsAlive--;
       currentScale -= FIRE_TURN_SCALAR;
       setScale(currentScale);
+      t.changeTerrainInCircle(this.getPosition(), MELT_RADIUS, Terrain.TerrainType.ICE, Terrain.TerrainType.NORMAL, false);
     } else {
       setDead(true);
     }
   }
 }
+
